@@ -1,0 +1,476 @@
+//Microsoft Developer Studio generated resource script.
+//
+#include "resource.h"
+
+#define APSTUDIO_READONLY_SYMBOLS
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 2 resource.
+//
+#include "winresrc.h"
+
+/////////////////////////////////////////////////////////////////////////////
+#undef APSTUDIO_READONLY_SYMBOLS
+
+/////////////////////////////////////////////////////////////////////////////
+// Czech resources
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_CSY)
+#ifdef _WIN32
+LANGUAGE LANG_CZECH, SUBLANG_DEFAULT
+#pragma code_page(1250)
+#endif //_WIN32
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Icon
+//
+
+// Icon with lowest ID value placed first to ensure application icon
+// remains consistent on all systems.
+1                       ICON    DISCARDABLE     "preccalc.ico"
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Menu
+//
+
+IDD_MENU MENU DISCARDABLE 
+BEGIN
+    POPUP "&File"
+    BEGIN
+        POPUP "&Language"
+        BEGIN
+            MENUITEM ".",                           29999
+        END
+        MENUITEM "&Font...",                    ID_FONT
+        MENUITEM "Opt&ions...\tAlt+O",          ID_OPTIONS
+        MENUITEM "&Colors...",                  ID_COLORS
+        MENUITEM "Open &buttons...\tCtrl+B",    ID_OPENBUTTONS
+        MENUITEM SEPARATOR
+        MENUITEM "&Open expression...\tCtrl+O", ID_OPEN
+        MENUITEM "&Save result...\tCtrl+S",     ID_SAVE
+        MENUITEM SEPARATOR
+        MENUITEM "Open &macros...",             ID_MACRO_OPEN
+        MENUITEM "Save m&acros as...",          ID_MACRO_SAVE
+        MENUITEM SEPARATOR
+        MENUITEM "Save se&ttings",              ID_WRINI
+        MENUITEM "&Delete settings",            ID_DELINI
+        MENUITEM SEPARATOR
+        MENUITEM "&Exit",                       ID_EXIT
+    END
+    POPUP "&Edit"
+    BEGIN
+        MENUITEM "&Undo\tCtrl+Z",               ID_UNDO
+        MENUITEM "Cu&t\tCtrl+X",                ID_CUT
+        MENUITEM "&Copy\tCtrl+C",               ID_COPY
+        MENUITEM "&Paste\tCtrl+V",              ID_PASTE
+        MENUITEM "Cl&ear\tEsc",                 ID_CLEAR
+        MENUITEM "Copy &result\tAlt+C",         ID_COPYRESULT
+        MENUITEM SEPARATOR
+        MENUITEM "&History...\tCtrl+H",         ID_HISTORY
+        MENUITEM "Prev&ious\tCtrl+up",          ID_HIST_PREV
+        MENUITEM "Ne&xt\tCtrl+down",            ID_HIST_NEXT
+        MENUITEM SEPARATOR
+        MENUITEM "&1st  parameter\tCtrl+1",     ID_VAR1
+        MENUITEM "&2nd parameter\tCtrl+2",      ID_VAR2
+        MENUITEM "&3rd  parameter\tCtrl+3",     ID_VAR3
+        MENUITEM "&4th  parameter\tCtrl+4",     ID_VAR4
+        MENUITEM SEPARATOR
+        MENUITEM "&Variables...\tCtrl+L",       ID_VARLIST
+    END
+    POPUP "Constan&ts"
+    BEGIN
+        MENUITEM SEPARATOR
+    END
+    POPUP "&Units"
+    BEGIN
+        MENUITEM SEPARATOR
+    END
+    POPUP "&Macro"
+    BEGIN
+        MENUITEM "&New\tCtrl+N",                ID_MACRO_NEW
+        MENUITEM "&Delete\tCtrl+D",             ID_MACRO_DEL
+        MENUITEM "&Rename",                     ID_MACRO_RENAME
+        MENUITEM SEPARATOR
+    END
+    POPUP "&Help"
+    BEGIN
+        MENUITEM "&Contents\tCtrl+F1",          ID_HELP_CONTENT
+        MENUITEM "&Functions\tF1",              ID_HELP
+        MENUITEM "&About...",                   ID_ABOUT
+    END
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Accelerator
+//
+
+3 ACCELERATORS MOVEABLE PURE 
+BEGIN
+    VK_F8,          ID_BASE,                VIRTKEY, NOINVERT
+    VK_ESCAPE,      ID_CLEAR,               VIRTKEY, NOINVERT
+    "C",            ID_COPYRESULT,          VIRTKEY, ALT, NOINVERT
+    VK_F1,          ID_HELP,                VIRTKEY, NOINVERT
+    VK_F1,          ID_HELP_CONTENT,        VIRTKEY, CONTROL, NOINVERT
+    VK_DOWN,        ID_HIST_NEXT,           VIRTKEY, CONTROL, NOINVERT
+    VK_UP,          ID_HIST_PREV,           VIRTKEY, CONTROL, NOINVERT
+    "H",            ID_HISTORY,             VIRTKEY, CONTROL, NOINVERT
+    "D",            ID_MACRO_DEL,           VIRTKEY, CONTROL, NOINVERT
+    "N",            ID_MACRO_NEW,           VIRTKEY, CONTROL, NOINVERT
+    "O",            ID_OPEN,                VIRTKEY, CONTROL, NOINVERT
+    "B",            ID_OPENBUTTONS,         VIRTKEY, CONTROL, NOINVERT
+    "O",            ID_OPTIONS,             VIRTKEY, ALT, NOINVERT
+    "V",            ID_PASTE,               VIRTKEY, CONTROL, NOINVERT
+    "R",            ID_RELOAD_BUTTONS,      VIRTKEY, CONTROL, NOINVERT
+    "S",            ID_SAVE,                VIRTKEY, CONTROL, NOINVERT
+    VK_PAUSE,       ID_STOP,                VIRTKEY, NOINVERT
+    "1",            ID_VAR1,                VIRTKEY, CONTROL, NOINVERT
+    VK_NUMPAD1,     ID_VAR1,                VIRTKEY, CONTROL, NOINVERT
+    "0",            ID_VAR10,               VIRTKEY, CONTROL, NOINVERT
+    VK_NUMPAD0,     ID_VAR10,               VIRTKEY, CONTROL, NOINVERT
+    "2",            ID_VAR2,                VIRTKEY, CONTROL, NOINVERT
+    VK_NUMPAD2,     ID_VAR2,                VIRTKEY, CONTROL, NOINVERT
+    "3",            ID_VAR3,                VIRTKEY, CONTROL, NOINVERT
+    VK_NUMPAD3,     ID_VAR3,                VIRTKEY, CONTROL, NOINVERT
+    "4",            ID_VAR4,                VIRTKEY, CONTROL, NOINVERT
+    VK_NUMPAD4,     ID_VAR4,                VIRTKEY, CONTROL, NOINVERT
+    "5",            ID_VAR5,                VIRTKEY, CONTROL, NOINVERT
+    VK_NUMPAD5,     ID_VAR5,                VIRTKEY, CONTROL, NOINVERT
+    "6",            ID_VAR6,                VIRTKEY, CONTROL, NOINVERT
+    VK_NUMPAD6,     ID_VAR6,                VIRTKEY, CONTROL, NOINVERT
+    "7",            ID_VAR7,                VIRTKEY, CONTROL, NOINVERT
+    VK_NUMPAD7,     ID_VAR7,                VIRTKEY, CONTROL, NOINVERT
+    "8",            ID_VAR8,                VIRTKEY, CONTROL, NOINVERT
+    VK_NUMPAD8,     ID_VAR8,                VIRTKEY, CONTROL, NOINVERT
+    "9",            ID_VAR9,                VIRTKEY, CONTROL, NOINVERT
+    VK_NUMPAD9,     ID_VAR9,                VIRTKEY, CONTROL, NOINVERT
+    "L",            ID_VARLIST,             VIRTKEY, CONTROL, NOINVERT
+    VK_F7,          IDC_BIN,                VIRTKEY, NOINVERT
+    VK_F5,          IDC_DEC,                VIRTKEY, NOINVERT
+    VK_F2,          IDC_DEG,                VIRTKEY, NOINVERT
+    VK_F12,         IDC_ENG,                VIRTKEY, NOINVERT
+    VK_F10,         IDC_FIX,                VIRTKEY, NOINVERT
+    VK_F4,          IDC_GRAD,               VIRTKEY, NOINVERT
+    VK_F6,          IDC_HEX,                VIRTKEY, NOINVERT
+    VK_F9,          IDC_NORM,               VIRTKEY, NOINVERT
+    VK_F3,          IDC_RAD,                VIRTKEY, NOINVERT
+    VK_F11,         IDC_SCI,                VIRTKEY, NOINVERT
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Dialog
+//
+
+IDD_ABOUT DIALOG DISCARDABLE  52, 18, 113, 123
+STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "About"
+FONT 10, "MS Shell Dlg"
+BEGIN
+    PUSHBUTTON      "http://preccalc.sourceforge.net",124,5,65,104,13
+    PUSHBUTTON      "http://petr.lastovicka.sweb.cz",123,5,83,104,13
+    PUSHBUTTON      "OK",IDOK,40,102,32,14
+    CTEXT           "(C) 2004-2013  Petr Lastovicka",501,4,50,104,10
+    CTEXT           "Version",503,32,27,28,9
+    CTEXT           "Precise Calculator",504,5,4,104,14,SS_CENTERIMAGE | 
+                    SS_SUNKEN | WS_BORDER
+    ICON            1,IDC_STATIC,10,23,20,20
+    ICON            1,IDC_STATIC,83,23,20,20
+    LTEXT           "",101,63,27,12,8
+END
+
+IDD_MAIN DIALOG DISCARDABLE  0, 0, 380, 237
+STYLE WS_MINIMIZEBOX | WS_MAXIMIZEBOX | WS_CAPTION | WS_SYSMENU | 
+    WS_THICKFRAME
+CLASS "PreciseCalculator"
+FONT 8, "MS Shell Dlg"
+BEGIN
+    CTEXT           ":",IDC_SPRECISION,256,31,40,8
+    EDITTEXT        IDC_PRECISION,301,28,33,14,ES_NUMBER
+    EDITTEXT        IDC_FIXDIGITS,352,28,22,14,ES_AUTOHSCROLL | ES_NUMBER
+    GROUPBOX        "",IDC_STATIC,4,0,106,22
+    PUSHBUTTON      "Dec",IDC_DEC,8,7,22,12
+    PUSHBUTTON      "Hex",IDC_HEX,33,7,22,12
+    PUSHBUTTON      "Bin",IDC_BIN,58,7,22,12
+    EDITTEXT        IDC_BASE,84,6,21,14,ES_NUMBER
+    GROUPBOX        "",IDC_STATIC,114,0,98,22
+    RADIOBUTTON     "Deg",IDC_DEG,117,8,29,10,WS_GROUP
+    RADIOBUTTON     "Rad",IDC_RAD,148,8,30,10
+    RADIOBUTTON     "Grad",IDC_GRAD,179,8,31,10
+    GROUPBOX        "",IDC_STATIC,216,0,119,22
+    RADIOBUTTON     "Norm",IDC_NORM,219,8,29,10,WS_GROUP
+    RADIOBUTTON     "Fix",IDC_FIX,252,8,25,10
+    RADIOBUTTON     "Sci",IDC_SCI,278,8,26,10
+    RADIOBUTTON     "Eng",IDC_ENG,306,8,26,10
+    CONTROL         "Inv",IDC_INV,"Button",BS_AUTOCHECKBOX | WS_GROUP | 
+                    WS_TABSTOP,256,49,26,10
+    CONTROL         "Hyp",IDC_HYP,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,286,
+                    49,29,10
+    RTEXT           "",IDC_TIME,322,48,52,12,SS_CENTERIMAGE
+    CONTROL         "a/b",IDC_FRACT,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,
+                    347,31,27,10
+END
+
+IDD_NEWMACRO DIALOG DISCARDABLE  0, 0, 186, 66
+STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Create a new macro"
+FONT 9, "MS Shell Dlg"
+BEGIN
+    LTEXT           "Name of macro:",507,7,6,172,8
+    EDITTEXT        101,7,19,172,14,ES_AUTOHSCROLL
+    DEFPUSHBUTTON   "OK",IDOK,32,45,50,14
+    PUSHBUTTON      "Cancel",IDCANCEL,104,45,50,14
+END
+
+IDD_RENAMEMACRO DIALOG DISCARDABLE  0, 0, 186, 105
+STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Rename macro"
+FONT 9, "MS Shell Dlg"
+BEGIN
+    LTEXT           "Original name:",505,7,6,172,8
+    COMBOBOX        101,7,22,172,117,CBS_DROPDOWNLIST | CBS_SORT | 
+                    WS_VSCROLL | WS_TABSTOP
+    LTEXT           "New name:",506,7,44,172,8
+    EDITTEXT        102,7,57,172,14,ES_AUTOHSCROLL
+    DEFPUSHBUTTON   "OK",IDOK,31,84,50,14
+    PUSHBUTTON      "Cancel",IDCANCEL,104,84,50,14
+END
+
+IDD_VARS DIALOG DISCARDABLE  0, 0, 299, 144
+STYLE WS_POPUP | WS_CAPTION | WS_SYSMENU | WS_THICKFRAME
+CAPTION "Variables"
+FONT 9, "MS Shell Dlg"
+BEGIN
+    LISTBOX         101,7,7,227,130,LBS_OWNERDRAWFIXED | 
+                    LBS_NOINTEGRALHEIGHT | LBS_NODATA | WS_VSCROLL | 
+                    WS_TABSTOP
+    DEFPUSHBUTTON   "&Paste",520,242,7,50,14
+    PUSHBUTTON      "&Remove",521,242,30,50,14
+    PUSHBUTTON      "Remove &all",522,242,53,50,14
+    PUSHBUTTON      "&Close",9,242,76,50,14
+END
+
+IDD_OPTIONS DIALOG DISCARDABLE  0, 0, 218, 197
+STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Options"
+FONT 9, "MS Shell Dlg"
+BEGIN
+    CONTROL         "&Save settings on exit",537,"Button",BS_AUTOCHECKBOX | 
+                    WS_TABSTOP,7,7,204,10
+    GROUPBOX        "",IDC_STATIC,3,20,98,68
+    CONTROL         "separator &before point",530,"Button",BS_AUTOCHECKBOX | 
+                    WS_TABSTOP,8,31,88,10
+    LTEXT           "&Character:",532,11,49,45,8
+    EDITTEXT        101,61,48,17,14
+    LTEXT           "F&requency:",534,11,68,45,8
+    EDITTEXT        103,61,67,24,14,ES_NUMBER
+    GROUPBOX        "",IDC_STATIC,107,20,100,68
+    CONTROL         "separator &after point",531,"Button",BS_AUTOCHECKBOX | 
+                    WS_TABSTOP,113,31,87,10
+    LTEXT           "C&haracter:",533,116,49,45,8
+    EDITTEXT        102,166,48,17,14
+    LTEXT           "Fr&equency:",535,116,68,45,8
+    EDITTEXT        104,166,67,24,14,ES_NUMBER
+    LTEXT           "&Maximum number of items in history:",536,7,101,132,8
+    EDITTEXT        105,146,98,32,14,ES_AUTOHSCROLL | ES_NUMBER
+    CONTROL         "&Log all expressions and results to a file:",538,"Button",
+                    BS_AUTOCHECKBOX | WS_TABSTOP,7,121,204,10
+    EDITTEXT        106,20,135,191,14,ES_AUTOHSCROLL
+    RTEXT           "Lo&g file length:",539,7,156,73,8
+    EDITTEXT        107,89,153,40,14,ES_AUTOHSCROLL
+    LTEXT           "KB",IDC_STATIC,133,155,10,8
+    DEFPUSHBUTTON   "OK",IDOK,37,175,50,14
+    PUSHBUTTON      "Cancel",IDCANCEL,114,175,50,14
+END
+
+IDD_DELETEMACRO DIALOG DISCARDABLE  0, 0, 186, 66
+STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Remove macro"
+FONT 9, "MS Shell Dlg"
+BEGIN
+    LTEXT           "Name of macro:",507,7,6,172,8
+    COMBOBOX        101,7,22,172,122,CBS_DROPDOWNLIST | CBS_SORT | 
+                    WS_VSCROLL | WS_TABSTOP
+    DEFPUSHBUTTON   "OK",IDOK,32,45,50,14
+    PUSHBUTTON      "Cancel",IDCANCEL,104,45,50,14
+END
+
+IDD_COLORS DIALOG DISCARDABLE  0, 0, 130, 135
+STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Colors"
+FONT 9, "MS Shell Dlg"
+BEGIN
+    LTEXT           "Numbers",550,11,10,68,8
+    CONTROL         "",100,"Button",BS_OWNERDRAW | WS_TABSTOP,84,7,15,15
+    LTEXT           "Functions",551,11,29,68,8
+    CONTROL         "",101,"Button",BS_OWNERDRAW | WS_TABSTOP,84,26,15,15
+    LTEXT           "Del, C",IDC_STATIC,11,49,68,8
+    CONTROL         "",102,"Button",BS_OWNERDRAW | WS_TABSTOP,84,47,15,15
+    LTEXT           "+, -, *, /",IDC_STATIC,11,69,68,8
+    CONTROL         "",103,"Button",BS_OWNERDRAW | WS_TABSTOP,84,66,15,15
+    LTEXT           "EXE",IDC_STATIC,11,89,68,8
+    CONTROL         "",104,"Button",BS_OWNERDRAW | WS_TABSTOP,84,87,15,15
+    DEFPUSHBUTTON   "OK",1,9,114,50,14
+    PUSHBUTTON      "Cancel",2,72,114,50,14
+END
+
+
+#ifdef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// TEXTINCLUDE
+//
+
+1 TEXTINCLUDE MOVEABLE PURE 
+BEGIN
+    "resource.h\0"
+END
+
+2 TEXTINCLUDE MOVEABLE PURE 
+BEGIN
+    "#include ""winresrc.h""\r\n"
+    "\0"
+END
+
+3 TEXTINCLUDE MOVEABLE PURE 
+BEGIN
+    "\r\n"
+    "\0"
+END
+
+#endif    // APSTUDIO_INVOKED
+
+
+#ifndef _MAC
+/////////////////////////////////////////////////////////////////////////////
+//
+// Version
+//
+
+VS_VERSION_INFO VERSIONINFO
+ FILEVERSION 2,6,0,0
+ PRODUCTVERSION 0,0,0,0
+ FILEFLAGSMASK 0x3fL
+#ifdef _DEBUG
+ FILEFLAGS 0x1L
+#else
+ FILEFLAGS 0x0L
+#endif
+ FILEOS 0x40004L
+ FILETYPE 0x1L
+ FILESUBTYPE 0x0L
+BEGIN
+    BLOCK "StringFileInfo"
+    BEGIN
+        BLOCK "040504b0"
+        BEGIN
+            VALUE "Comments", "\0"
+            VALUE "CompanyName", "Petr Laštovièka\0"
+            VALUE "FileDescription", "Precise Calculator\0"
+            VALUE "FileVersion", "2, 6, 0, 0\0"
+            VALUE "InternalName", "\0"
+            VALUE "LegalCopyright", "© 2004-2013  Petr Laštovièka\0"
+            VALUE "LegalTrademarks", "\0"
+            VALUE "OriginalFilename", "preccalc.exe\0"
+            VALUE "PrivateBuild", "\0"
+            VALUE "ProductName", "\0"
+            VALUE "ProductVersion", "\0"
+            VALUE "SpecialBuild", "\0"
+        END
+    END
+    BLOCK "VarFileInfo"
+    BEGIN
+        VALUE "Translation", 0x405, 1200
+    END
+END
+
+#endif    // !_MAC
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// DESIGNINFO
+//
+
+#ifdef APSTUDIO_INVOKED
+GUIDELINES DESIGNINFO MOVEABLE PURE 
+BEGIN
+    IDD_ABOUT, DIALOG
+    BEGIN
+        BOTTOMMARGIN, 118
+    END
+
+    IDD_MAIN, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 373
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 230
+    END
+
+    IDD_NEWMACRO, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 179
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 59
+    END
+
+    IDD_RENAMEMACRO, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 179
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 98
+    END
+
+    IDD_VARS, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 292
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 137
+    END
+
+    IDD_OPTIONS, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 211
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 189
+    END
+
+    IDD_DELETEMACRO, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 179
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 59
+    END
+
+    IDD_COLORS, DIALOG
+    BEGIN
+        BOTTOMMARGIN, 128
+    END
+END
+#endif    // APSTUDIO_INVOKED
+
+#endif    // Czech resources
+/////////////////////////////////////////////////////////////////////////////
+
+
+
+#ifndef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 3 resource.
+//
+
+
+/////////////////////////////////////////////////////////////////////////////
+#endif    // not APSTUDIO_INVOKED
+

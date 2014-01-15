@@ -1,0 +1,74 @@
+[Longitud\angstrom]
+1E-10
+[Longitud\pulgada]
+0.0254
+[Longitud\pie]
+0.3048
+[Longitud\yarda]
+0.9144
+[Longitud\milla]
+1609.344
+[Longitud\milla náutica]
+1852
+[Longitud\unidad astronómica]
+1.4959787E11
+[Longitud\año luz]
+9.46055E15
+[Longitud\parsec]
+3.085678E16
+[Área\pulgada ajustada]
+6.4516E-4
+[Área\pie ajustado]
+0.09290304
+[Área\yarda ajustada]
+0.83612736
+[Área\acre]
+4046.8564224
+[Área\milla ajustada]
+2.589988110336E6
+[Volumen\onza flúida (Reino Unido)]
+28.4130625E-6
+[Volumen\onza flúida (los E.E.U.U.)]
+29.5735295625E-6
+[Volumen\pinta (Reino Unido)]
+5.68261E-4
+[Volumen\galón (Reino Unido)]
+4.54609E-3
+[Volumen\galón (los E.E.U.U.)]
+3.785411784E-3
+[Volumen\barril]
+0.158998
+[Masa\onza]
+0.028349523125
+[Masa\libra]
+0.45359237
+[Energía\ergio]
+1E-7
+[Energía\caloría]
+4.1868
+[Energía\caballo]
+735.4988
+[Energía\energía de caballo]
+745.69987136
+[Presión\atmósfera]
+101324.905610778
+[Presión\Torr (milímetro de hectogramo)]
+133.322144429454
+[Presión\milímetro del agua]
+9.80665
+[Velocidad\kilómetro por hora]
+(1/3.6)
+[Velocidad\nudo]
+0.51444444438562
+[Tiempo\día sideral]
+86164.09962
+[Tiempo\día de calendario]
+86400
+[Tiempo\mes sideral] 
+2360591.5 
+[Tiempo\mes sinódico] 
+2551442.8 
+[Tiempo\año sideral] 
+31558149.5 
+[Tiempo\año tropical] 
+31556925.7

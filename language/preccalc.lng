@@ -1,0 +1,171 @@
+;menu
+450=&File
+451=&Language
+223=&Font...
+230=Opt&ions...\tAlt+O
+224=&Colors...
+111=Open &buttons...\tCtrl+B
+106=&Open expression...\tCtrl+O
+108=&Save result...\tCtrl+S
+109=Open &macros...
+110=Save m&acros as...
+102=Save se&ttings
+105=&Delete settings
+103=&Exit
+
+453=&Edit
+205=&Undo\tCtrl+Z
+200=Cu&t\tCtrl+X
+201=&Copy\tCtrl+C
+202=&Paste\tCtrl+V
+204=Cl&ear\tEsc
+203=Copy &result\tAlt+C
+234=&History...\tCtrl+H
+232=Prev&ious\tCtrl+up
+233=Ne&xt\tCtrl+down
+241=&1st  parameter\tCtrl+1
+242=&2nd parameter\tCtrl+2
+243=&3rd  parameter\tCtrl+3
+244=&4th  parameter\tCtrl+4
+206=&Variables...\tCtrl+L
+
+454=Constan&ts
+
+455=&Units
+
+465=&Macro
+210=&New\tCtrl+N
+211=&Delete\tCtrl+D
+212=&Rename
+
+452=&Help
+122=&Contents\tCtrl+F1
+120=&Functions\tF1
+121=&About...
+
+
+296=Precision:
+
+1=OK
+2=Cancel
+9=&Close
+
+;dialog windows
+11=About
+503=Version
+504=Precise Calculator
+
+14=Create a new macro
+507=Name of macro:
+
+16=Rename macro
+505=Original name:
+506=New name:
+
+15=Remove macro
+
+17=Variables
+20=History
+520=&Paste
+521=&Remove
+522=Remove &all
+
+18=Options
+537=&Save settings on exit
+530=separator &before point
+532=&Character:
+534=F&requency:
+531=separator &after point
+533=C&haracter:
+535=Fr&equency:
+536=&Maximum number of items in history:
+538=&Log all expressions and results to a file:
+539=Lo&g file length:
+
+19=Colors
+550=Numbers
+551=Functions
+
+;error messages
+1010=Division by zero
+1011=Overflow, number is too big
+1017=The shift operand is not integer
+1018=Operand of combination is not integer
+1019=Operand of permutation is not integer
+1020=Operand of factorial is not integer
+1026=The greatest common divisor of non-integers
+1027=The least common multiple of non-integers
+1030=divisor of real number
+1031=Computation is too difficult
+1032=Angle of point [0,0]
+1033=Invalid number after goto
+1034=Infinite result
+1035=Function does not support imaginary numbers
+1036=Logarithm of zero
+1037=Complex or negative power of zero
+1038=Complex or negative root of zero
+1039=argtanh,argcoth from 1 or -1
+1040=arctan, arccot from 1i or -1i
+1041=Matrices have incorrect size
+1042=Increment or decrement of a matrix
+1043=The function does not support matrices
+1044=Matrices don't have the same size
+1045=Number of columns of the first matrix is not equal to number of columns of the second matrix
+1046=Vectors have different lengths
+1047=Not integer power of matrix
+1048=Matrix is not square
+1049=Arguments have to be vectors of length 3
+1050=Matrix is not regular
+1051=Index is out of range
+1052=Index is not integer
+1053=Matrix doesn't have 2 columns
+1054=Matrix must have more than one column
+1055=Equations are not solvable
+1056=Parameter is not a vector
+1057=The first parameter has to be a variable
+1058=The fourth argument has to be integer
+1059=Function matrix must have parameters number of rows, number of columns
+1060=Trigonometric function operand is too big
+1061=Parameters must be variables
+1062=Result is too long
+1063=The first operand of MOD function is longer than precision
+
+960=There is a numeric expression at the left side of an assignment
+961=Increment or decrement of an expression
+962=] expected
+954=The digit is outside the selected base
+950=Unknown function or variable
+951=Unknown operator
+957=Left parenthesis expected
+958=Wrong number of arguments
+952=Number, variable or prefix function expected
+953=Binary operator expected
+959=Missing quote at the end of a printed text
+1029=Fatal error
+956=Unmatched comma
+963=Unmatched right bracket
+955=Unmatched parenthesis
+964=End of comment is missing
+
+755=Error in %s\nLine %d
+756=Error in %s\nMessage number %d is too big
+757=Error in %s\nDuplicated number %d
+753=File %s is too long
+754=Error reading file %s
+730=Cannot open file %s
+733=Cannot create file %s
+735=Cannot write to Windows registry
+736=Do you want to delete your settings ?
+801=Macro "%s" already exists
+731=Bad format of %s
+802=At first, type some expression to the input edit box
+1028=Not enough memory !!!
+
+508=Text files (*.txt)\0*.txt\0All files\0*.*\0
+509=Macros (*.cal)\0*.cal\0All files\0*.*\0
+510=Buttons (*.cbt)\0*.cbt\0All files\0*.*\0
+
+13=preccalc.chm
+10=constants.cns
+12=units.unt
+21=examples.cal

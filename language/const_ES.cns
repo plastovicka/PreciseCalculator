@@ -1,0 +1,101 @@
+
+[&Velocidad de la luz [m/s]]
+299792458
+[&g [m/s^2]]
+9.80665
+[&Gravitacional [m^3/s^2.kg]]
+6.6742 E-11
+[&Avogadro [1/mol]]
+6.0221415 E23
+[&Gas universal [J/mol.K]]
+8.314472
+[&Volumen molar del gas [m^3/mol]]
+0.022413996
+[Permitivity del vacío [F/m]]
+(1 (299792458^2*4e-7*pi))
+[Permeabilidad del vacío [H/m]]
+(4e-7*pi)
+[Faraday [C/mol]]
+96485.3383
+[Carga elemental [C]]
+1.60217653 E-19
+[Masa atómica [kilogramo]]
+1.66053886 E-27
+[Masa del electrón [kilogramo]]
+9.1093826 E-31
+[Masa del protón [kilogramo]]
+1.67262171 E-27
+[Masa del neutrón [kilogramo]]
+1.67492728 E-27
+[Rydberg [el 1/m]]
+10973731.568525
+[Planck [J.s]]
+6.6260693 E-34
+[Boltzmann [J/K]]
+1.3806505 E-23
+[Stefan-Boltzmann [W/m^2.K^4]]
+5.6704 E-8
+[Magneton de Bohr [J/T]]
+9.27400949 E-24
+[Magneton nuclear [J/T]]
+5.05078343 E-27
+[&Conversion\Ingles a Metrico\Pulgada a Cm]
+*2.54
+[&Conversion\Ingles a Metrico\Pies a Metro]
+*0.3048
+[&Conversion\Ingles a Metrico\Galon(Us) a Litro]
+*3.785411784
+[&Conversion\Ingles a Metrico\Caballos de fuerza a Kilowatt]
+*0.7354988
+[&Conversion\Ingles a Metrico\Millas a Kilometros]
+*1.609344
+[&Conversion\Ingles a Metrico\Millas Nauticas a Metros]
+*1852
+[&Conversion\Ingles a Metrico\Onza a Gramos]
+*28.349523125
+[&Conversion\Ingles a Metrico\Libra a Kilogramo]
+*0.45359237
+[&Conversion\Ingles a Metrico\Yardas a Metros]
+*0.45359237
+[&Conversion\Ingles a Metrico\Acre a Metro Cuadrado]
+*4046,8564224
+[&Conversion\Ingles a Metrico\Calorias a Joule]
+*4.1868
+[&Conversion\Ingles a Metrico\Onza Fluida(us) a milimetro]
+*29.5735295625
+
+[&Conversion\Metrico a Ingles\Cm a Pulgada]
+*0.393700787401575
+[&Conversion\Metrico a Ingles\Metro a Pies]
+*0,393700787401575
+[&Conversion\Metrico a Ingles\Litro a Galon(Us)]
+*0,264172052358148
+[&Conversion\Metrico a Ingles\Kilowatt a Caballos de fuerza]
+*1,35962152487536
+[&Conversion\Metrico a Ingles\Kilometros a Millas]
+*0,621371192237334
+[&Conversion\Metrico a Ingles\Metros a Millas Nauticas]
+*0,000539956803455724
+[&Conversion\Metrico a Ingles\Gramos a Onza]
+*0,0352739619495804
+[&Conversion\Metrico a Ingles\Kilogramo a Libra]
+*2,20462262184878
+[&Conversion\Metrico a Ingles\Metros a Yardas]
+*1,09361329833771
+[&Conversion\Metrico a Ingles\Metro cuadrado a Acre]
+*0,000247105381467165
+[&Conversion\Metrico a Ingles\Joule a Calorias]
+*0,238845896627496
+[&Conversion\Metrico a Ingles\Milimetro a Onza Fluida(us)]
+*0,033814022701843
+Metrico a Ingles\Centimetro cubico a Litro]
+*0.001
+[&Conversion\Tiempo\Año Juliano a Gregoriano]
+*1.000021
+[&Conversion\Tiempo\Hora a Año Juliano]
+*0.0001140771
+[Nota sobre conversiones]
+Buscar en http://www.convert-me.com/en/
+o utilizar los aplicativos en esta carpeta
+Convert.exe o pcconvert.exe
+

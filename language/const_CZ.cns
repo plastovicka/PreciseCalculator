@@ -1,0 +1,41 @@
+
+[rychlost svìtla [m/s]]
+299792458 
+[tíhové zrychlení [m/s^2]]
+9.80665 
+[gravitaèní [N.m^2/kg^2]]
+6.6742 E-11 
+[Avogadrova [1/mol]]
+6.0221415 E23 
+[molární plynová [J/mol.K]]
+8.314472 
+[molární objem [m^3/mol]]
+0.022413996 
+[permitivita vakua [F/m]]
+(1/(299792458^2*4e-7*pi))
+[permeabilita vakua [H/m]]
+(4e-7*pi)
+[Faradayova [C/mol]]
+96485.3383 
+[elementární náboj [C]]
+1.60217653 E-19 
+[hmotnostní jednotka [kg]]
+1.66053886 E-27 
+[hmotnost elektronu [kg]]
+9.1093826 E-31 
+[hmotnost protonu [kg]]
+1.67262171 E-27 
+[hmotnost neutronu [kg]]
+1.67492728 E-27 
+[Rydbergova [1/m]]
+10973731.568525 
+[Planckova [J.s]]
+6.6260693 E-34 
+[Boltzmannova [J/K]]
+1.3806505 E-23 
+[Stefan-Boltzmannova [W/m^2.K^4]]
+5.6704 E-8 
+[Bohrùv magneton [A.m^2]]
+9.27400949 E-24 
+[jaderný magneton [A.m^2]]
+5.05078343 E-27 

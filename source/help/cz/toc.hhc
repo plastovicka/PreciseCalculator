@@ -1,0 +1,79 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<HTML>
+<HEAD>
+<meta name="GENERATOR" content="Microsoft&reg; HTML Help Workshop 4.1">
+<!-- Sitemap 1.0 -->
+</HEAD><BODY>
+<UL>
+	<LI> <OBJECT type="text/sitemap">
+		<param name="Name" value="Instalace">
+		<param name="Local" value="html\instal.htm">
+		</OBJECT>
+	<LI> <OBJECT type="text/sitemap">
+		<param name="Name" value="Ovl&aacute;d&aacute;n&iacute;">
+		<param name="Local" value="html\usage.htm">
+		</OBJECT>
+	<LI> <OBJECT type="text/sitemap">
+		<param name="Name" value="Syntaxe">
+		<param name="Local" value="html\syntax.htm">
+		</OBJECT>
+	<LI> <OBJECT type="text/sitemap">
+		<param name="Name" value="Priorita operac&iacute;">
+		<param name="Local" value="html\precedence.htm">
+		</OBJECT>
+	<LI> <OBJECT type="text/sitemap">
+		<param name="Name" value="P&oslash;ehled funkc&iacute;">
+		<param name="Local" value="html\reference.htm">
+		</OBJECT>
+	<UL>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="+, -, *, /, ^">
+			<param name="Local" value="html\reference.htm">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="komplex. èísla">
+			<param name="Local" value="html\reference.htm#complex">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="if, goto">
+			<param name="Local" value="html\reference.htm#commands">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="and, or">
+			<param name="Local" value="html\reference.htm#bitwise">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="sin, cos, tan">
+			<param name="Local" value="html\reference.htm#angle">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="matice">
+			<param name="Local" value="html\reference.htm#matrix">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="for, foreach">
+			<param name="Local" value="html\reference.htm#for">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="statistika">
+			<param name="Local" value="html\reference.htm#statistics">
+			</OBJECT>
+	</UL>
+	<LI> <OBJECT type="text/sitemap">
+		<param name="Name" value="&Egrave;asov&aacute; složitost">
+		<param name="Local" value="html\times.htm">
+		</OBJECT>
+	<LI> <OBJECT type="text/sitemap">
+		<param name="Name" value="Pøíklady">
+		<param name="Local" value="html\examples.htm">
+		</OBJECT>
+	<LI> <OBJECT type="text/sitemap">
+		<param name="Name" value="Licence">
+		<param name="Local" value="html\licence.htm">
+		</OBJECT>
+	<LI> <OBJECT type="text/sitemap">
+		<param name="Name" value="Co je nov&eacute;ho">
+		<param name="Local" value="html\history.htm">
+		</OBJECT>
+</UL>
+</BODY></HTML>

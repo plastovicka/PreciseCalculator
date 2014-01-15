@@ -1,0 +1,377 @@
+
+[Quadratic equation]
+a=1; b=3; c=2;   /* a*x^2 + b*x + c = 0 */
+D=sqrt(b^2-4*a*c; print(-b-D)/2/a; (-b+D)/2/a
+[Cubic equation]
+a=1; b=2; c=3; d=4;   /* a*x^3 + b*x^2 + c*x + d = 0 */
+u=-b/3/a; v=c/a; t=u^3-(u*v+d/a)/2; s=t^2+(v/3-u^2)*(v/3-u^2)^2; if(s>=0, goto complex, 0); s=2*sqrt(u^2-v/3); t=acos(t*8/s^3)/3; print cos(t)*s+u; print cos(t+deg120)*s+u;
+return cos(t+deg240)*s+u;   
+complex: v=3#(t+sqrt s); t=3#(t-sqrt s);
+print v+t+u; if(s<>0 or v<>0, return u-(v+t)/2+(v-t)*sqrt-3/2, 0);
+[Divisors]
+n=12345678; print"n =",n;
+p=0;k=0;e=1;c=1;j=n;m=1; cykl: print d=divisor j; e=e*(d-(p!=d));if(p==d,gotor4,0); c=c*m;m=1;k++; m++;p=d; j=j/d; if(j>=d, goto cykl, 0);
+print;print"Number of all divisors:",c*m;print"Number of prime divisors:",k;print"Euler's function:",e
+[Prime numbers]
+n=100; p=1;
+print p=prime p; n--; if(n>0, goto2, 0);
+[Plane\Circle]
+R=6; /* radius */
+s=deg30; /* central angle */
+print "Circle
+ circle area=",pi*R^2,"
+ circumference=",2*pi*R,"
+ sector area=",torad(s)*R^2/2,"
+ arc length=",torad(s)*R,"
+ chord length=",2*R*sin(s/2),"
+ segment area=",(torad(s)-sin(s))*R^2/2,"
+ segment height=",R*(1-cos(s/2))
+[Plane\Square]
+s=6;
+print "Square
+ area=",s^2,"
+ perimeter=",4*s,"
+ diagonal=",s*sqrt2
+[Plane\Rectangle]
+L=6; W=5;
+print "Rectangle
+ area=",L*W,"
+ perimeter=",2*(L+W),"
+ diagonal=",hypot(L,W)
+[Plane\Kite]
+c=4.4721; d=2.8284;   /* sides */
+f=4; g=6;   /* diagonals */
+print "Kite
+ area=",(f*g)/2,"
+ perimeter=",2*(c+d)
+[Plane\Parallelogram]
+L=4.5; /* lateral side */
+W=6;  /* base side */
+h=4;  /* height */
+print "Parallelogram
+ area=",W*h,"
+ perimeter=",2*(L+W),"
+ diagonal p=",sqrt(W^2+L^2+2*W*sqrt(L^2-h^2)),"
+ diagonal q=",sqrt(W^2+L^2-2*W*sqrt(L^2-h^2)),"
+ alpha=",asin(h/L),"
+ beta=",deg180-Ans
+[Plane\Regular polygon]
+n=5; /* number of vertices */
+s=6; /* side length */
+print "Regular polygon
+ area=",s^2*n/4*cot(deg180/n),"
+ perimeter=",s*n,"
+ angle=",(1-2/n)*deg180,"
+ circumradius=",s/2/sin(deg180/n),"
+ apothem=",s/2*cot(deg180/n)
+[Plane\Rhombus]
+s=5; h=4.5;
+print "Rhombus
+ area=",s*h,"
+ perimeter=",4*s,"
+ diagonal p=",sqrt(2*s*(s+sqrt(s^2-h^2))),"
+ diagonal q=",sqrt(2*s*(s-sqrt(s^2-h^2))),"
+ alpha=",asin(h/s),"
+ beta=",deg180-Ans
+[Plane\Trapezoid]
+a=6; b=3; /* parallel bases */
+c=3; d=3.5; /* lateral sides */
+print "Trapezoid
+ height=",h=sqrt((-a+b+c+d)*(a-b+c+d)*(a-b+c-d)*(a-b-c+d))/2/abs(b-a),"
+ area=",(a+b)/2*h,"
+ perimeter=",a+b+c+d,"
+ alpha=",asin(h/c),"
+ beta=",asin(h/d)
+[Plane\Triangle - sss]
+a=3; b=4; c=5;
+p=(a+b+c)/2;S=sqrt(p*(p-a)*(p-b)*(p-c)); if(real ans,gotor3,0);print"Triangle inequality is false !";return;
+print"Triangle
+alpha=",acos((b^2+c^2-a^2)/(2*b*c)),"
+beta=",acos((a^2+c^2-b^2)/(2*a*c)),"
+gamma=",acos((b^2+a^2-c^2)/(2*b*a)),"
+
+Perimeter=",a+b+c,"
+Area=",S,"
+Incircle=",S/p,"
+Circumscribed circle=",a*b*c/4/S,"
+
+Altitude a=",2*S/a,"
+Altitude b=",2*S/b,"
+Altitude c=",2*S/c,"
+Median a=",sqrt(2*(b^2+c^2)-a^2)/2,"
+Median b=",sqrt(2*(a^2+c^2)-b^2)/2,"
+Median c=",sqrt(2*(b^2+a^2)-c^2)/2
+[Plane\Triangle - asa]
+a=3; beta=deg40; gamma=deg50;
+p=a/sin(beta+gamma; 
+print"Triangle
+Side b=",b=p*sin beta,"
+Side c=",c=p*sin gamma,"
+alpha=",deg180-beta-gamma,"
+
+Perimeter=",o=a+b+c; v=a/(cot beta+cot gamma);
+print"Area=",S=a*v/2,"
+Incircle=",2*S/o,"
+Circumscribed circle=",p/2,"
+
+Altitude a=",v,"
+Altitude b=",2*S/b,"
+Altitude c=",2*S/c,"
+Median a=",sqrt(2*(b^2+c^2)-a^2)/2,"
+Median b=",sqrt(2*(a^2+c^2)-b^2)/2,"
+Median c=",sqrt(2*(b^2+a^2)-c^2)/2
+[Plane\Triangle - sas]
+a=3; b=4; gamma=deg90;
+print"Triangle
+Side c=",c=sqrt(a^2+b^2-2*a*b*cos gamma),"
+alpha=",acos((b^2+c^2-a^2)/(2*b*c)),"
+beta=",acos((a^2+c^2-b^2)/(2*a*c)),"
+
+Perimeter=",o=a+b+c,"
+Area=",S=a*b*sin gamma/2,"
+Incircle=",2*S/o,"
+Circumscribed circle=",c/2/sin gamma,"
+
+Altitude a=",2*S/a,"
+Altitude b=",2*S/b,"
+Altitude c=",2*S/c,"
+Median a=",sqrt(2*(b^2+c^2)-a^2)/2,"
+Median b=",sqrt(2*(a^2+c^2)-b^2)/2,"
+Median c=",sqrt(2*(b^2+a^2)-c^2)/2
+[Plane\Triangle - Ssa]
+alpha=deg90; a=5; b=4;
+print"Triangle
+Side c=",c=b*cos alpha+sqrt(a^2-(b*sin alpha)^2),"
+beta=",acos((a^2+c^2-b^2)/(2*a*c)),"
+gamma=",acos((b^2+a^2-c^2)/(2*b*a)),"
+
+Perimeter=",o=a+b+c,"
+Area=",S=b*c*sin alpha/2,"
+Incircle=",2*S/o,"
+Circumscribed circle=",a/2/sin alpha,"
+
+Altitude a=",2*S/a,"
+Altitude b=",2*S/b,"
+Altitude c=",b*sin alpha,"
+Median a=",sqrt(2*(b^2+c^2)-a^2)/2,"
+Median b=",sqrt(2*(a^2+c^2)-b^2)/2,"
+Median c=",sqrt(2*(b^2+a^2)-c^2)/2
+[Solid\Cuboid]
+L=5; W=6; H=4;
+print "Cuboid
+ volume=", L*W*H, "
+ surface area=", 2*(L*W+W*H+L*H), "
+ diagonal=", abs(L,W,H)
+[Solid\Triangular prism]
+b=5; /* triangle base length */
+h=4; /* triangle height */
+l=5; /* prism height */
+print "Triangular prism
+ volume=", b*h*l/2, "
+ side=", s=hypot(b/2,h), "
+ surface area=", b*(h+l)+2*l*s
+[Solid\Cylinder]
+R=6; /* radius */
+H=4; /* height */
+print "Cylinder
+ volume=", pi*R^2*H, "
+ surface area=", 2*pi*R*(R+H)
+[Solid\Cone]
+R=6; /* radius */
+H=4; /* height */
+print "Cone
+ volume=", pi*R^2*H/3, "
+ surface area=", pi*R*(R+hypot(R,H))
+[Solid\Truncated cone]
+R1=6; /* the first base radius */
+R2=3; /* the second base radius */
+H=4; /* height */
+print "Truncated cone
+ volume=", pi*(R1^2+R1*R2+R2^2)*H/3, "
+ surface area=", pi*(R1^2+R2^2+(R1+R2)*hypot(R1-R2,H))
+[Solid\Pyramid]
+L=5; /* length of pyramid base */
+W=6; /* width of pyramid base */
+H=4; /* height of pyramid */
+print "Pyramid
+ volume=", L*W*H/3, "
+ surface area=", L*hypot(W/2,H)+W*hypot(L/2,H)+L*W
+[Solid\Pyramidal frustum]
+a=4; b=6; /* the first base */
+c=2; d=3; /* the second base */
+h=3;      /* height */
+print "Pyramidal frustum
+ volume=", h/3*(a*b+c*d+(a*d+b*c)/2), "
+ surface area=", a*b+c*d+(a+c)*hypot(h,(b-d)/2)+(b+d)*hypot(h,(a-c)/2)
+[Solid\Regular tetrahedron]
+S=6; /* edge length */
+print "Regular tetrahedron
+ volume=", sqrt(2)/12*S^3, "
+ surface area=", S^2*sqrt(3)
+[Solid\Sphere]
+r=5; /* radius */
+print "Sphere
+ volume=", 4/3*pi*r^3, "
+ surface area=", 4*pi*r^2
+[Solid\Spherical cap]
+h=3; /* height of cap */
+r=6; /* radius of sphere */
+print "Spherical cap
+ volume=", pi*h^2*(r-h/3), "
+ surface area of the zone=", 2*pi*r*h, "
+ total surface area with base=", pi*h*(4*r-h)
+[Solid\Spherical cone]
+h=3; /* height of cap */
+R=6; /* radius of sphere */
+print "Spherical cone
+ volume=", 2/3*pi*R^2*h, "
+ surface area=", pi*R*(2*h+sqrt(h*(2*R-h)))
+[Solid\Spherical segment]
+a=6; /* the first base radius */
+b=4; /* the second base radius */
+h=3; /* height */
+print "Spherical segment
+ volume=", pi/2*h*(a^2+b^2+h^2/3), "
+ radius of the sphere=", r=hypot(a,(a^2-b^2-h^2)/2/h), "
+ area of the zone=", 2*pi*r*h, "
+ total surface area with bases=", pi*(2*r*h+a^2+b^2)
+[Solid\Spherical wedge]
+r=6;  /* radius of sphere */
+a=30; /* angle in degrees */
+print "Spherical wedge
+ volume=", pi/270*r^3*a, "
+ area of the lune=", pi/90*r^2*a, "
+ total surface area=", pi*r^2*(a/90+1)
+[Solid\Torus]
+R=6; /* radius of the torus */
+s=3; /* radius of the tube */
+print "Torus
+ volume=", 2*pi^2*R*s^2, "
+ surface area=", 4*pi^2*R*s
+[Statistics\Standard deviation]
+x=(10,16,3,25,7,26,19,11);
+print "count=", count x, "
+mean=", ave x, "
+median=", med x, "
+geometric mean=", geom x, "
+harmonic mean=", harmon x, "
+minimum=", min x, "
+maximum=", max x, "
+variance=", var x, "
+standard deviation=", stdev x
+[Statistics\Standard deviation with freq. list]
+Data=(14,13,12,11,10,9,8,7,6,5);
+Freq=(1,2,3,3,5,3,2,1,2,1);
+print "count=",n=sum Freq, "
+sum x=", s=sum(Data*Freq), "
+sum x^2=", s2=sumfor(i,0,count Data-1,Data[i]^2*Freq[i]), "
+mean=", s/n, "
+geometric mean=", n#productfor(i,0,count Data-1,Data[i]^Freq[i]), "
+harmonic mean=", n/sumfor(i,0,count Data-1,Freq[i]/Data[i]), "
+minimum=", min Data, "
+maximum=", max Data, "
+variance=", (s2-s^2/n)/(n-1), "
+standard deviation=", sqrt Ans
+[Statistics\Correlation]
+X=(100,40,95,90,92,85,55,60,98,20);
+Y=(0,95,5,20,30,40,50,70,0,100);
+k=0;
+rank: L=if(k==0,X,Y); i=0;
+loop: b=0; e=0; m=L[i];
+foreach(j,L, if(j>m, 0, if(j==m, e++, b++)));
+j=b+(1+e)/2;
+R= if(i==0, j, (R,j));
+i++; if(i<count L, goto loop, 0);
+if(k==0, Rx=R, Ry=R);
+k++; if(k<2, goto rank, 0);
+print "Spearman's rho=", lrr(Rx',Ry'),"
+Pearson r=", lrr(X',Y')
+[Statistics\t-test]
+x=(10, 9, 9, 8, 7, 7, 7, 6, 6, 5, 3, 2);
+y=(14, 13, 13, 13, 12, 12, 10, 8, 8, 7, 7, 5, 5);
+n1=count x; n2=count y;
+print"Student's t =",(ave(x)-ave(y))/sqrt(((n1-1)*var(x)+(n2-1)*var(y))/(n1+n2-2)*(1/n1+1/n2))
+[Statistics\t-test with freq. lists]
+Data1=(10, 9, 8, 7, 6, 5, 3, 2);
+Freq1=(1, 2, 1, 3, 2, 1, 1, 1);
+Data2=(14, 13, 12, 10, 8, 7, 5);
+Freq2=(1, 3, 2, 1, 2, 2, 2);
+print "n1=",n1=sum Freq1, "
+mean1=",m1=sum(Data1*Freq1)/n1, "
+variance1=", v1=(sumfor(i,0,count Data1-1,Data1[i]^2 * Freq1[i]) -
+ m1^2*n1)/(n1-1), "
+n2=",n2=sum Freq2, "
+mean2=",m2=sum(Data2*Freq2)/n2, "
+variance2=", v2=(sumfor(i,0,count Data2-1,Data2[i]^2 * Freq2[i]) -
+ m2^2*n2)/(n2-1), "
+ 
+Student's t =",(m1-m2)/sqrt(((n1-1)*v1+(n2-1)*v2)/(n1+n2-2)*(1/n1+1/n2))
+[Statistics\rank sum test]
+/* u test (Wilcoxon & Mann-Whitney) */
+L1=(12, 12, 11, 8, 7, 6, 6);
+L2=(24, 24, 16, 15, 14, 12, 11, 10, 9);
+S1=sort(L1);S2=sort(L2); n1=count L1;n2=count L2; 
+R1=0;R2=0;i=0;j=0;o=1;t1=0;t2=0;last=0;ties=0;
+merge:
+if(i<n1, goto merge1, 0);
+if(j<n2, goto take2, goto addrank);
+merge1: if(j>=n2, goto take1, 0);
+if(S1[i]<S2[j], goto take1, 0);
+take2: b=0; item=S2[j]; j++; goto compare;
+take1: b=1; item=S1[i]; i++;
+compare: if(item==last, goto next, 0);
+addrank:
+a=t1+t2; if(a>0,ties=ties+a-1,0);
+a=o-(a+1)/2; R1=R1+a*t1; R2=R2+a*t2;
+if(o>n1+n2, goto end, 0);
+t1=0;t2=0; last=item;
+next: o++; if(b,t1++,t2++); goto merge;
+end:
+U1=R1-n1*(n1+1)/2; U2=R2-n2*(n2+1)/2;
+if(U1+U2==n1*n2, gotor3,0); print "error"; return;
+print "sum of ranks 1=",R1, "
+sum of ranks 2=",R2, "
+number of ties=",ties, "
+U=",U=max(U1,U2), "
+mean U=",Mu=n1*n2/2, "
+std dev U=",Su=sqrt(n1*n2*(n1+n2+1)/12), "
+Z=",(U-Mu)/Su
+[Statistics\Wilcoxon signed-rank test]
+L1=(51, 49, 46, 45, 46, 39, 38, 40, 41, 40, 49, 55, 45, 37, 44, 52, 37);
+L2=(50, 48, 46, 44, 45, 41, 39, 39, 39, 42, 48, 56, 48, 36, 45, 51, 36);
+D=sort(L1-L2); n=count D;
+i=-1;
+i++; if(i==n, gotor1, if(D[i]<0, gotor-1, 0));
+if(i>0,gotor3,0);
+print "Sum of ""-"" ranks= 0"; return;
+S1=listforeach(x, reverse D[0,i-1], abs x);
+i--;
+i++; if(i==n, gotor1, if(D[i]==0, gotor-1, 0));
+if(i<n,gotor3,0);
+print "Sum of ""+"" ranks= 0"; return;
+S2=D[i,n-1];
+n1=count S1; n2=count S2;
+R1=0;R2=0;i=0;j=0;o=1;t1=0;t2=0;last=0;
+merge:
+if(i<n1, goto merge1, 0);
+if(j<n2, goto take2, goto addrank);
+merge1: if(j>=n2, goto take1, 0);
+if(S1[i]<S2[j], goto take1, 0);
+take2: b=0; item=S2[j]; j++; goto compare;
+take1: b=1; item=S1[i]; i++;
+compare: if(item==last, goto next, 0);
+addrank:
+a=t1+t2;
+a=o-(a+1)/2; R1=R1+a*t1; R2=R2+a*t2;
+if(o>n1+n2, goto end, 0);
+t1=0;t2=0; last=item;
+next: o++; if(b,t1++,t2++); goto merge;
+end:
+print "Sum of ""-"" ranks=",R1, "
+Sum of ""+"" ranks=",R2,"
+N=",N=n1+n2,"
+W=",abs(R1-R2),"
+
+Normal distribution approximation:
+Z=",z=(abs(R1-R2)-.5)/sqrt(N*(N+1)*(2*N+1)/6),"
+p=",2*exp(-z^2/2)/sqrt(2*pi) * polynom(1/(1+0.2316419*z), (0,0.319381530, -0.356563782, 1.781477937, -1.821255978, 1.330274429))

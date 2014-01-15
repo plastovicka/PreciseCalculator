@@ -1,0 +1,74 @@
+[&Délka\angström]
+1E-10 
+[&Délka\palec]
+0.0254 
+[&Délka\stopa]
+0.3048 
+[&Délka\yard]
+0.9144 
+[&Délka\míle]
+1609.344 
+[&Délka\námoøní míle]
+1852 
+[&Délka\astronomická jednotka (AU)]
+1.4959787E11 
+[&Délka\svìtelnı rok]
+9.46055E15 
+[&Délka\parsek]
+3.085678E16 
+[&Obsah\ètvereèní palec]
+6.4516E-4 
+[&Obsah\ètvereèní stopa]
+0.09290304 
+[&Obsah\ètvereèní yard]
+0.83612736 
+[&Obsah\akr]
+4046.8564224 
+[&Obsah\ètvereèní míle]
+2.589988110336E6 
+[Ob&jem\tekutá unce (UK)]
+28.4130625E-6 
+[Ob&jem\tekutá unce (US)]
+29.5735295625E-6 
+[Ob&jem\pinta (UK)]
+5.68261E-4 
+[Ob&jem\galon (UK)]
+4.54609E-3 
+[Ob&jem\galon (US)]
+3.785411784E-3 
+[Ob&jem\barel]
+0.158998 
+[&Hmotnost\unce]
+0.028349523125 
+[&Hmotnost\libra]
+0.45359237 
+[&Energie\erg]
+1E-7 
+[&Energie\kalorie]
+4.1868 
+[&Vıkon\kùò]
+735.4988 
+[&Vıkon\koòská síla (HP)]
+745.69987136 
+[&Tlak\atmosféra]
+101324.905610778 
+[&Tlak\Torr (mm rtuového sloupce)]
+133.322144429454 
+[&Tlak\kp/m^2 (mm vodního sloupce)]
+9.80665 
+[&Rychlost\km/h]
+(1/3.6) 
+[&Rychlost\uzel]
+0.51444444438562 
+[È&as\siderickı den]
+86164.09962 
+[È&as\kalendáøní den]
+86400 
+[È&as\siderickı mìsíc]
+2360591.5 
+[È&as\synodickı mìsíc]
+2551442.8 
+[È&as\siderickı rok]
+31558149.5 
+[È&as\tropickı rok]
+31556925.7 

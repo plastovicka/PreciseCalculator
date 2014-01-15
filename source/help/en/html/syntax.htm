@@ -1,0 +1,112 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+<HTML>
+<HEAD>
+<META HTTP-EQUIV="Content-Type" Content="text/html; charset=Windows-1252">
+<TITLE>Syntax</TITLE>
+</HEAD>
+
+<BODY BGCOLOR="#FFFFFF" TEXT="#000000">
+
+<OBJECT TYPE="application/x-oleobject" CLASSID="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e">
+	<PARAM NAME="Keyword" VALUE="syntax">
+	<PARAM NAME="Keyword" VALUE="exponent">
+	<PARAM NAME="Keyword" VALUE="variable">
+	<PARAM NAME="Keyword" VALUE="goto">
+	<PARAM NAME="Keyword" VALUE="print">
+	<PARAM NAME="Keyword" VALUE="return">
+	<PARAM NAME="Keyword" VALUE="=">
+	<PARAM NAME="Keyword" VALUE="spaces">
+</OBJECT>
+
+<P><A NAME="syntax"></A><B>Syntax</B></P>
+
+<P><U>Numbers</U></P>
+
+<P>Numbers must begin with a digit. Hexadecimal 0A means ten, but A represents variable A. An integer part and a fractional part are separated by a dot (which is also called a point). Numbers less then one can be written without zero before the point. One half can be written as .5. Big numbers are represented by a mantissa and an exponent which are separated by a letter E. There must be a space before the letter E if the base is greater than ten. Example: 1 E3 is equal to 1000, but hexadecimal 1E3 is equal to decimal 483. The exponent is always in decimal base. Binary 101E3 is equal to binary 101000. </P>
+
+<P>Numbers can be followed by an engineering symbol:</P>
+<TABLE border="1" rules="rows">
+<TR><TD>y</TD><TD>10^-24</TD><TD>(yocto)</TD></TR>
+
+<TR><TD>z</TD><TD>10^-21</TD><TD>(zepto)</TD></TR>
+
+<TR><TD>a</TD><TD>10^-18</TD><TD>(atto)</TD></TR>
+
+<TR><TD>f</TD><TD>10^-15</TD><TD>(femto)</TD></TR>
+
+<TR><TD>p</TD><TD>10^-12</TD><TD>(piko)</TD></TR>
+
+<TR><TD>n</TD><TD>10^-9</TD><TD>(nano)</TD></TR>
+
+<TR><TD>u</TD><TD>10^-6</TD><TD>(mikro)</TD></TR>
+
+<TR><TD>m</TD><TD>10^-3</TD><TD>(mili)</TD></TR>
+
+<TR><TD>k</TD><TD>10^+3</TD><TD>(kilo)</TD></TR>
+
+<TR><TD>M</TD><TD>10^+6</TD><TD>(mega)</TD></TR>
+
+<TR><TD>G</TD><TD>10^+9</TD><TD>(giga)</TD></TR>
+
+<TR><TD>T</TD><TD>10^+12</TD><TD>(tera)</TD></TR>
+
+<TR><TD>P</TD><TD>10^+15</TD><TD>(peta)</TD></TR>
+
+<TR><TD>X</TD><TD>10^+18</TD><TD>(exa)</TD></TR>
+
+<TR><TD>Z</TD><TD>10^+21</TD><TD>(zeta)</TD></TR>
+
+<TR><TD>Y</TD><TD>10^+24</TD><TD>(yotta)</TD></TR>
+</TABLE>
+<P><U>Variables</U></P>
+
+<P>Each variable is a memory for one number or one matrix. A name of a variable consists of letters, underscores, digits or characters that have ASCII code greater than 127. The first character must not be a digit. All names are case insensitive. Operator = is used to create a new variable or change a value of already existing variable. Example: abc=123 stores number 123 to the variable abc. You can create any number of variables if you have enough memory. Postfix operators ++ and -- are used to add or subtract one to a variable.</P>
+
+<P>The variable ans always contains a result of a previous expression.</P>
+
+<P><U>Complex numbers</U></P>
+
+<P>Complex numbers usually consist of two parts - real and imaginary. There is an operator + or - between them. The imaginary part is ended by a small letter i or j. There can be space before the letter. Because identifiers i or j mean variables, an imaginary unit has to be written as 1i or 1j. The imaginary unit is defined as  sqrt(-<CODE>1</CODE>).</P>
+
+<P>Note: 2/3*1i  can be written as (2/3)i  or  2i/3 , but not as 2/3i</P>
+
+<P><U>Matrix</U></P>
+
+<P>Matrix is a two-dimensional array of complex numbers. It is written in parenthesis, numbers are separated by commas and rows are separated by backslashes. For example (5,2,-3 \ 7,-5,1) is a matrix that has three columns and two rows. Vector is a matrix which has only one row or only one column. </P>
+
+<P>Expression A[r][c] gets the number which is on row r and column c. Rows and columns are indexed from zero. A[r1,r2][c1,c2] means a submatrix that is made up from rows r1 to r2 and columns c1 to c2. A[r] represents row r, A[][c] is column c. Other allowed expressions are A[r1,r2] , A[][c1,c2], A[r][c1,c2], A[r1,r2][c].</P>
+
+<P><U>Comment</U></P>
+
+<P>A comment starts with <CODE>/*</CODE> and ends with <CODE>*/</CODE>. It is used especially in macros. It is ignored during computation. Comments cannot be nested.</P>
+
+<P><U>Commands</U></P>
+
+<P>You can write more expressions in the input edit box. They are separated by semicolons. A semicolon at the end causes the result of the last expression to be ignored and not shown. </P>
+
+<P>Command <CODE>print</CODE> is used to display numbers or text strings. The string is surrounded by quotation marks. Quotes inside the string must be doubled. There can be many expressions after the print keyword. They are separated by commas. Each print command usually produces one output line. But you can add a comma at the end of the command to disable the carriage return. Print must not occur inside an expression. Example: <CODE>if(x&gt;0,print x, print -x)</CODE> is error.</P>
+
+<P>There can be a label before any command. The label is a word which is ended by a colon. It can contain characters that are allowed in variables, but a label name can also begin by a digit. Command  <CODE>goto </CODE>jumps to a label. The parameter after goto can be a label or a command’s sequence number or an expression. Example:  <CODE>goto abc-2 </CODE> jumps two commands before label abc. Command<CODE> goto(abc-2)</CODE> jumps to the command which number is abc-2 where abc is a variable and not a label. Command<CODE> goto0</CODE>  jumps to the beginning. Command <CODE>gotor N </CODE> jumps forward or backward according to a sign of N that can be any integer expression. </P>
+
+<P><U>Operators</U></P>
+
+<P>Prefix operators are placed before a number or an expression.  Postfix operators come after an expression. Binary operators are placed between two expressions. Functions with multiple arguments are followed by parenthesis that enclose arguments separated by commas. There can be spaces before or after operators, but they are usually not mandatory. Example: there has to be a space in expression sqrt x, but there needn’t be a space in expression sqrt2.</P>
+
+<P><U>binary operators:</U>  +, -, *, /, div, mod, ^, **, #, and, &amp;, or, |, xor, nand, nor, imp, -&gt;, eqv, bitnand, bitnor, bitimp, biteqv, lsh, &lt;&lt;, rsh, &gt;&gt;, rshi, &gt;&gt;&gt;, combin, nCr, permut, nPr, ==, !=, &lt;&gt;, &gt;, &lt;, &gt;=, &lt;=, =, vert</P>
+
+<P><U>prefix operators</U>:  +, -, sqrt, exp, ln, log, abs, sign, round, int, floor, ceil, trunc, frac, not, fact, fibon, divisor, prime, isprime, gcd, lcm, random, radtodeg, degtorad, radtograd, gradtorad, degtograd, gradtodeg, deg, rad, grad, todeg, torad, tograd, dms, todms, ftoc, ctof, sin, cos, tan, cosec, sec, cotg, asin, acos, atan, asec, acsc, acotg, sinh, cosh, tanh, sech, csch, cotgh, asinh, acosh, atanh, asech, acsch, acotgh, conjg, real, imag, arg, min, max, count, sum, sumq, ave, mean, aveq, meanq, var, vara, stdev, stdeva, med, mode, sort, geom, harmon, product, invert, transp, det, elim, rank, solve, width, height, lra, lrb, lrr, sumxy, sumx, sumy, sumxq, sumyq, avex, avey, avexq, aveyq, varx, vary, varxa, varya, stdevx, stdevy, stdevxa, stdevya</P>
+
+<P><U>postfix operators:</U>   !, !!, ++, --, °, ‘, i, j</P>
+
+<P><U>functions without arguments:</U>   pi, ans, rand</P>
+
+<P><U>functions with two arguments:</U>   hypot, angle, polar, complex, logn, polynom, lrx, lry, matrix</P>
+
+<P><U>functions with three arguments:</U>   if, foreach, sumforeach, productforeach, listforeach, rowsforeach</P>
+
+<P><U>functions with four arguments:</U>   for, sumfor, productfor, listfor, rowsfor</P>
+
+<P><U>function with five arguments:</U>   integral</P>
+
+</BODY>
+</HTML>

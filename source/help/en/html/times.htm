@@ -1,0 +1,41 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+<HTML>
+<HEAD>
+<META HTTP-EQUIV="Content-Type" Content="text/html; charset=Windows-1252">
+<TITLE>Computation time</TITLE>
+</HEAD>
+
+<BODY BGCOLOR="#FFFFFF" TEXT="#000000">
+
+<OBJECT TYPE="application/x-oleobject" CLASSID="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e">
+	<PARAM NAME="Keyword" VALUE="time">
+</OBJECT>
+
+<P><A NAME="times"></A><B>Computation time</B></P>
+
+<P>n means precision, m means length of an input parameter
+
+<UL>
+	<LI>(const) : trunc, real, conjg, count, imp, eqv, nand, nor<BR><BR></LI>
+
+	<LI>(n) :  +, -, and,or,xor,not,bitnand,bitnor,bitimp,biteqv, lsh,rsh,rshi, ctof,ftoc, gradtodeg,degtograd, dms,todms, min,max, med,mode, sum,ave, round,floor,ceil,frac, complex,imag<BR><BR></LI>
+
+	<LI>(n^1.585) :  *, degtorad, gradtorad, rand,random, sumq,aveq,var,vara<BR><BR></LI>
+
+	<LI>(n^2) :  /, div, mod, sqrt, hypot, abs, sign, fibon, radtodeg,radtograd, stdev,stdeva, print<BR><BR></LI>
+
+	<LI>(less than n^2.585) : exp, sin,cos,tan, cosec,sec,cotg, sinh,cosh,tanh, csch,sech,cotgh, polar<BR><BR></LI>
+
+	<LI>(n^2.585) : ^, #, ln,log,logn, asin,acos,atan, acsc,asec,acotg, asinh,acosh,atanh, acsch,asech,acotgh, angle, arg<BR><BR></LI>
+
+	<LI>(n^2 to n^3) :  pi<BR><BR></LI>
+
+	<LI>(m^3) :  gcd, lcm<BR><BR></LI>
+
+	<LI>(exp m) :  prime, isprime, divisor, !, !!, combin, permut</LI>
+</UL>
+
+<P>Multiplicative constants were omitted. Computation time does not depend only on a precision, but often on a function parameter, too. Any number can be multiplicated or divided by a fraction in time (n).</P>
+
+</BODY>
+</HTML>

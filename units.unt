@@ -1,0 +1,74 @@
+[&Length\angstrom]
+1E-10 
+[&Length\inch]
+0.0254 
+[&Length\foot]
+0.3048 
+[&Length\yard]
+0.9144 
+[&Length\mile]
+1609.344 
+[&Length\nautical mile]
+1852 
+[&Length\astronomical unit]
+1.4959787E11 
+[&Length\light-year]
+9.46055E15 
+[&Length\parsec]
+3.085678E16 
+[&Area\inch squared]
+6.4516E-4 
+[&Area\foot squared]
+0.09290304 
+[&Area\yard squared]
+0.83612736 
+[&Area\acre]
+4046.8564224 
+[&Area\mile squared]
+2.589988110336E6 
+[&Volume\fluid ounce (UK)]
+28.4130625E-6 
+[&Volume\fluid ounce (US)]
+29.5735295625E-6 
+[&Volume\pint (UK)]
+5.68261E-4 
+[&Volume\gallon (UK)]
+4.54609E-3 
+[&Volume\gallon (US)]
+3.785411784E-3 
+[&Volume\barrel]
+0.158998 
+[&Mass\ounce]
+0.028349523125 
+[&Mass\pound]
+0.45359237 
+[&Energy\erg]
+1E-7 
+[&Energy\calorie]
+4.1868 
+[&Power\horse]
+735.4988 
+[&Power\horse power]
+745.69987136 
+[P&ressure\atmosphere]
+101324.905610778 
+[P&ressure\Torr  (mm of Hg)]
+133.322144429454 
+[P&ressure\mm of water]
+9.80665 
+[&Speed\km/h]
+(1/3.6) 
+[&Speed\knot]
+0.51444444438562 
+[T&ime\sidereal day]
+86164.09962 
+[T&ime\calendar day]
+86400 
+[T&ime\sidereal month]
+2360591.5 
+[T&ime\synodic month]
+2551442.8 
+[T&ime\sidereal year]
+31558149.5 
+[T&ime\tropical year]
+31556925.7 
