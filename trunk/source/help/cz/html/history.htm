@@ -1,0 +1,229 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+<HTML>
+<HEAD>
+<META HTTP-EQUIV="Content-Type" Content="text/html; charset=windows-1250">
+<TITLE>Historie změn</TITLE>
+</HEAD>
+
+<BODY BGCOLOR="#FFFFFF" TEXT="#000000">
+
+<OBJECT TYPE="application/x-oleobject" CLASSID="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e">
+	<PARAM NAME="Keyword" VALUE="verze">
+</OBJECT>
+
+<P><A NAME="history"></A><B>Historie změn</B></P>
+<BR>
+<CODE>2.6 (4.5.2013)</CODE>
+<UL>
+<LI>funkce mod zobrazí chybu, pokud je první operand větší než zvolená přesnost
+</UL>
+<CODE>2.5.4 (9.11.2012)</CODE>
+<UL>
+<LI>funkce gcd a lcm mají parametr matici
+<LI><CODE>opravené chyby:</CODE>
+<LI>režim ENG nefungoval správně pro čísla končící nulou
+</UL>
+<CODE>2.5.3 (24.9.2011)</CODE>
+<UL>
+<LI>ruský překlad
+</UL>
+<CODE>2.5.2 (18.3.2011)</CODE>
+<UL>
+<LI><CODE>opravené chyby:</CODE>
+<LI>přerušení výpočtu klávesou Esc způsobilo chybu při zapnutém zápisu výsledků do souboru
+<LI>sin 90° se někdy zaseklo
+</UL>
+<CODE>2.5 (27.2.2011)</CODE>
+<UL>
+<LI>funkce sortd, swap, reverse
+<LI>přiřazení prvku matice nebo podmatice, např. a[2,4][1]=(5 \ 1 \ 3)
+<LI>zvětšení nebo zmenšení prvku matice o jedna, např. a[2][3]++
+<LI>při stisknutém Shift a přejetí myší nad tlačítky se zaškrtne Inv
+<LI>možnost nastavit velikost log souboru
+<LI>chybová hláška 'Operand goniometrické funkce je moc velký', například když zadáte sin(1E10000)
+<LI>text za print může obsahovat uvozovky, např. print "Hello ""world"" !"
+<LI>přesnost může být až 9999999, předtím mohla být nejvýše 963250
+<LI>konverzi výsledku z binární do desítkové soustavy lze přerušit klávesou Pause nebo Esc
+<LI>lze měnit velikost oken Historie a Proměnné
+<LI>funkce listfor a rowsfor jsou rychlejší
+<LI>ctrl+1, ctrl+2 atd. neoznačuje vnější závorky u matic
+<LI><CODE>opravené chyby:</CODE>
+<LI>operátory dec,hex,bin,oct,baseN se nevztahovaly na základ exponentu, např. bin(1E3) vracelo 1000 místo 8
+<LI>rozsah matice způsobil chybu uvnitř funkce s více parametry, např. if(i>1,x[1,i],0)
+<LI>některé matice obsahující velká čísla způsobily chybu "Výsledek je nekonečně velký", např. listfor(i,1,5000,2^i)
+<LI>cyklus for(i,2^32-1,2^32,0) se napodruhé zaseknul
+<LI>ctrl+1, ctrl+2 atd. označovalo také výrazy v uvozovkách za print
+</UL>
+<CODE>2.4 (9.2.2011)</CODE>
+<UL>
+<LI>64-bitová verze
+<LI>nápověda zkonvertována z HLP formátu do CHM
+<LI><CODE>opravené chyby:</CODE>
+<LI>ve SCI režimu se malá celá čísla nezobrazovala v exponenciálním tvaru
+<LI>čísla vzniklá dělením mocninou dvou se zobrazila na menší počet desetinných míst
+<LI>funkce int a round pro čísla mezi -1 a +1 vracely 0
+<LI>funkce lcm byla nepřesná, pokud jeden parametr byl hodně velký a druhý malý
+<LI>exp(2*ln(2^32)) se zaseklo
+<LI>ln(2^31) se zaseklo
+<LI>divisor ze záporného čísla ohlásil stejnou chybu jako sqrt ze záporného čísla
+<LI>dec,hex,oct,bin nemohlo být napsáno velkými písmeny
+</UL>
+<CODE>2.3 (5.7.2008)</CODE>
+<UL>
+<LI>španělský překlad
+<LI><CODE>opravené chyby:</CODE>
+<LI>5!^2 byla syntaktická chyba
+<LI>tlačítka byla posunuta u uživatelů, kteří mají taskbar na horním okraji obrazovky
+</UL>
+<CODE>2.2 (16.3.2007)</CODE>
+<UL>
+<LI>funkce asec, acsc, sech, csch, asech, acsch, nand, nor, imp, eqv, 
+
+<LI>bitnand, bitnor, bitimp, biteqv, sign, complex, rshi, isprime, matrix, °,  ‘
+
+<LI>prefixní operace s&nbsp;parametrem v&nbsp;závorkách mají vyšší prioritu než mocnina
+
+<LI>imaginární jednotka může být i nebo j a používá se jako postfixová operace 
+
+<LI>inženýrské postfixové symboly (k, M, G, ...)
+
+<LI>doba výpočtu se zobrazuje s&nbsp;přesností na milisekundy
+
+<LI>možnost automatického ukládání nastavení při ukončení programu
+
+<LI>možnost zapisovat všechny výpočty do souboru
+
+<LI>menu Konstanty a Jednotky se načítají ze souboru
+
+<LI><CODE>opravené chyby:</CODE>
+
+<LI>funkce asin,acos,atan,acot, acosh,atanh,acoth pro některá imaginární čísla vracely nesprávný výsledek
+
+<LI>1E-15 se zobrazovalo jako 10 E-16
+
+<LI>todms asin(0.5)  vracelo výsledek 29.596, správně je 30
+</UL>
+<CODE>2.1 (14.12.2006)</CODE>
+<UL>
+<LI>funkce minfor, maxfor
+
+<LI>komentáře /* */
+
+<LI>při chybě (například dělení nulou) se kurzor nastaví na operaci, která chybu způsobila
+
+<LI>lze změnit barvu textu na tlačítkách
+</UL>
+<CODE>2.0 (30.8.2005)</CODE>
+<UL>
+<LI>výpočty s&nbsp; maticemi
+
+<LI>funkce polynom, sort, geom, harmon, product, invert, transp, det, elim, rank, solve, vert, width, height, integral, for, foreach, sumfor, sumforeach, productfor, productforeach, listfor, listforeach, rowsfor, rowsforeach, lra, lrb, lrr, lrx, lry, sumxy, sumx, sumy, sumxq, sumyq, avex, avey, avexq, aveyq, varx, vary, varxa, varya, stdevx, stdevy, stdevxa, stdevya
+
+<LI><CODE>opravené chyby:</CODE>
+
+<LI>x/x nebylo 1, ale 0,9999...
+
+<LI>0/0 neohlásilo chybu
+
+<LI>sqrt někdy bylo nepřesné
+
+<LI>funkce rand nemohla být ve výrazu vícekrát 
+
+<LI>frac způsobilo chybu, pokud operand byl celé číslo
+
+<LI>funkce dec, hex, oct nefungovaly ve verzi 1.5
+
+<LI>při přepnutí NORM, FIX, SCI, ENG se výsledek změnil, pokud ve výrazu bylo Ans nebo =
+</UL>
+<CODE>1.5 (20.8.2005)</CODE>
+<UL>
+<LI>převod výsledku z&nbsp;dvojkové do desítkové soustavy byl zrychlen devětkrát 
+
+<LI>krátká desetinná čísla se převádějí na zlomky, např. 1.5 se převede na 3/2
+
+<LI>přepínač zobrazení zlomků přesunut z&nbsp;okna Možnosti do hlavního okna 
+
+<LI>návěští v příkaze goto
+
+<LI>historie všech zadávaných výrazů
+
+<LI>v&nbsp;menu Makra lze vytvářet podmenu
+</UL>
+<CODE>1.4 (15.3.2005)</CODE>
+<UL>
+<LI>vlastní tlačítka v cbt souborech
+</UL>
+<CODE>1.3 (17.2.2005)</CODE>
+<UL>
+<LI>výpočty se zlomky
+
+<LI>možnost vkládat mezeru např. za každou třetí číslici
+
+<LI>zrychlena funkce exp, pokud má celočíselný parametr
+
+<LI>fyzikální konstanty byly aktualizovány podle CODATA 2002
+</UL>
+<CODE>1.2 (12.2.2005)</CODE>
+<UL>
+<LI>funkce ffact, logn, div, ftoc, ctof, ++, --
+
+<LI>komplexní funkce tg, cotg, tgh, cotgh, asin, acos, atg, acotg, asinh, acosh, atgh, acotgh
+
+<LI>konstanta Molární objem plynu
+
+<LI>makra kvádr, jehlan, kužel, vektory, trojúhelníky
+
+<LI>za print může být text v&nbsp;uvozovkách
+
+<LI>return může být bez parametru
+
+<LI>názvy proměnných mohou obsahovat číslice
+
+<LI>přiřazení do proměnné může být uvnitř výrazu
+
+<LI><CODE>opravené chyby:</CODE>
+
+<LI>funkce &lt;&lt;, &gt;&gt;, arccotg
+
+<LI>chyba při otevření maker
+
+<LI>zrychleny hyperbolické funkce
+</UL>
+<CODE>1.1 (6.2.2005)</CODE>
+<UL>
+<LI>komplexní čísla
+
+<LI>funkce real, imag, conjg, arg, polar
+
+<LI>příkaz gotor
+
+<LI>makro autostart se vykoná po spuštění kalkulačky
+
+<LI>seznam proměnných
+
+<LI>formát čísel Fix
+
+<LI><CODE>opravené chyby:</CODE>
+
+<LI>program bránil ukončení Windows
+
+<LI>příkaz if po sobě neuvolnil paměť
+
+<LI>příkaz goto0 někdy nefungoval
+
+<LI>delší stisk Enter způsobil chybu
+</UL>
+<CODE>1.0 (10.1.2005)</CODE>
+<UL>
+<LI>konstanty, jednotky, makra
+
+<LI>většina matematických funkcí
+</UL>
+<CODE>0.1 (21.5.2002)</CODE>
+<UL>
+<LI>výpočet čísla PI
+
+<LI>funkce +, -, *, /, sqrt, exp
+</UL>
+</BODY>
+</HTML>

@@ -1,0 +1,82 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+<HTML>
+<HEAD>
+<META HTTP-EQUIV="Content-Type" Content="text/html; charset=windows-1250">
+<TITLE>Ovládání</TITLE>
+</HEAD>
+
+<BODY BGCOLOR="#FFFFFF" TEXT="#000000">
+
+<OBJECT TYPE="application/x-oleobject" CLASSID="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e">
+	<PARAM NAME="Keyword" VALUE="EXE">
+	<PARAM NAME="Keyword" VALUE="Inv">
+	<PARAM NAME="Keyword" VALUE="C">
+	<PARAM NAME="Keyword" VALUE="Del">
+	<PARAM NAME="Keyword" VALUE="makra">
+	<PARAM NAME="Keyword" VALUE="deg">
+	<PARAM NAME="Keyword" VALUE="rad">
+	<PARAM NAME="Keyword" VALUE="grad">
+	<PARAM NAME="Keyword" VALUE="fix">
+	<PARAM NAME="Keyword" VALUE="sci">
+	<PARAM NAME="Keyword" VALUE="eng">
+	<PARAM NAME="Keyword" VALUE="dec">
+	<PARAM NAME="Keyword" VALUE="hex">
+	<PARAM NAME="Keyword" VALUE="bin">
+</OBJECT>
+
+<P><A NAME="usage"></A><B>Ovládání</B></P>
+
+<P>V&nbsp;levé části okna jsou dva bílé editační obdélníky. Do horního z&nbsp;nich vepište matematický výraz, který chcete vypočítat. Výpočet se spustí po stisku klávesy ENTER a nebo kliknutím na tlačítko EXE. Výraz také můžete zadat pomocí tlačítek v&nbsp;pravé části okna. Pokud při kliknutí na tlačítko držíte klávesu SHIFT, pak je to stejné jako byste předtím zaškrtli Inv. Tlačítko Del odpovídá klávese Backspace, tlačítko C odpovídá klávese Esc. </P>
+
+<P>Přesnost výpočtu se zadává pomocí dvou čísel. První z&nbsp;nich znamená celkový počet číslic. Druhé se používá jen v&nbsp;režimu Fix a znamená maximální počet číslic za desetinnou tečkou. Napravo od pole s&nbsp;přesností je přepínač “a/b”, kterým se zapíná nebo vypíná zobrazení zlomků ve výsledku. Čitatel a jmenovatel zlomku může být nejvýše 32-bitový (přibližně 9 číslic). Pokud máte nainstalovanou 64-bitovou verzi Precizní kalkulačky, pak čitatel a jmenovatel zlomku je 64-bitový (přibližně 18 číslic). </P>
+
+<P>Výpočty se vykonávají v&nbsp;samostatném podprocesu. Proto nemusíte čekat na zobrazení výsledku a po stisku ENTER můžete hned začít zadávat další výraz. Pokud máte nastavenu hodně velkou přesnost, pak se nejdříve objeví výsledek s&nbsp;menším počtem číslic a později se zobrazí celý výsledek. Aby byla zaručena požadovaná přesnost, provádí se každý výpočet dvakrát, přičemž při druhém se zvolí o trochu větší přesnost. Ve výpočtu se pokračuje do té doby, dokud se oba výsledky neshodují na požadovaném počtu číslic. Po skončení se vpravo nad tlačítky zobrazí doba výpočtu v&nbsp;milisekundách.</P>
+
+<P>Po stisku ENTER nebo EXE lze použít klávesy vpravo/vlevo pro nastavení kurzoru na začátek/konec vstupního výrazu. Ostatní klávesy způsobí automatické vymazání výrazu.</P>
+
+<P>Ctrl+ENTER vloží znak konce řádku. </P>
+
+<P><U>Číselné soustavy</U></P>
+
+<P>Kromě desítkové soustavy lze zvolit libovolnou soustavu od dvojkové až po třecetišestkovou. Soustavy 10, 16, 2  lze rychle zvolit tlačítky Dec, Hex, Bin.</P>
+
+<P><U>Jednotky úhlů</U></P>
+
+<P>Deg - stupně, pravý úhel je 90</P>
+
+<P>Rad - radiány, pravý úhel je PI/2</P>
+
+<P>Grad - grady, pravý úhel je 100</P>
+
+<P>S&nbsp;úhly počítají funkce sin, cos, tg, cosec, sec, cotg, asin, acos, atg, acsc, asec, acotg, angle. Při výpočtech s&nbsp;komplexními čísly mají zvolené úhlové jednotky vliv také na funkce ^, #, exp, ln, log, sinh, cosh, tgh, csch, sech, cotgh, asinh, acosh, atgh, acotgh, acsch, asech, arg, polar. </P>
+
+<P><U>Formát výsledku</U></P>
+
+<P>Norm - normální, tečka je mezi celočíselnou a desetinnou částí</P>
+
+<P>Sci - vědecký, tečka je vždy za první číslicí</P>
+
+<P>Eng - inženýrský, podobné jako Sci, ale exponent je dělitelný třemi</P>
+
+<P>Fix - fixní, podobné jako Norm, ale lze nastavit počet desetinných míst</P>
+
+<P><U>Makra</U></P>
+
+<P>Jako makro lze uložit jakýkoli text. Nejčastěji se makra používají na matematické nebo fyzikální vzorce. Na začátek vzorce je vhodné dát přiřazení do proměnných. Například vzorec na obsah válce lze napsat jako <CODE>r=1;v=2;v*pi*r^2</CODE>. Potom můžete při zadávání hodnot proměnných <CODE>r</CODE>, <CODE>v</CODE> použít klávesové zkratky Ctrl+1 a Ctrl+2.</P>
+
+<P>Při ukončení programu se makra automaticky ukládají na disk a při dalším spuštění se makra zase načtou. V&nbsp;menu Soubor příkazem “Uložit makra jako”  lze určit, do kterého souboru se mají makra ukládat.</P>
+
+<P>Makro s&nbsp;názvem autostart se vykoná automaticky po spuštění kalkulačky nebo při otevření souboru s makry. Makro autostart by mělo obsahovat jen přiřazení hodnot do proměnných.</P>
+
+<P>V&nbsp;menu Makra lze vytvářet další rozbalovací menu, které mohou být vnořeny do libovolné hloubky. Stačí přejmenovat makro a použít zpětná lomítka k&nbsp;oddělení názvu podmenu od názvu položky.</P>
+
+<P><U>Vlastní tlačítka</U></P>
+
+<P>Každý uživatel si může vytvořit svoji vlastní sadu tlačítek. Stačí vytvořit soubor s&nbsp;příponou cbt a otevřít ho přes menu Soubor / Načíst tlačítka. Pro začátek okopírujte některý soubor ze složky buttons a zkuste změnit názvy několika tlačítek. Pokud vás to bude bavit, tak si můžete určit také umístění a velikosti jednotlivých tlačítek. </P>
+
+<P>První řádek souboru musí být  PRECCALC 1. Na druhém řádku je šest čísel, která znamenají souřadnici x, souřadnici y, počet sloupců, počet řad, šířku tlačítka, výšku tlačítka. Za druhým a čtvrtým číslem je čárka. Pak následuje 2*(počet sloupců)*(počet řad)  řádek, na kterých jsou texty tlačítek. Každé tlačítko má dva názvy, z&nbsp;nichž druhý se zobrazí při zaškrtnutí Inv. Za posledním názvem může následovat další šestice čísel a další názvy tlačítek atd. </P>
+
+<P>Klávesovou zkratkou Ctrl+R se znovu načtou tlačítka z&nbsp;naposledy otevřeného CBT souboru.</P>
+
+</BODY>
+</HTML>

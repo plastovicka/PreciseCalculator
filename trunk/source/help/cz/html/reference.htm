@@ -1,0 +1,429 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+<HTML>
+<HEAD>
+<META HTTP-EQUIV="Content-Type" Content="text/html; charset=windows-1250">
+<TITLE>Přehled funkcí</TITLE>
+</HEAD>
+
+<BODY BGCOLOR="#FFFFFF" TEXT="#000000">
+
+<OBJECT TYPE="application/x-oleobject" CLASSID="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e">
+	<PARAM NAME="Keyword" VALUE="funkce">
+	<PARAM NAME="Keyword" VALUE="operace">
+</OBJECT>
+
+<A NAME="reference"></A><B>Přehled funkcí</B>
+
+<TABLE>
+<TR><TD width="100pt"><CODE>+</CODE></TD><TD>sčítání</TD></TR>
+
+<TR><TD><CODE>-</CODE></TD><TD>odčítání</TD></TR>
+
+<TR><TD><CODE>*</CODE></TD><TD>násobení</TD></TR>
+
+<TR><TD><CODE>/</CODE></TD><TD>dělení</TD></TR>
+
+<TR><TD>div</TD><TD><CODE>x div y= trunc(x/y)</CODE></TD></TR>
+
+<TR><TD>mod</TD><TD>zbytek po dělení,   <CODE>x mod y= x-y*(x div y)</CODE></TD></TR>
+
+<TR><TD>hypot</TD><TD>přepona,   <CODE>hypot(a,b)=sqrt(a^2+b^2)</CODE></TD></TR>
+
+<TR><TD>angle</TD><TD>úhel,<CODE> angle(a,b)=atan(a/b)</CODE></TD></TR>
+
+<TR><TD>rand</TD><TD>náhodné číslo z&nbsp;intervalu [0, 1)</TD></TR>
+
+<TR><TD>random</TD><TD><CODE>random(n)=trunc(rand*n)</CODE></TD></TR>
+
+<TR><TD>ctof</TD><TD>převod °Celsia na °Fahrenheita</TD></TR>
+
+<TR><TD>ftoc</TD><TD>převod °Fahrenheita na °Celsia</TD></TR>
+
+<TR><TD>baseN</TD><TD>následuje číslo v&nbsp;soustavě N,   2&lt;=N&lt;=36,  před N není mezera</TD></TR>
+
+<TR><TD>dec</TD><TD>base10</TD></TR>
+
+<TR><TD>hex</TD><TD>base16</TD></TR>
+
+<TR><TD>bin</TD><TD>base2</TD></TR>
+
+<TR><TD>oct</TD><TD>base8</TD></TR>
+
+</TABLE>
+<TABLE>
+<TR><TD colspan="2"><U>mocniny a logaritmy</U></TD></TR>
+
+<TR><TD width="100pt">^, <CODE>**</CODE></TD><TD>mocnina</TD></TR>
+
+<TR><TD><CODE>#</CODE></TD><TD>odmocnina,    <CODE>y#x= x^(1/y)</CODE></TD></TR>
+
+<TR><TD>sqrt</TD><TD>druhá odmocnina,    <CODE>sqrt(x)= 2#x = x^.5</CODE></TD></TR>
+
+<TR><TD>exp</TD><TD>exponenciální funkce,   <CODE>exp(x)=e^x, e=2.718...</CODE></TD></TR>
+
+<TR><TD>ln</TD><TD>přirozený logaritmus,  funkce opačná k exp</TD></TR>
+
+<TR><TD>logn</TD><TD>logaritmus o základu n,    <CODE>logn(n,x)=ln(x)/ln(n)</CODE></TD></TR>
+
+<TR><TD>log</TD><TD>desítkový logaritmus,    <CODE>log(x)=logn(10,x)</CODE></TD></TR>
+
+</TABLE>
+<A NAME="complex"></A>
+<TABLE>
+<TR><TD colspan="2"><U>komplexní čísla</U></TD></TR>
+
+<TR><TD width="100pt">real</TD><TD>reálná část,   <CODE>real(a+bi)=a</CODE></TD></TR>
+
+<TR><TD>imag</TD><TD>imaginární část,   <CODE>imag(a+bi)=b</CODE></TD></TR>
+
+<TR><TD>conjg</TD><TD>komplexně sdružené číslo,   <CODE>conjg(a+bi)=a-bi</CODE></TD></TR>
+
+<TR><TD>abs</TD><TD>absolutní hodnota,   <CODE>abs x=hypot(real x,imag x)</CODE></TD></TR>
+
+<TR><TD>arg</TD><TD>argument,   <CODE>arg x=angle(imag x,real x)</CODE></TD></TR>
+
+<TR><TD>sign</TD><TD>znaménko,<CODE>  sign x=x/abs x</CODE></TD></TR>
+
+<TR><TD>polar</TD><TD>polární souřadnice,   <CODE>polar(r,a)=r*cos a + i*r*sin a</CODE></TD></TR>
+
+<TR><TD>complex</TD><TD><CODE>complex(a,b)= a + b i</CODE></TD></TR>
+
+</TABLE>
+<A NAME="commands"></A>
+<TABLE>
+<TR><TD colspan="2"><U>podmínky a příkazy</U></TD></TR>
+
+<TR><TD width="100pt">==</TD><TD>výsledek je 1, pokud se hodnoty rovnají, jinak je 0</TD></TR>
+
+<TR><TD>!=, &lt;&gt;</TD><TD>nerovná se</TD></TR>
+
+<TR><TD>&gt;</TD><TD>větší</TD></TR>
+
+<TR><TD>&lt;</TD><TD>menší</TD></TR>
+
+<TR><TD>&gt;=</TD><TD>větší nebo rovno</TD></TR>
+
+<TR><TD>&lt;=</TD><TD>menší nebo rovno</TD></TR>
+
+<TR><TD>if(p,a,b)</TD><TD>pokud je p rovno 0, pak je výsledek b, jinak a</TD></TR>
+
+<TR><TD>return</TD><TD>ukončí výpočet</TD></TR>
+
+<TR><TD>return x</TD><TD>ukončí výpočet a vypíše číslo x</TD></TR>
+
+<TR><TD>goto n</TD><TD>skok na návěští nebo n-tý středník,  goto0 skočí na začátek </TD></TR>
+
+<TR><TD>gotor n</TD><TD>relativní skok,  gotor <CODE>-</CODE>1 skočí na předchozí příkaz, gotor1 skočí na další příkaz,  gotor0 zasekne kalkulačku</TD></TR>
+
+<TR><TD>print x,"t"</TD><TD>vypíše číslo x a za ním text t</TD></TR>
+
+<TR><TD>swap(a,b)</TD><TD>prohodí proměnné a,b</TD></TR>
+
+</TABLE>
+<TABLE>
+<TR><TD colspan="2"><U>zaokrouhlování</U></TD></TR>
+
+<TR><TD width="100pt">round</TD><TD>zaokrouhlení na nejbližší celé číslo</TD></TR>
+
+<TR><TD>int, floor</TD><TD>zaokrouhlení na celé číslo směrem dolu</TD></TR>
+
+<TR><TD>ceil</TD><TD>zaokrouhlení na celé číslo směrem nahoru</TD></TR>
+
+<TR><TD>trunc</TD><TD>zaokrouhlení na celé číslo směrem k nule</TD></TR>
+
+<TR><TD>frac</TD><TD>část za desetinnou tečkou,   <CODE>frac x=x-trunc x</CODE></TD></TR>
+
+</TABLE>
+<A NAME="bitwise"></A>
+<TABLE>
+<TR><TD colspan="2"><U>bitové operace</U></TD></TR>
+
+<TR><TD width="100pt">and, &amp;</TD><TD>logická operace “a”</TD></TR>
+
+<TR><TD>or, |</TD><TD>logická operace “nebo”</TD></TR>
+
+<TR><TD>xor</TD><TD>logická operace “výlučné nebo”</TD></TR>
+
+<TR><TD>not</TD><TD>změna všech bitů před desetinnou tečkou</TD></TR>
+
+<TR><TD>bitnand</TD><TD><CODE>x bitnand y=not(x and y)</CODE></TD></TR>
+
+<TR><TD>nand</TD><TD><CODE>x nand y=(x==0 or y==0)</CODE></TD></TR>
+
+<TR><TD>bitnor</TD><TD><CODE>x bitnor y=not(x or y)</CODE></TD></TR>
+
+<TR><TD>nor</TD><TD><CODE>x nor y=(x==0 and y==0)</CODE></TD></TR>
+
+<TR><TD>bitimp</TD><TD><CODE>x bitimp y=y or not x</CODE></TD></TR>
+
+<TR><TD>imp, -&gt;</TD><TD><CODE>x imp y=(x==0 or y&lt;&gt;0)</CODE></TD></TR>
+
+<TR><TD>biteqv</TD><TD><CODE>x biteqv y= not(x xor y)</CODE></TD></TR>
+
+<TR><TD>eqv</TD><TD><CODE>x eqv y=((x==0)==(y==0))</CODE></TD></TR>
+
+<TR><TD>lsh, &lt;&lt;</TD><TD>bitový posun vlevo,   <CODE>x&lt;&lt;y=x*2^y</CODE></TD></TR>
+
+<TR><TD>rsh, &gt;&gt;</TD><TD>bitový posun vpravo,   <CODE>x&gt;&gt;y=x&lt;&lt;-y</CODE></TD></TR>
+
+<TR><TD>rshi, &gt;&gt;&gt;</TD><TD><CODE>x&gt;&gt;&gt;y=trunc(x&gt;&gt;y)</CODE></TD></TR>
+
+</TABLE>
+<A NAME="integer"></A>
+<TABLE>
+<TR><TD colspan="2"><U>celočíselné operace</U></TD></TR>
+
+<TR><TD width="100pt">!, fact</TD><TD>faktoriál,    <CODE>n!=fact(n)= productfor(i,1,n,i)</CODE></TD></TR>
+
+<TR><TD>!!, ffact</TD><TD><CODE>n!!=ffact(n)= productfor(i,0,n/2-1,n-2*i)</CODE></TD></TR>
+
+<TR><TD>combin, nCr</TD><TD>kombinace,    <CODE>n nCr k = n!/(n-k)!/k!</CODE></TD></TR>
+
+<TR><TD>permut, nPr</TD><TD>variace,     <CODE>n nPr k = n!/(n-k)!</CODE></TD></TR>
+
+<TR><TD>gcd</TD><TD>největší společný dělitel dvou nebo více čísel</TD></TR>
+
+<TR><TD>lcm</TD><TD>nejmenší společný násobek dvou nebo více čísel,   <CODE>lcm(a,b)=a*b/gcd(a,b)</CODE></TD></TR>
+
+<TR><TD>divisor</TD><TD>nejmenší prvočíselný dělitel</TD></TR>
+
+<TR><TD>prime</TD><TD>prvočíslo, které následuje za daným číslem</TD></TR>
+
+<TR><TD>isprime</TD><TD><CODE>isprime(n)=(divisor(n)==n)</CODE></TD></TR>
+
+<TR><TD>fibon</TD><TD>Fibonacciho číslo,  <CODE>fibon(n)=fibon(n-1)+fibon(n-2)</CODE></TD></TR>
+
+</TABLE>
+<A NAME="angle"></A>
+<TABLE>
+<TR><TD colspan="2"><U>převody úhlů</U></TD></TR>
+
+<TR><TD width="100pt">radtodeg</TD><TD>převod radiánů na stupně, <CODE>radtodeg x= x/pi*180</CODE></TD></TR>
+
+<TR><TD>degtorad</TD><TD>převod stupňů na radiány</TD></TR>
+
+<TR><TD>radtograd</TD><TD>převod radiánů na grady, <CODE>radtograd x= x/pi*200</CODE></TD></TR>
+
+<TR><TD>gradtorad</TD><TD>převod gradů na radiány</TD></TR>
+
+<TR><TD>degtograd</TD><TD>převod stupňů na grady, <CODE>degtograd x= x*10/9</CODE></TD></TR>
+
+<TR><TD>gradtodeg</TD><TD>převod gradů na stupně</TD></TR>
+
+<TR><TD>deg, °</TD><TD>převod stupňů na právě zvolené jednotky</TD></TR>
+
+<TR><TD>rad</TD><TD>převod radiánů na právě zvolené jednotky</TD></TR>
+
+<TR><TD>grad</TD><TD>převod gradů na právě zvolené jednotky</TD></TR>
+
+<TR><TD>todeg</TD><TD>převod právě zvolených jednotek na stupně</TD></TR>
+
+<TR><TD>torad</TD><TD>převod právě zvolených jednotek na radiány</TD></TR>
+
+<TR><TD>tograd</TD><TD>převod právě zvolených jednotek na grady</TD></TR>
+
+<TR><TD>dms</TD><TD>převod stupňů, minut a sekund na stupně, celočíselná část jsou stupně, dvě číslice za desetinnou tečkou jsou minuty, další dvě číslice jsou sekundy a pak následují desetiny sekundy, setiny sekundy atd. </TD></TR>
+
+<TR><TD>todms</TD><TD>funkce inverzní k dms</TD></TR>
+
+</TABLE>
+<TABLE>
+<TR><TD colspan="2"><U>goniometrické funkce</U></TD></TR>
+
+<TR><TD width="100pt">sin</TD><TD>sinus, (protilehlá odvěsna / přepona)</TD></TR>
+
+<TR><TD>cos</TD><TD>kosinus, (přilehlá odvěsna / přepona)</TD></TR>
+
+<TR><TD>tan, tg</TD><TD>tangens, (protilehlá odvěsna / přilehlá odvěsna)</TD></TR>
+
+<TR><TD>cosec, csc</TD><TD>kosekans, (přepona / protilehlá odvěsna)</TD></TR>
+
+<TR><TD>sec</TD><TD>sekans, (přepona / přilehlá odvěsna)</TD></TR>
+
+<TR><TD>cot, cotg</TD><TD>kotangens, (přilehlá odvěsna / protilehlá odvěsna)</TD></TR>
+
+</TABLE>
+<TABLE>
+<TR><TD colspan="2"><U>cyklometrické funkce</U></TD></TR>
+
+<TR><TD width="150pt">asin, arcsin</TD><TD><CODE>asin(x)=-ln(x i+sqrt(1-x^2)) i</CODE></TD></TR>
+
+<TR><TD>acos, arccos</TD><TD><CODE>acos(x)=-ln(x+sqrt(1-x^2) i) i</CODE></TD></TR>
+
+<TR><TD>atan, atg, arctan, arctg</TD><TD><CODE>atan(x)=(ln(1+x i)-ln(1-x i))/2i</CODE></TD></TR>
+
+<TR><TD>acsc</TD><TD><CODE>acsc(x)=asin(1/x)</CODE></TD></TR>
+
+<TR><TD>asec</TD><TD><CODE>asec(x)=acos(1/x)</CODE></TD></TR>
+
+<TR><TD>acot, acotg, arccot, arccotg</TD><TD><CODE>acot(x)=atan(1/x)</CODE></TD></TR>
+
+</TABLE>
+<TABLE>
+<TR><TD colspan="2"><U>hyperbolické funkce</U></TD></TR>
+
+<TR><TD width="100pt">sinh</TD><TD><CODE>sinh(x)=(exp(x)-exp(-x))/2</CODE></TD></TR>
+
+<TR><TD>cosh</TD><TD><CODE>cosh(x)=(exp(x)+exp(-x))/2</CODE></TD></TR>
+
+<TR><TD>tanh, tgh</TD><TD><CODE>tanh(x)=sinh(x)/cosh(x)</CODE></TD></TR>
+
+<TR><TD>csch</TD><TD><CODE>csch(x)=1/sinh(x)</CODE></TD></TR>
+
+<TR><TD>sech</TD><TD><CODE>sech(x)=1/cosh(x)</CODE></TD></TR>
+
+<TR><TD>coth, cotgh</TD><TD><CODE>coth(x)=cosh(x)/sinh(x)</CODE></TD></TR>
+
+</TABLE>
+<TABLE>
+<TR><TD colspan="2"><U>hyperbolometrické funkce</U></TD></TR>
+
+<TR><TD>asinh, argsinh</TD><TD><CODE>asinh(x)=ln(x+sqrt(x^2+1))</CODE></TD></TR>
+
+<TR><TD>acosh, argcosh</TD><TD><CODE>acosh(x)=ln(x+sqrt(x+1)*sqrt(x-1))</CODE></TD></TR>
+
+<TR><TD>atanh, atgh, argtanh, argtgh</TD><TD><CODE>atanh(x)=(ln(1+x)-ln(1-x))/2</CODE></TD></TR>
+
+<TR><TD>acsch</TD><TD><CODE>acsch(x)=asinh(1/x)</CODE></TD></TR>
+
+<TR><TD>asech</TD><TD><CODE>asech(x)=acosh(1/x)</CODE></TD></TR>
+
+<TR><TD>acoth, acotgh, argcoth, argcotgh</TD><TD><CODE>acoth(x)=atanh(1/x)</CODE></TD></TR>
+
+</TABLE>
+<A NAME="matrix"></A>
+<TABLE>
+<TR><TD colspan="2"><U>matice</U></TD></TR>
+
+<TR><TD colspan="2">+, <CODE>-</CODE>, ==, &lt;&gt;, and, or, xor, lsh, rsh, real, imag, conjg, round, trunc, floor, ceil, frac</TD></TR>
+
+<TR><TD width="100pt">width</TD><TD>počet sloupců</TD></TR>
+
+<TR><TD>height</TD><TD>počet řádek</TD></TR>
+
+<TR><TD>matrix(r,s)</TD><TD>nulová matice, která má r řádek a s sloupců</TD></TR>
+
+<TR><TD>count</TD><TD><CODE>count A= width A * height A</CODE></TD></TR>
+
+<TR><TD><CODE>,</CODE></TD><TD>spojení matic vedle sebe, musejí mít stejný počet řádků</TD></TR>
+
+<TR><TD><CODE>\</CODE></TD><TD>spojení matic pod sebe, musejí mít stejný počet sloupců</TD></TR>
+
+<TR><TD><CODE>*</CODE></TD><TD>násobení dvou matic nebo jedné matice skalárem nebo skalární součin dvou vektorů</TD></TR>
+
+<TR><TD>vert</TD><TD>vektorový součin,<CODE> A vert B= (A[1]*B[2]-A[2]*B[1], A[2]*B[0]-A[0]*B[2], A[0]*B[1]-A[1]*B[0])</CODE></TD></TR>
+
+<TR><TD><CODE>/</CODE></TD><TD><CODE>A/B= A*invert B</CODE></TD></TR>
+
+<TR><TD>^</TD><TD><CODE>A^n= productfor(i,1,n,A); A^(-n)=1/(A^n)</CODE></TD></TR>
+
+<TR><TD>invert</TD><TD>inverzní matice,<CODE> invert A= 1/A= A^(-1)</CODE></TD></TR>
+
+<TR><TD>det</TD><TD>determinant</TD></TR>
+
+<TR><TD>rank</TD><TD>hodnost,  počet lineárně nezávislých řádků</TD></TR>
+
+<TR><TD>transp, '</TD><TD>transponovaná matice, osová symetrie podle diagonály</TD></TR>
+
+<TR><TD>elim</TD><TD>Gaussova eliminační metoda, provádí elementární operace s řádky</TD></TR>
+
+<TR><TD>solve</TD><TD>řešení soustavy lineárních rovnic, každý řádek matice reprezentuje jednu rovnici, poslední sloupec matice odpovídá pravé straně soustavy rovnic, proto musí být počet sloupců o 1 větší než počet neznámých. Počet řádků může být libovolný, ale zpravidla je počet řádků roven počtu neznámých. Jestliže má soustava nekonečně mnoho řešení, pak je vráceno jen jediné a to takové, aby hodnoty posledních neznámých byly nulové.</TD></TR>
+
+<TR><TD>abs</TD><TD>délka vektoru, norma matice,<CODE> abs A= sqrt sumq A</CODE></TD></TR>
+
+<TR><TD>angle</TD><TD>úhel mezi dvěma vektory,<CODE> angle(A,B)= acos(A*B/abs(A)/abs(B))</CODE></TD></TR>
+
+<TR><TD>polynom</TD><TD><CODE>polynom(x,A)= sumfor(i,0,count A-1, A[i]*x^i)</CODE></TD></TR>
+
+<TR><TD>reverse</TD><TD>změna pořadí prvků od posledního směrem k prvnímu</TD></TR>
+
+<TR><TD>sort</TD><TD>setřídění prvků matice vzestupně</TD></TR>
+
+<TR><TD>sortd</TD><TD>setřídění prvků matice sestupně,<CODE> sortd A= reverse sort A</CODE></TD></TR>
+
+</TABLE>
+<A NAME="for"></A>
+<TABLE>
+<TR><TD colspan="2"><U>cykly</U></TD></TR>
+
+<TR><TD width="150pt">for(x,a,b,f(x))</TD><TD>do proměnné x dosazuje hodnoty od a do b včetně. V&nbsp;každém kroku se x zvětší o 1. Pro tyto hodnoty vykonává funkci f. Jestliže f neobsahuje příkazy if a return, pak je výsledek for příkazu vždy 0. Funkce f také může měnit hodnoty proměnných.</TD></TR>
+
+<TR><TD>foreach(x,A,f(x))</TD><TD>do proměnné x postupně dosazuje všechny prvky matice A, <CODE>for(i,0,count A-1,f(A[i]))</CODE></TD></TR>
+
+<TR><TD>listfor(x,a,b,f(x))</TD><TD>řádkový vektor, který obsahuje hodnoty f(x) pro x od a do b. Pokud funkce f vrací sloupcové vektory, pak výsledkem příkazu listfor je matice. Jestliže a&gt;b, potom je výsledek 0.</TD></TR>
+
+<TR><TD>rowsfor(x,a,b,f(x))</TD><TD>sloupcový vektor, který obsahuje hodnoty f(x) pro x od a do b. Pokud funkce f vrací řádkové vektory, pak výsledkem příkazu rowsfor je matice. Jestliže a&gt;b, potom je výsledek 0.</TD></TR>
+
+<TR><TD>sumfor(x,a,b,f(x))</TD><TD><CODE>sum(listfor(x,a,b,f(x)))</CODE></TD></TR>
+
+<TR><TD>productfor(x,a,b,f(x))</TD><TD><CODE>if(a>b,1,product(listfor(x,a,b,x))</CODE></TD></TR>
+
+<TR><TD>minfor(x,a,b,f(x))</TD><TD><CODE>min(listfor(x,a,b,f(x)))</CODE></TD></TR>
+
+<TR><TD>maxfor(x,a,b,f(x))</TD><TD><CODE>max(listfor(x,a,b,f(x)))</CODE></TD></TR>
+
+<TR><TD colspan="2">listforeach, rowsforeach, sumforeach, productforeach, minforeach, maxforeach - tyto funkce jsou podobné jako výše uvedené, ale do proměnné x postupně dosazují všechny prvky matice A</TD></TR>
+
+<TR><TD>integral(x,a,b,n,f(x))</TD><TD>určitý integrál od a do b z&nbsp;funkce f(x), n je přesnost (počet správných desítkových číslic výsledku, zbylé číslice budou chybné!), pokud n&gt;=100, pak n znamená přibližnou dobu výpočtu v&nbsp;milisekundách</TD></TR>
+
+</TABLE>
+<A NAME="statistics"></A>
+<TABLE>
+<TR><TD colspan="2"><U>statistické funkce</U></TD></TR>
+
+<TR><TD width="100pt">min</TD><TD>minimální hodnota</TD></TR>
+
+<TR><TD>max</TD><TD>maximální hodnota</TD></TR>
+
+<TR><TD>med</TD><TD>medián, prostřední hodnota</TD></TR>
+
+<TR><TD>mode</TD><TD>modus, nejčastější hodnota</TD></TR>
+
+<TR><TD>sum</TD><TD>součet všech prvků matice</TD></TR>
+
+<TR><TD>product</TD><TD>součin všech prvků matice</TD></TR>
+
+<TR><TD>sumq</TD><TD>součet druhých mocnin,   <CODE>sumq A= sumforeach(x,A,x^2)</CODE></TD></TR>
+
+<TR><TD>ave, mean</TD><TD>aritmetický průměr,   <CODE>ave A= sum A/count A</CODE></TD></TR>
+
+<TR><TD>aveq, meanq</TD><TD>aritmetický průměr druhých mocnin,   <CODE>aveq A= sumq A/count A</CODE></TD></TR>
+
+<TR><TD>geom</TD><TD>geometrický průměr,<BR><CODE>geom A= (count A)#product A</CODE></TD></TR>
+
+<TR><TD>harmon</TD><TD>harmonický průměr, <CODE>harmon A= count A / sumforeach(x,A,1/x)</CODE></TD></TR>
+
+<TR><TD>var</TD><TD>rozptyl vzorku,   <CODE>var A= (sumq A-(sum A)^2/count A)/(count A-1)</CODE></TD></TR>
+
+<TR><TD>vara</TD><TD>rozptyl populace,<BR><CODE>vara A= aveq A-(ave A)^2</CODE></TD></TR>
+
+<TR><TD>stdev</TD><TD>směrodatná odchylka vzorku,<BR><CODE>stdev A= sqrt(var A)</CODE></TD></TR>
+
+<TR><TD>stdeva</TD><TD>směrodatná odchylka populace,<BR><CODE>stdeva A= sqrt(vara A)</CODE></TD></TR>
+
+</TABLE>
+<TABLE>
+<TR><TD colspan="2"><U>lineární regrese</U></TD></TR>
+
+<TR><TD colspan="2">Množina bodů v&nbsp;rovině je reprezentována maticí se dvěma sloupci. První sloupec odpovídá souřadnici x, druhý sloupec souřadnici y. Danými body se proloží přímka y=a+x*b, kde koeficienty a, b se spočtou funkcemi lra, lrb. Pokud všechny body leží na přímce, pak funkce lrr vrátí hodnotu 1 nebo -1.</TD></TR>
+
+<TR><TD width="100pt">lra</TD><TD><CODE>lra D= (sumy D-lrb D*sumx D)/height D</CODE></TD></TR>
+
+<TR><TD>lrb</TD><TD><CODE>lrb D= (height D*sumxy D-sumx D*sumy D)/(height D*sumxq D-(sumx D)^2)</CODE></TD></TR>
+
+<TR><TD>lrr</TD><TD>korelační koeficient, <CODE>lrr D= (height D*sumxy D-sumx D*sumy D)/sqrt((height D*sumxq D-(sumx D)^2)*(height D*sumyq D-(sumy D)^2))</CODE></TD></TR>
+
+<TR><TD>lrx</TD><TD><CODE>lrx(D,y)= (y-lra D)/lrb D</CODE></TD></TR>
+
+<TR><TD>lry</TD><TD><CODE>lry(D,x)= lra D + x*lrb D</CODE></TD></TR>
+
+<TR><TD>sumx</TD><TD><CODE>sumx D= sum D[][0]</CODE></TD></TR>
+
+<TR><TD>sumy</TD><TD><CODE>sumy D= sum D[][1]</CODE></TD></TR>
+
+<TR><TD>sumxy</TD><TD><CODE>sumxy D= D[][0]*D[][1]</CODE></TD></TR>
+
+<TR><TD colspan="2">sumxq, sumyq, avex, avey, avexq, aveyq, varx, vary, varxa, varya, stdevx, stdevy, stdevxa, stdevya</TD></TR>
+</TABLE>
+</BODY>
+</HTML>

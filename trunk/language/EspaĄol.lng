@@ -1,0 +1,156 @@
+503=Verze
+504=Precise Calculator - Omar Perez
+10=language\\const_ES.cns
+12=language\\units_ES.unt
+
+296=Precision:
+
+1=OK
+2=Cancelar
+9=Cerrar
+11=Acerca de
+16=Renombrar Macro
+14=Crear nueva Macro
+15=Borrar Macro
+17=Variables
+18=Opciones
+19=Colores
+20=Historia
+
+;menu
+450=Archivo
+451=Lenguaje
+452=Ayuda
+453=Editar
+454=Constante
+455=Unidades
+465=Macros
+470=Conversion
+471=nose
+
+102=Grabar configuracion
+103=Salir
+111=Abrir botones...\tCtrl+B
+224=Colores...
+105=Borrar configuracion
+106=Abrir Espresiones...\tCtrl+O
+108=Grabar resultado...\tCtrl+S
+109=Abrir Macros...
+110=Grabar Macros como...
+200=Cortar\tCtrl+X
+201=Copiar\tCtrl+C
+202=Pegar\tCtrl+V
+203=Copiar resultado\tAlt+C
+204=Limpiar\tEsc
+205=Deshacer\tCtrl+Z
+210=Nueva\tCtrl+N
+211=Borrar\tCtrl+D
+212=Renombrar
+223=Letra...
+230=Opciones...\tAlt+O
+234=Historia...\tCtrl+H
+232=Anterior\tCtrl+up
+233=Siguiente\tCtrl+down
+241=&1. parametro\tCtrl+1
+242=&2. parametro\tCtrl+2
+243=&3. parametro\tCtrl+3
+244=&4. parametro\tCtrl+4
+206=Variables...\tCtrl+L
+122=Contenido\tCtrl+F1
+120=Funciones\tF1
+121=Acerca de...
+
+
+505=Nombre Original:
+506=Nuevo Nombre:
+507=Nombre del macro:
+508=Archivos de Texto (*.txt)\0*.txt\0Todos los archivos\0*.*\0
+509=Macros (*.cal)\0*.cal\0Todos los archivos\0*.*\0
+510=Botones (*.cbt)\0*.cbt\0Todos los archivos\0*.*\0
+520=Pegar
+521=Quitar
+522=Quitar todo
+
+;Opciones
+530=separador antes punto
+531=separador despues punto
+532=Caracter:
+533=Caracter:
+534=Frecuencia:
+535=Frecuencia:
+536=Cantidad de items en historia:
+537=Grabar configuracion al salir
+538=Grabar todaslas expresiones y resultaods en el archivo..:
+
+;Barvy
+550=Numeros
+551=Funciones
+
+
+730=No se puede abrir el archivo %s
+731=Error de tamaño sobre %s
+733=No se puede crear el fichero %s
+735=No se puede escribir al registro de Windows 
+736=¿Quiere borrar su configuración? 
+753=Conjunto %s demasiado largo
+754=Error sobre conjunto vacio
+755=Error en %s \ nLine %d 
+756=Error en %s \ nMessage número %d es demasiado grande 
+757=Error en %s \ nDuplicated número %d 
+801=Macro "%s" ya existe
+802=Primero ingrese una expresion en el box
+
+950=Funcion o variable desconocida
+951=Operador desconocido
+952=Numero, variable o funcion esperada
+953=Operador binario esperado
+954=Un digito esta fuera de la base seleccionada
+955=No coinciden los parentesis
+956=No coincide la coma
+957=Paréntesis izquierdo espera 
+958=Número erróneo de argumentos 
+959=Falta citar al final de un texto impreso 
+960=Expresion numerica a la izquierda de una asignacion
+961=Incremento o decremento de una expresión 
+962=espera 
+963=No coincide corchete derecho
+964=faltan Fin del comentario
+
+1010=Division por cero
+1011=Overflow, el número es demasiado grande 
+1017=El cambio de operandos no es entero 
+1018=operador de combinación no es entero
+1019=operador de permutación no es entero
+1020=factorial de un operador no es entero
+1026=El máximo común divisor del número real
+1027=El múltiplo de menos número real
+1030=divisor del número real
+1031=Calculo muy complejo
+1032=Angulo del punto [0,0]
+1033=número no válido después de goto
+1034=Resultado Infinito 
+1035=Función no admite números imaginarios
+1036=logaritmo de cero
+1037=Complejo o poder negativo de cero
+1038=Complejo o raíz negativo de cero
+1039=argtanh, argcoth a partir del 1 o -1
+1040=arctan, arccot de 1i o-1i
+1041=las matrices tienen el tamaño incorrecto
+1042=Incremento o decremento de una matriz
+1043=La función no es compatible con matrices
+1044=matrices no tienen el mismo tamaño
+1045=Número de columnas de la primera matriz no es igual al número de columnas de la segunda matriz
+1046=Vectores tienen diferentes longitudes
+1047=No es potencia de la matriz
+1048=matriz no es cuadrada
+1049=Los argumentos tienen que ser vectores de longitud 3
+1050=matriz no es regular
+1051=Índice está fuera de rango
+1052=Índice no es entero
+1053=matriz no tiene 2 columnas
+1054=matriz debe tener más de una columna
+1055=Ecuaciones no son solucionables
+1056=Parámetro no es un vector
+1057=El primer parámetro tiene que ser una variable
+1058=El cuarto argumento tiene que ser entero
+1059=Función matriz de parámetros debe tener el número de filas, el número de columnas 

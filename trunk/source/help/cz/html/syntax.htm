@@ -1,0 +1,112 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+<HTML>
+<HEAD>
+<META HTTP-EQUIV="Content-Type" Content="text/html; charset=windows-1250">
+<TITLE>Syntaxe</TITLE>
+</HEAD>
+
+<BODY BGCOLOR="#FFFFFF" TEXT="#000000">
+
+<OBJECT TYPE="application/x-oleobject" CLASSID="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e">
+	<PARAM NAME="Keyword" VALUE="syntaxe">
+	<PARAM NAME="Keyword" VALUE="goto">
+	<PARAM NAME="Keyword" VALUE="print">
+	<PARAM NAME="Keyword" VALUE="return">
+	<PARAM NAME="Keyword" VALUE="=">
+	<PARAM NAME="Keyword" VALUE="E">
+</OBJECT>
+
+<P><A NAME="syntax"></A><B>Syntaxe</B></P>
+
+<P><U>Čísla</U></P>
+
+<P>Čísla musejí začínat číslicí. Například v&nbsp;šestnáctkové soustavě A znamená proměnnou A, zatímco 0A znamená číslo deset. Celá část je od desetinné části oddělena tečkou. Není možné použít čárku, protože ta slouží jako oddělovač parametrů funkcí. Pokud píšete čísla pomocí numerické části klávesnice, pak se čárka automaticky konvertuje na tečku. Čísla menší než jedna se mohou psát bez nuly na začátku. Například .5 je jedna polovina. Pro hodně velká čísla je třeba použít vědecký zápis, který se skládá z&nbsp;mantisy a exponentu, mezi nimiž je písmeno E. Pokud používáte&nbsp;číselnou soustavu větší než desítkovou, pak před E musí být mezera. Například v&nbsp;šestnáctkové soustavě 1&nbsp;E3 znamená 1000, ale 1E3 je číslo 483. Exponent se vždy uvádí v&nbsp;desítkové soustavě. Například ve dvojkové soustavě 101E3 znamená to samé jako 101000. </P>
+
+<P>Za číslem také může následovat inženýrský symbol:</P>
+<TABLE border="1" rules="rows">
+<TR><TD width="30pt">y</TD><TD>10^-24</TD><TD>(yocto)</TD></TR>
+
+<TR><TD>z</TD><TD>10^-21</TD><TD>(zepto)</TD></TR>
+
+<TR><TD>a</TD><TD>10^-18</TD><TD>(atto)</TD></TR>
+
+<TR><TD>f</TD><TD>10^-15</TD><TD>(femto)</TD></TR>
+
+<TR><TD>p</TD><TD>10^-12</TD><TD>(piko)</TD></TR>
+
+<TR><TD>n</TD><TD>10^-9</TD><TD>(nano)</TD></TR>
+
+<TR><TD>u</TD><TD>10^-6</TD><TD>(mikro)</TD></TR>
+
+<TR><TD>m</TD><TD>10^-3</TD><TD>(mili)</TD></TR>
+
+<TR><TD>k</TD><TD>10^+3</TD><TD>(kilo)</TD></TR>
+
+<TR><TD>M</TD><TD>10^+6</TD><TD>(mega)</TD></TR>
+
+<TR><TD>G</TD><TD>10^+9</TD><TD>(giga)</TD></TR>
+
+<TR><TD>T</TD><TD>10^+12</TD><TD>(tera)</TD></TR>
+
+<TR><TD>P</TD><TD>10^+15</TD><TD>(peta)</TD></TR>
+
+<TR><TD>X</TD><TD>10^+18</TD><TD>(exa)</TD></TR>
+
+<TR><TD>Z</TD><TD>10^+21</TD><TD>(zeta)</TD></TR>
+
+<TR><TD>Y</TD><TD>10^+24</TD><TD>(yotta)</TD></TR>
+</TABLE>
+<P><U>Proměnné</U></P>
+
+<P>Každá proměnná slouží jako paměť pro jedno číslo nebo matici. Název proměnné může obsahovat písmena, podtržítko, číslice a znaky s&nbsp;ASCII kódy nad 127. Nerozlišuje se mezi velkými a malými písmeny (to ale neplatí pro písmena s&nbsp;háčkem nebo čárkou, u kterých na velikosti záleží). Proměnné nesmějí začínat číslicí a také se nesmějí shodovat s&nbsp;názvem nějaké funkce. </P>
+
+<P>Číslo se do proměnné přiřadí operátorem =. Například příkaz abc=123 uloží hodnotu 123 do proměnné abc. Počet proměnných je omezen jen velikostí paměti. Postfixové operátory ++ a -- lze použít ke zvětšení nebo zmenšení proměnné o 1.</P>
+
+<P>Proměnná ans vždy obsahuje výsledek předchozího výrazu.</P>
+
+<P><U>Komplexní čísla</U></P>
+
+<P>Komplexní číslo se obvykle skládá ze dvou částí -&nbsp;reálné a imaginární. Mezi nimi je operace plus nebo minus. Imaginární část je zakončena malým písmenem i nebo j. Před ním může být mezera. Protože samotné písmeno i nebo j znamená proměnnou, musí se imaginární jednotka zapisovat jako 1i nebo 1j. Platí vztah <CODE>sqrt(-1)=1i</CODE>.</P>
+
+<P>Poznámka: 2/3*1i  lze napsat jako (2/3)i  nebo 2i/3 , ale ne jako 2/3i</P>
+
+<P><U>Matice</U></P>
+
+<P>Matice je dvourozměrné pole komplexních čísel. Zapisuje se v&nbsp;kulatých závorkách, jednotlivé prvky se oddělují čárkami a řádky se oddělují zpětným lomítkem. Například (5,2,-3 \ 7,-5,1) je matice, která má tři sloupce a dva řádky. Pokud má matice jen jeden řádek nebo jen jeden sloupec, pak se nazývá vektor.</P>
+
+<P>Pokud chcete z&nbsp;matice získat prvek, který leží na řádku r a sloupci s, pak napište A[r][s]. Řádky a sloupce se číslují od nuly. A[r1,r2][s1,s2] vybere z&nbsp;matice podmatici, která leží na řádcích r1 až r2 a sloupcích s1 až s2. A[r] vezme řádek r, A[][s] znamená sloupec s. Jsou povoleny také výrazy  A[r1,r2] , A[][s1,s2], A[r][s1,s2], A[r1,r2][s].</P>
+
+<P><U>Komentáře</U></P>
+
+<P>Komentář začíná znaky <CODE>/*</CODE> a končí znaky <CODE>*/</CODE>. Používá se hlavně v&nbsp;makrech. Při výpočtu se ignoruje. Komentáře není možno vnořovat.</P>
+
+<P><U>Příkazy</U></P>
+
+<P>Do vstupního editačního pole je možné vepsat více příkazů. Oddělené jsou pomocí středníků. Pokud je středník také na konci výrazu, pak se výsledek posledního příkazu ignoruje a nezobrazí se. </P>
+
+<P>Příkaz print slouží k&nbsp;vypsání čísla nebo textu. Text je ohraničen uvozovkami. Pokud se nějaké uvozovky vyskytují uvnitř textu, musíte je zdvojit. Za print může následovat několik výrazů oddělených čárkami. Každý příkaz print obvykle odpovídá jednomu řádku na výstupu. Pokud je na konci příkazu print čárka, pak se neprovede přesun na další řádek. Příkaz print se nemůže vyskytovat uvnitř výrazu. Například <CODE>if(x&gt;0,print x, print -x)</CODE> je chyba.</P>
+
+<P>Před příkazem může být návěští, které je ukončené dvojtečkou. Návěští je slovo, které může obsahovat stejné znaky jako proměnná a navíc může začínat číslicí. Příkaz <CODE>goto</CODE> provede skok na zadané návěští. Kromě toho ale může obsahovat také pořadové číslo příkazu nebo číselný výraz. Například  <CODE>goto abc-2 </CODE> skočí o dva příkazy před návěští abc. Příkaz <CODE>goto(abc-2)</CODE> skočí na tolikátý příkaz, jaká je hodnota proměnné abc minus 2. Příkaz  <CODE>goto0</CODE>  skočí na první příkaz.  Příkaz  <CODE>gotor N</CODE>   skočí o N příkazů vpřed nebo zpět podle toho, jestli je N kladné nebo záporné. Přitom N může být libovolný výraz. </P>
+
+<P><U>Operace</U></P>
+
+<P>Prefixové operace se píší před číselný výraz.  Postfixové operace se píší za číselný výraz. Binární operace se vkládají mezi dva číselné výrazy. Funkce s&nbsp;více parametry se používají tak, že za nimi následují závorky a v&nbsp;nich jsou parametry oddělené čárkami. Mezi operacemi popřípadě operandy a operátory se může vyskytovat libovolný počet mezer. Obvykle ale nejsou povinné. Například ve výraze sqrt x musí být mezera, ale ve výraze sqrt2 nemusí být mezera. </P>
+
+<P><U>binární operace:</U>  +, -, *, /, div, mod, ^, **, #, and, &amp;, or, |, xor, nand, nor, imp, -&gt;, eqv, bitnand, bitnor, bitimp, biteqv, lsh, &lt;&lt;, rsh, &gt;&gt;, rshi, &gt;&gt;&gt;, combin, nCr, permut, nPr, ==, !=, &lt;&gt;, &gt;, &lt;, &gt;=, &lt;=, =, vert</P>
+
+<P><U>prefixové operace</U>:  +, -, sqrt, exp, ln, log, abs, sign, round, int, floor, ceil, trunc, frac, not, fact, fibon, divisor, prime, isprime, gcd, lcm, random, radtodeg, degtorad, radtograd, gradtorad, degtograd, gradtodeg, deg, rad, grad, todeg, torad, tograd, dms, todms, ftoc, ctof, sin, cos, tan, cosec, sec, cotg, asin, acos, atan, asec, acsc, acotg, sinh, cosh, tanh, sech, csch, cotgh, asinh, acosh, atanh, asech, acsch, acotgh, conjg, real, imag, arg, min, max, count, sum, sumq, ave, mean, aveq, meanq, var, vara, stdev, stdeva, med, mode, sort, geom, harmon, product, invert, transp, det, elim, rank, solve, width, height, lra, lrb, lrr, sumxy, sumx, sumy, sumxq, sumyq, avex, avey, avexq, aveyq, varx, vary, varxa, varya, stdevx, stdevy, stdevxa, stdevya</P>
+
+<P><U>postfixové operace:</U>   !, !!, ++, --, °, ‘, i, j</P>
+
+<P><U>funkce bez parametrů:</U>   pi, ans, rand</P>
+
+<P><U>funkce se&nbsp;dvěma parametry:</U>   hypot, angle, polar, complex, logn, polynom, lrx, lry, matrix</P>
+
+<P><U>funkce se třemi&nbsp;parametry:</U>   if, foreach, sumforeach, productforeach, listforeach, rowsforeach</P>
+
+<P><U>funkce se čtyřmi&nbsp;parametry:</U>   for, sumfor, productfor, listfor, rowsfor</P>
+
+<P><U>funkce s&nbsp;pěti parametry:</U>   integral</P>
+
+</BODY>
+</HTML>

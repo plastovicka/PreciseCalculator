@@ -1,0 +1,227 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+<HTML>
+<HEAD>
+<META HTTP-EQUIV="Content-Type" Content="text/html; charset=Windows-1252">
+<TITLE>Version history</TITLE>
+</HEAD>
+
+<BODY BGCOLOR="#FFFFFF" TEXT="#000000">
+
+<OBJECT TYPE="application/x-oleobject" CLASSID="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e">
+	<PARAM NAME="Keyword" VALUE="version">
+</OBJECT>
+
+<P><A NAME="history"></A><B>Version history</B></P>
+<BR>
+<CODE>2.6 (4 May 2013)</CODE>
+<UL>
+<LI>function mod shows error if the first operand is longer than precision
+</UL>
+<CODE>2.5.4 (9 November 2012)</CODE>
+<UL>
+<LI>functions gcd and lcm parameter can be a matrix
+<LI><CODE>fixed bugs:</CODE>
+<LI>ENG mode truncated trailing zeros
+</UL>
+<CODE>2.5.3 (24 September 2011)</CODE>
+<UL>
+<LI>Russian translation
+</UL>
+<CODE>2.5.2 (18 March 2011)</CODE>
+<UL>
+<LI><CODE>fixed bugs:</CODE>
+<LI>Escape key caused crash if logging results to file was enabled
+<LI>sin(90°) sometimes freezed
+</UL>
+<CODE>2.5 (27 February 2011)</CODE>
+<UL>
+<LI>functions sortd, swap, reverse
+<LI>assignment to a matrix item or submatrix, e.g. a[2,4][1]=(5 \ 1 \ 3)
+<LI>increment or decrement of a matrix item, e.g. a[2][3]++
+<LI>Inv is checked if the mouse is moved over the buttons and the shift key is pressed
+<LI>option to set log file size
+<LI>error message 'Trigonometric function operand is too big', for example sin(1E10000)
+<LI>quotes inside printed text, e.g. print "Hello ""world"" !"
+<LI>result conversion from binary to decimal string can be interrupted by Pause or Esc key
+<LI>precision is not limited by 963250 anymore, new maximum is 9999999
+<LI>history and variables windows are resizeable
+<LI>listfor and rowsfor are faster
+<LI>ctrl+1, ctrl+2 etc. do not select outer parenthesis of matrices
+<LI><CODE>fixed bugs:</CODE>
+<LI>operators dec,hex,bin,oct,baseN were not applied to exponent base, e.g. bin(1E3) returned 1000 instead of 8
+<LI>matrix range caused syntax error inside function with multiple arguments, e.g. if(i>1,x[1,i],0)
+<LI>big numbers in matrix could cause error "Infinite result", e.g. listfor(i,1,5000,2^i)
+<LI>ctrl+1, ctrl+2 etc. selected expressions inside strings after print
+<LI>cycle for(i,2^32-1,2^32,0) could freeze
+</UL>
+<CODE>2.4 (9 February 2011)</CODE>
+<UL>
+<LI>64-bit version
+<LI>help converted from HLP format to CHM
+<LI><CODE>fixed bugs:</CODE>
+<LI>small integers were not displayed with exponent in SCI mode
+<LI>numbers divided by power of 2 were displayed with less digits
+<LI>int and round returned zero for parameters between -1 and +1
+<LI>lcm was imprecise if one parameter was very big and the other parameter was small
+<LI>exp(2*ln(2^32)) did not return any result
+<LI>ln(2^31)  did not return any result
+<LI>divisor from negative number showed the same error as sqrt
+<LI>dec,hex,oct,bin could not be upper case
+</UL>
+<CODE>2.3 (5 July 2008)</CODE>
+<UL>
+<LI>Spanish translation
+<LI><CODE>fixed bugs:</CODE>
+<LI>5!^2 was syntax error
+<LI>wrong controls positions if windows taskbar was at the top of screen
+</UL>
+<CODE>2.2 (16 March 2007)</CODE>
+<UL>
+<LI>functions asec, acsc, sech, csch, asech, acsch, nand, nor, imp, eqv, 
+
+<LI>bitnand, bitnor, bitimp, biteqv, sign, complex, rshi, isprime, matrix, °,  ‘
+
+<LI>prefix operators with a parametr in parenthesis have the highest priority
+
+<LI>the imaginary unit can be both i and j, it is used as a postfix operation
+
+<LI>engineering postfix symbols (k, M, G, ...)
+
+<LI>accuracy of the computation time is 1 ms
+
+<LI>option to automatically save settings on exit
+
+<LI>option to log all calculations to a file
+
+<LI>menu Constants and Units are read from files
+
+<LI><CODE>fixed bugs:</CODE>
+
+<LI>functions asin,acos,atan,acot, acosh,atanh,acoth returned incorrect results for some imaginary parameters
+
+<LI>1E-15 has been displayed as 10 E-16
+
+<LI>todms asin(0.5)  returned 29.596 instead of 30
+</UL>
+<CODE>2.1 (14 September 2006)</CODE>
+<UL>
+<LI>functions minfor, maxfor
+
+<LI>comments /* */
+
+<LI>if an arithmetic error occurs, the cursor is moved to the function which caused error
+
+<LI>buttons’ text color can be changed
+</UL>
+<CODE>2.0 (30 August 2005)</CODE>
+<UL>
+<LI>matrices
+
+<LI>functions polynom, sort, geom, harmon, product, invert, transp, det, elim, rank, solve, vert, width, height, integral, for, foreach, sumfor, sumforeach, productfor, productforeach, listfor, listforeach, rowsfor, rowsforeach, lra, lrb, lrr, lrx, lry, sumxy, sumx, sumy, sumxq, sumyq, avex, avey, avexq, aveyq, varx, vary, varxa, varya, stdevx, stdevy, stdevxa, stdevya
+
+<LI><CODE>fixed bugs:</CODE>
+
+<LI>sqrt sometimes wasn’t accurate
+
+<LI>0/0 was not error
+
+<LI>x/x was not 1, but 0.9999...
+
+<LI>function rand couldn’t be in an expression more than once 
+
+<LI>frac crashed if the operand was integer
+
+<LI>functions dec, hex, oct didn’t work in version 1.5
+
+<LI>switching NORM, FIX, SCI, ENG changed a result if there was Ans or ‘=’
+</UL>
+<CODE>1.5 (20 August 2005)</CODE>
+<UL>
+<LI>result conversion from binary to decimal base is 9 times faster 
+
+<LI>short floating-point numbers are converted to fractions;  for example 1.5 is 3/2
+
+<LI>checkbox to show fractions moved from the Options window to the main window 
+
+<LI>goto labels
+
+<LI>history
+
+<LI>submenus in menu Macro
+</UL>
+<CODE>1.4 (15 Mar 2005)</CODE>
+<UL>
+<LI>custom buttons in cbt files
+</UL>
+<CODE>1.3 (17 Feg 2005)</CODE>
+<UL>
+<LI>calculations with fractions
+
+<LI>option to insert a separator after every three digit etc.
+
+<LI>function exp is faster if the operand is integer
+
+<LI>updated physical constants according to CODATA 2002
+</UL>
+<CODE>1.2 (12 Feb 2005)</CODE>
+<UL>
+<LI>functions ffact, logn, div, ftoc, ctof, ++, --
+
+<LI>complex functions tan, cot, tanh, coth, asin, acos, atan, acot, asinh, acosh, atanh, acoth
+
+<LI>constant normal volume of ideal gas
+
+<LI>there can be text strings in quotes after print
+
+<LI>return doesn’t require an argument
+
+<LI>names of variables can contain digits
+
+<LI>variable assignment can be inside an expression
+
+<LI><CODE>fixed bugs:</CODE>
+
+<LI>functions &lt;&lt;, &gt;&gt;, arccot
+
+<LI>open macros
+
+<LI>hyperbolic functions were too slow
+</UL>
+<CODE>1.1 (6 Feb 2005)</CODE>
+<UL>
+<LI>complex numbers
+
+<LI>functions real, imag, conjg, arg, polar
+
+<LI>command gotor
+
+<LI>macro autostart is executed at startup
+
+<LI>list of variables
+
+<LI>number format Fix
+
+<LI><CODE>fixed bugs:</CODE>
+
+<LI>program prevented Windows to shutdown
+
+<LI>memory leak in command if
+
+<LI>command goto0 sometimes didn’t work
+
+<LI>faster pressing Enter could crash
+</UL>
+<CODE>1.0 (10 Jan 2005)</CODE>
+<UL>
+<LI>constants, units, macros
+
+<LI>most of the math functions
+</UL>
+<CODE>0.1 (21 May 2002)</CODE>
+<UL>
+<LI>pi number
+
+<LI>functions +, -, *, /, sqrt, exp
+</UL>
+</BODY>
+</HTML>

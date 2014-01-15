@@ -1,0 +1,143 @@
+<HTML>
+<!-- Sitemap 1.0 -->
+<OBJECT type="text/site properties">
+</OBJECT>
+<UL>
+	<LI> <OBJECT type="text/sitemap">
+		<param name="Keyword" value="=">
+		<param name="Name" value="Syntax">
+		<param name="Local" value="html/syntax.htm">
+		</OBJECT>
+	<LI> <OBJECT type="text/sitemap">
+		<param name="Keyword" value="base">
+		<param name="Name" value="Usage">
+		<param name="Local" value="html/usage.htm">
+		</OBJECT>
+	<LI> <OBJECT type="text/sitemap">
+		<param name="Keyword" value="C">
+		<param name="Name" value="Usage">
+		<param name="Local" value="html/usage.htm">
+		</OBJECT>
+	<LI> <OBJECT type="text/sitemap">
+		<param name="Keyword" value="Del">
+		<param name="Name" value="Usage">
+		<param name="Local" value="html/usage.htm">
+		</OBJECT>
+	<LI> <OBJECT type="text/sitemap">
+		<param name="Keyword" value="eng">
+		<param name="Name" value="Usage">
+		<param name="Local" value="html/usage.htm">
+		</OBJECT>
+	<LI> <OBJECT type="text/sitemap">
+		<param name="Keyword" value="EXE">
+		<param name="Name" value="Usage">
+		<param name="Local" value="html/usage.htm">
+		</OBJECT>
+	<LI> <OBJECT type="text/sitemap">
+		<param name="Keyword" value="exponent">
+		<param name="Name" value="Syntax">
+		<param name="Local" value="html/syntax.htm">
+		</OBJECT>
+	<LI> <OBJECT type="text/sitemap">
+		<param name="Keyword" value="fix">
+		<param name="Name" value="Usage">
+		<param name="Local" value="html/usage.htm">
+		</OBJECT>
+	<LI> <OBJECT type="text/sitemap">
+		<param name="Keyword" value="functions">
+		<param name="Name" value="Function reference">
+		<param name="Local" value="html/reference.htm">
+		</OBJECT>
+	<LI> <OBJECT type="text/sitemap">
+		<param name="Keyword" value="goto">
+		<param name="Name" value="Syntax">
+		<param name="Local" value="html/syntax.htm">
+		</OBJECT>
+	<LI> <OBJECT type="text/sitemap">
+		<param name="Keyword" value="inv">
+		<param name="Name" value="Usage">
+		<param name="Local" value="html/usage.htm">
+		</OBJECT>
+	<LI> <OBJECT type="text/sitemap">
+		<param name="Keyword" value="licence">
+		<param name="Name" value="License">
+		<param name="Local" value="html/licence.htm">
+		</OBJECT>
+	<LI> <OBJECT type="text/sitemap">
+		<param name="Keyword" value="macro">
+		<param name="Name" value="Usage">
+		<param name="Local" value="html/usage.htm">
+		</OBJECT>
+	<LI> <OBJECT type="text/sitemap">
+		<param name="Keyword" value="Odstranit nastavení">
+		<param name="Name" value="Instalace">
+		<param name="Local" value="html/instal.htm">
+		</OBJECT>
+	<LI> <OBJECT type="text/sitemap">
+		<param name="Keyword" value="operators">
+		<param name="Name" value="Function reference">
+		<param name="Local" value="html/reference.htm">
+		</OBJECT>
+	<LI> <OBJECT type="text/sitemap">
+		<param name="Keyword" value="parenthesis">
+		<param name="Name" value="Precedence of operators">
+		<param name="Local" value="html/precedence.htm">
+		</OBJECT>
+	<LI> <OBJECT type="text/sitemap">
+		<param name="Keyword" value="precedence">
+		<param name="Name" value="Precedence of operators">
+		<param name="Local" value="html/precedence.htm">
+		</OBJECT>
+	<LI> <OBJECT type="text/sitemap">
+		<param name="Keyword" value="precision">
+		<param name="Name" value="Usage">
+		<param name="Local" value="html/usage.htm">
+		</OBJECT>
+	<LI> <OBJECT type="text/sitemap">
+		<param name="Keyword" value="print">
+		<param name="Name" value="Syntax">
+		<param name="Local" value="html/syntax.htm">
+		</OBJECT>
+	<LI> <OBJECT type="text/sitemap">
+		<param name="Keyword" value="priority">
+		<param name="Name" value="Precedence of operators">
+		<param name="Local" value="html/precedence.htm">
+		</OBJECT>
+	<LI> <OBJECT type="text/sitemap">
+		<param name="Keyword" value="return">
+		<param name="Name" value="Syntax">
+		<param name="Local" value="html/syntax.htm">
+		</OBJECT>
+	<LI> <OBJECT type="text/sitemap">
+		<param name="Keyword" value="sci">
+		<param name="Name" value="Usage">
+		<param name="Local" value="html/usage.htm">
+		</OBJECT>
+	<LI> <OBJECT type="text/sitemap">
+		<param name="Keyword" value="spaces">
+		<param name="Name" value="Syntax">
+		<param name="Local" value="html/syntax.htm">
+		</OBJECT>
+	<LI> <OBJECT type="text/sitemap">
+		<param name="Keyword" value="syntax">
+		<param name="Name" value="Syntax">
+		<param name="Local" value="html/syntax.htm">
+		</OBJECT>
+	<LI> <OBJECT type="text/sitemap">
+		<param name="Keyword" value="time">
+		<param name="Name" value="Usage">
+		<param name="Local" value="html/usage.htm">
+		<param name="Name" value="Computation time">
+		<param name="Local" value="html/times.htm">
+		</OBJECT>
+	<LI> <OBJECT type="text/sitemap">
+		<param name="Keyword" value="variable">
+		<param name="Name" value="Syntax">
+		<param name="Local" value="html/syntax.htm">
+		</OBJECT>
+	<LI> <OBJECT type="text/sitemap">
+		<param name="Keyword" value="version">
+		<param name="Name" value="Version history">
+		<param name="Local" value="html/history.htm">
+		</OBJECT>
+</UL></HTML>

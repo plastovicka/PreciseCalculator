@@ -1,0 +1,79 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+<HTML>
+<HEAD>
+<META HTTP-EQUIV="Content-Type" Content="text/html; charset=Windows-1252">
+<TITLE>Usage</TITLE>
+</HEAD>
+
+<BODY BGCOLOR="#FFFFFF" TEXT="#000000">
+
+<OBJECT TYPE="application/x-oleobject" CLASSID="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e">
+	<PARAM NAME="Keyword" VALUE="inv">
+	<PARAM NAME="Keyword" VALUE="precision">
+	<PARAM NAME="Keyword" VALUE="time">
+	<PARAM NAME="Keyword" VALUE="base">
+	<PARAM NAME="Keyword" VALUE="fix">
+	<PARAM NAME="Keyword" VALUE="sci">
+	<PARAM NAME="Keyword" VALUE="eng">
+	<PARAM NAME="Keyword" VALUE="macro">
+	<PARAM NAME="Keyword" VALUE="EXE">
+	<PARAM NAME="Keyword" VALUE="C">
+	<PARAM NAME="Keyword" VALUE="Del">
+</OBJECT>
+
+<P><A NAME="usage"></A><B>Usage</B></P>
+
+<P>There are two edit boxes. The upper one is used to enter mathematical expressions which are evaluated and the result is written to the lower edit box. Computation starts when the ENTER key or EXE button is pressed. Expressions can be entered by the mouse - use buttons at the right side of the window. When some button is clicked while a SHIFT key is pressed, then it does the same function as if the Inv checkbox is checked. Button Del corresponds to Backspace key. Button C clears the edit boxes. </P>
+
+<P>The first edit box after the label “Precision:” holds number of significant digits. The second edit box is visible only in the Fix mode and means maximal number of digits after the decimal point. The checkbox “a/b” enables or disables fractions in the result. A numerator and a denominator are 32-bit integers (approximately 9 digits). If you have installed the 64-bit version of Precise Calculator, both numerator and denominator are 64-bit (approximately 18 digits). </P>
+
+<P>All computations are done in a separated thread. So you don’t have to wait until the result is displayed. You can start typing another expression immediately after pressing the ENTER key. Several leading digits of the result are displayed sooner than the whole result if you have set vary large precision. Every expression is evaluated at least twice. Further computations are done with greater precision until required number of digits are achieved. Duration in milliseconds is displayed when the computation is finished.</P>
+
+<P>After pressing ENTER or EXE, you can use cursor keys left / right to set cursor at the end or beginning of the input edit box. Other keys automatically clear the edit box.</P>
+
+<P>Ctrl+ENTER inserts end of line character.</P>
+
+<P><U>Numeric bases</U></P>
+
+<P>In addition to a decimal base, you can perform calculations in any base from 2 to 36. Characters A to Z&nbsp;are used to represent digits greater than 9. Buttons Dec, Hex, Bin quickly change base to 10, 16 or 2.</P>
+
+<P><U>Angle units</U></P>
+
+<P>Deg - degrees, right angle is 90</P>
+
+<P>Rad - radians, right angle is PI/2</P>
+
+<P>Grad - gradients, right angle is 100</P>
+
+<P>Angle units are used by functions sin, cos, tg, cosec, sec, cotg, asin, acos, atg, acsc, asec, acotg, angle. They also affect complex functions  ^, #, exp, ln, log, sinh, cosh, tgh, csch, sech, cotgh, asinh, acosh, atgh, acotgh, acsch, asech, arg, polar.</P>
+
+<P><U>Result format</U></P>
+
+<P>Norm - normal, point is between an integer and a fractional part</P>
+
+<P>Sci - scientific, point follows the first digit</P>
+
+<P>Eng - engineering, similar to Sci, but the exponent is divisible by 3</P>
+
+<P>Fix - similar to Norm, but a fractional part has fixed lenght </P>
+
+<P><U>Macros</U></P>
+
+<P>Any text can be saved as a macro. It is usually used to store mathematic or physical formulas. There should be assignments to variables at the beginning of a formula. Example: volume of a cylinder can be written as <CODE>r=1;v=2;v*pi*r^2</CODE>. Then you can use keyboard shortcuts Ctrl+1 and Ctrl+2 to easily change values of variables <CODE>r</CODE>, <CODE>v</CODE>.</P>
+
+<P>Macros are saved automatically when you close the calculator and they are reloaded when you start it again. You can choose a file for macros in the menu File / Save macros as.</P>
+
+<P>Macro autostart is executed automatically when the calculator is started or a macro file is opened. Macro autostart should contain only assignments to variables.</P>
+
+<P>You can create submenus in the menu Macro. Rename a macro and use the backslash character to separate a submenu name and an item name. Submenus can be nested to any deep.</P>
+
+<P><U>Custom buttons</U></P>
+
+<P>You can make your own buttons. Just create a text file with CBT extension and then open it from menu File / Open buttons. </P>
+
+<P>The first line of the file contains text  PRECCALC 1.  There are six numbers on the second line that mean coordinate x, coordinate y, number of columns, number of rows, button width and button height. There are commas after the second and the fourth number. Following lines are captions for (number of columns)*(number of rows) buttons. There are two lines for each button, the second line is used when the Inv is checked. There can be many groups of buttons in the file. Each group starts with a line containing six numbers. Button widht and height is not required if it is the same as in previos group. </P>
+
+<P>Use Ctrl+R shortcut to reload the last opened buttons file.</P>
+
+</BODY>
+</HTML>

@@ -1,0 +1,42 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+<HTML>
+<HEAD>
+<META HTTP-EQUIV="Content-Type" Content="text/html; charset=windows-1250">
+<TITLE>Časová složitost</TITLE>
+</HEAD>
+
+<BODY BGCOLOR="#FFFFFF" TEXT="#000000">
+
+<OBJECT TYPE="application/x-oleobject" CLASSID="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e">
+	<PARAM NAME="Keyword" VALUE="čas">
+	<PARAM NAME="Keyword" VALUE="složitost">
+</OBJECT>
+
+<P><A NAME="times"></A><B>Časová složitost</B></P>
+
+<P>n značí přesnost výsledku, m značí délku vstupního operandu
+
+<UL>
+	<LI>(konst) : trunc, real, conjg, count, imp, eqv, nand, nor<BR><BR></LI>
+
+	<LI>(n) : +, -, and,or,xor,not,bitnand,bitnor,bitimp,biteqv, lsh,rsh,rshi, ctof,ftoc, gradtodeg,degtograd, dms,todms, min,max, med,mode, sum,ave, round,floor,ceil,frac, complex,imag<BR><BR></LI>
+
+	<LI>(n^1.585) :  *, degtorad, gradtorad, rand,random, sumq,aveq,var,vara<BR><BR></LI>
+
+	<LI>(n^2) :  /, div, mod, sqrt, hypot, abs, sign, fibon, radtodeg,radtograd, stdev,stdeva, print<BR><BR></LI>
+
+	<LI>(méně než n^2.585) :  exp, sin,cos,tan, cosec,sec,cotg, sinh,cosh,tanh, csch,sech,cotgh, polar<BR><BR></LI>
+
+	<LI>(n^2.585) :  ^, #, ln,log,logn, asin,acos,atan, acsc,asec,acotg, asinh,acosh,atanh, acsch,asech,acotgh, angle, arg<BR><BR></LI>
+
+	<LI>(n^2 až n^3) :  pi<BR><BR></LI>
+
+	<LI>(m^3) :  gcd, lcm<BR><BR></LI>
+
+	<LI>(exp m) :  prime, isprime, divisor, !, !!, combin, permut</LI>
+</UL>
+
+<P>Pro některé vstupní hodnoty (například zlomky) může být výpočet rychlejší. Například násobení nebo dělení reálného čísla zlomkem je v&nbsp;čase (n). </P>
+
+</BODY>
+</HTML>

@@ -1,0 +1,156 @@
+<HTML>
+<!-- Sitemap 1.0 -->
+<OBJECT type="text/site properties">
+</OBJECT>
+<UL>
+	<LI> <OBJECT type="text/sitemap">
+		<param name="Keyword" value="=">
+		<param name="Name" value="Syntaxe">
+		<param name="Local" value="html/syntax.htm">
+		</OBJECT>
+	<LI> <OBJECT type="text/sitemap">
+		<param name="Keyword" value="bin">
+		<param name="Name" value="Ovládání">
+		<param name="Local" value="html/usage.htm">
+		</OBJECT>
+	<LI> <OBJECT type="text/sitemap">
+		<param name="Keyword" value="C">
+		<param name="Name" value="Ovládání">
+		<param name="Local" value="html/usage.htm">
+		</OBJECT>
+	<LI> <OBJECT type="text/sitemap">
+		<param name="Keyword" value="dec">
+		<param name="Name" value="Ovládání">
+		<param name="Local" value="html/usage.htm">
+		</OBJECT>
+	<LI> <OBJECT type="text/sitemap">
+		<param name="Keyword" value="deg">
+		<param name="Name" value="Ovládání">
+		<param name="Local" value="html/usage.htm">
+		</OBJECT>
+	<LI> <OBJECT type="text/sitemap">
+		<param name="Keyword" value="Del">
+		<param name="Name" value="Ovládání">
+		<param name="Local" value="html/usage.htm">
+		</OBJECT>
+	<LI> <OBJECT type="text/sitemap">
+		<param name="Keyword" value="E">
+		<param name="Name" value="Syntaxe">
+		<param name="Local" value="html/syntax.htm">
+		</OBJECT>
+	<LI> <OBJECT type="text/sitemap">
+		<param name="Keyword" value="eng">
+		<param name="Name" value="Ovládání">
+		<param name="Local" value="html/usage.htm">
+		</OBJECT>
+	<LI> <OBJECT type="text/sitemap">
+		<param name="Keyword" value="EXE">
+		<param name="Name" value="Ovládání">
+		<param name="Local" value="html/usage.htm">
+		</OBJECT>
+	<LI> <OBJECT type="text/sitemap">
+		<param name="Keyword" value="fix">
+		<param name="Name" value="Ovládání">
+		<param name="Local" value="html/usage.htm">
+		</OBJECT>
+	<LI> <OBJECT type="text/sitemap">
+		<param name="Keyword" value="funkce">
+		<param name="Name" value="Poehled funkcí">
+		<param name="Local" value="html/reference.htm">
+		</OBJECT>
+	<LI> <OBJECT type="text/sitemap">
+		<param name="Keyword" value="goto">
+		<param name="Name" value="Syntaxe">
+		<param name="Local" value="html/syntax.htm">
+		</OBJECT>
+	<LI> <OBJECT type="text/sitemap">
+		<param name="Keyword" value="grad">
+		<param name="Name" value="Ovládání">
+		<param name="Local" value="html/usage.htm">
+		</OBJECT>
+	<LI> <OBJECT type="text/sitemap">
+		<param name="Keyword" value="hex">
+		<param name="Name" value="Ovládání">
+		<param name="Local" value="html/usage.htm">
+		</OBJECT>
+	<LI> <OBJECT type="text/sitemap">
+		<param name="Keyword" value="Inv">
+		<param name="Name" value="Ovládání">
+		<param name="Local" value="html/usage.htm">
+		</OBJECT>
+	<LI> <OBJECT type="text/sitemap">
+		<param name="Keyword" value="licence">
+		<param name="Name" value="Licence">
+		<param name="Local" value="html/licence.htm">
+		</OBJECT>
+	<LI> <OBJECT type="text/sitemap">
+		<param name="Keyword" value="makra">
+		<param name="Name" value="Ovládání">
+		<param name="Local" value="html/usage.htm">
+		</OBJECT>
+	<LI> <OBJECT type="text/sitemap">
+		<param name="Keyword" value="Odstranit nastavení">
+		<param name="Name" value="Instalace">
+		<param name="Local" value="html/instal.htm">
+		</OBJECT>
+	<LI> <OBJECT type="text/sitemap">
+		<param name="Keyword" value="operace">
+		<param name="Name" value="Poehled funkcí">
+		<param name="Local" value="html/reference.htm">
+		</OBJECT>
+	<LI> <OBJECT type="text/sitemap">
+		<param name="Keyword" value="pooadí">
+		<param name="Name" value="Priorita operací">
+		<param name="Local" value="html/precedence.htm">
+		</OBJECT>
+	<LI> <OBJECT type="text/sitemap">
+		<param name="Keyword" value="precedence">
+		<param name="Name" value="Priorita operací">
+		<param name="Local" value="html/precedence.htm">
+		</OBJECT>
+	<LI> <OBJECT type="text/sitemap">
+		<param name="Keyword" value="print">
+		<param name="Name" value="Syntaxe">
+		<param name="Local" value="html/syntax.htm">
+		</OBJECT>
+	<LI> <OBJECT type="text/sitemap">
+		<param name="Keyword" value="priorita">
+		<param name="Name" value="Priorita operací">
+		<param name="Local" value="html/precedence.htm">
+		</OBJECT>
+	<LI> <OBJECT type="text/sitemap">
+		<param name="Keyword" value="rad">
+		<param name="Name" value="Ovládání">
+		<param name="Local" value="html/usage.htm">
+		</OBJECT>
+	<LI> <OBJECT type="text/sitemap">
+		<param name="Keyword" value="return">
+		<param name="Name" value="Syntaxe">
+		<param name="Local" value="html/syntax.htm">
+		</OBJECT>
+	<LI> <OBJECT type="text/sitemap">
+		<param name="Keyword" value="sci">
+		<param name="Name" value="Ovládání">
+		<param name="Local" value="html/usage.htm">
+		</OBJECT>
+	<LI> <OBJECT type="text/sitemap">
+		<param name="Keyword" value="složitost">
+		<param name="Name" value="Easová složitost">
+		<param name="Local" value="html/times.htm">
+		</OBJECT>
+	<LI> <OBJECT type="text/sitemap">
+		<param name="Keyword" value="syntaxe">
+		<param name="Name" value="Syntaxe">
+		<param name="Local" value="html/syntax.htm">
+		</OBJECT>
+	<LI> <OBJECT type="text/sitemap">
+		<param name="Keyword" value="verze">
+		<param name="Name" value="Historie zmin">
+		<param name="Local" value="html/history.htm">
+		</OBJECT>
+	<LI> <OBJECT type="text/sitemap">
+		<param name="Keyword" value="eas">
+		<param name="Name" value="Easová složitost">
+		<param name="Local" value="html/times.htm">
+		</OBJECT>
+</UL></HTML>

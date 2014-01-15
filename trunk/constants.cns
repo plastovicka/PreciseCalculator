@@ -1,0 +1,41 @@
+
+[Speed of light [m/s]]
+299792458 
+[g [m/s^2]]
+9.80665 
+[Gravitational [m^3/s^2.kg]]
+6.6742 E-11 
+[Avogadro [1/mol]]
+6.0221415 E23 
+[Universal gas [J/mol.K]]
+8.314472 
+[Molar volume of gas [m^3/mol]]
+0.022413996 
+[Permitivity of vacuum [F/m]]
+(1/(299792458^2*4e-7*pi))
+[Permeability of vacuum [H/m]]
+(4e-7*pi)
+[Faraday [C/mol]]
+96485.3383 
+[Elementary charge [C]]
+1.60217653 E-19 
+[Atomic mass [kg]]
+1.66053886 E-27 
+[Electron mass [kg]]
+9.1093826 E-31 
+[Proton mass [kg]]
+1.67262171 E-27 
+[Neutron mass [kg]]
+1.67492728 E-27 
+[Rydberg [1/m]]
+10973731.568525 
+[Planck [J.s]]
+6.6260693 E-34 
+[Boltzmann [J/K]]
+1.3806505 E-23 
+[Stefan-Boltzmann [W/m^2.K^4]]
+5.6704 E-8 
+[Bohr magneton [J/T]]
+9.27400949 E-24 
+[Nuclear magneton [J/T]]
+5.05078343 E-27 

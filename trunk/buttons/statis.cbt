@@ -1,0 +1,91 @@
+PRECCALC 1
+0 0, 4 2, 46 27
+sum(
+sumq(
+stdev(
+stdeva(
+min(
+rand
+max(
+random
+ave(
+aveq(
+var(
+vara(
+med(
+count(
+mode(
+
+0 60, 4 4, 46 28
+round 
+int 
+frac 
+trunc 
+!
+ceil 
+ nCr 
+ nPr 
+sqrt 
+^2
+exp 
+^3
+ln 
+exp 
+log 
+10^
+pi
+dms 
+sin 
+asin 
+cos 
+acos 
+tan 
+atan 
+,
+abs 
+(
+
+)
+
+^
+#
+0 177, 5 4, 37 32
+7
+
+8
+
+9
+
+Del
+
+C
+
+4
+
+5
+
+6
+
+*
+
+/
+ mod 
+1
+
+2
+
+3
+
++
+
+-
+
+0
+=
+.
+; 
+ E
+,
+Ans
+ i
+EXE
