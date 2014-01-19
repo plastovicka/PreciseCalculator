@@ -2371,7 +2371,8 @@ local	e2
 @@1:	mov	[rdx-8],rax	;exponent
 ;zjisti délku výsledku
 	mov	rax,[rdx-32]
-	add	rax,10          ;zvìtši délku kvùli pøesnosti
+MULPREC	equ	10
+	add	rax,MULPREC          ;zvìtši délku kvùli pøesnosti
 	mov	[rdx-32],rax
 	mov	[rdx-24],rax
 	mov	rsi,[rbx-24]
@@ -2464,7 +2465,7 @@ local	e2
 	push	rdi
 	call	carry
 	pop	rdi
-	sub	qword ptr [rdi-32],10
+	sub	qword ptr [rdi-32],MULPREC
 	call	round
 @@ret:	ret
 MULTX1	endp
