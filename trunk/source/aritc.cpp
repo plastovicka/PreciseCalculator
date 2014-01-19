@@ -1507,7 +1507,7 @@ void _stdcall COSX(Pint y, const Pint x0)
 				DIVI1(y, 2);
 				return;
 			case 60: //cos(deg 60)=1/2
-				COPYX(y,half);
+				COPYX(y, half);
 				return;
 			case 90: //cos(deg 90)=0
 				ZEROX(y);

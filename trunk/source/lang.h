@@ -1,9 +1,9 @@
 /*
  (C) Petr Lastovicka
- 
+
  This program is free software; you can redistribute it and/or
  modify it under the terms of the GNU General Public License.
-*/
+ */
 #ifndef langH
 #define langH
 
@@ -15,7 +15,7 @@ void initLang();
 int setLang(int cmd);
 HMENU loadMenu(char *name, int *subId);
 void loadMenu(HWND hwnd, char *name, int *subId);
-void changeDialog(HWND &wnd, int x,int y,LPCTSTR dlgTempl, DLGPROC dlgProc);
+void changeDialog(HWND &wnd, int x, int y, LPCTSTR dlgTempl, DLGPROC dlgProc);
 void setDlgTexts(HWND hDlg);
 void setDlgTexts(HWND hDlg, int id);
 void getExeDir(char *fn, char *e);
