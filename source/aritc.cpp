@@ -762,44 +762,52 @@ void _stdcall SQRX(Pint z, const Pint x)
 }
 #endif
 //-------------------------------------------------------------------
-void _stdcall EXPX(Pint y, Pint x0)
+void _stdcall EXPX(Pint y, const Pint x0)
 {
-	Tint ex, n, sgn;
-	Pint z, t, u, w, x;
+	Tint ex, n, sgn, k;
+	Pint z, t, u, w, x, x1;
 
 	x=x0;
 	SETX(y, 1);
 	if(isZero(x)) return; //x^0=1
-	t=ALLOCX(y[-4]);
-	z=y;
+	ALLOCN(3, y[-4]+1, &u, &t, &x1);
 	ex=0;
 	sgn=x[-2];
 	if(x[-1]>0 && (!isFraction(x)
 		|| Tuint(x[0])/20/y[-4] >= Tuint(x[1]))){
-		x[-2]=0;
 		getln2(y[-4]);
-		if(x[-1]>1 || x[-1]==1 && CMPX(x0, lnBase)>0){
-			x=ALLOCX(y[-4]);
-			//zjisti exponent výsledku
-			DIVX(t, x0, lnBase);
+		x[-2]=0;
+		if(x[-1]>1 || x[-1]==1 && CMPX(x, lnBase)>0){
+			//calculate exponent
+			DIVX(t, x, lnBase);
 			ex=t[0];
 			if(t[-1]>1 || ex<0){
-				x0[-2]=sgn;
+				x[-2]=sgn;
 				overflow();
-				FREEX(x);
-				FREEX(t);
+				FREEX(u);
 				y[-1]=ExpMax;
 				return;
 			}
 			//x-=ex*ln(base)
 			MULTI(t, lnBase, ex);
-			MINUSX(x, x0, t);
-			x[-2]=sgn;
+			MINUSX(x1, x, t);
+			x1[-2]=sgn;
+			x=x1;
 		}
 		x0[-2]=sgn;
 	}
 	//x<=lnBase
-	u=ALLOCX(y[-4]);
+
+	//exp(x)= (exp(x/2))^2
+#ifdef ARIT64
+	k=30;
+#else
+	k=20;
+#endif
+	DIVI(x1, x, ((Tuint)1)<<k);
+	x=x1;
+
+	z=y;
 	COPYX(u, x);
 	PLUSX(y, one, x);
 	n=2;
@@ -810,13 +818,16 @@ void _stdcall EXPX(Pint y, Pint x0)
 		w=t; t=z; z=w;
 		n++;
 	} while((u[-1]>=z[-1]-z[-3] || u[-1]>=0) && !isZero(u) && !error);
+
+	while(--k >= 0 && !error)
+	{
+		SQRX(t, z);
+		w=t; t=z; z=w;
+	}
 	COPYX(y, z);
 	//y<=Base
 	SCALEX(y, (sgn) ? -ex : ex);
-	if(x!=x0) FREEX(x);
-	if(z!=y) FREEX(z);
 	FREEX(u);
-	if(t!=y) FREEX(t);
 }
 //-------------------------------------------------------------------
 //ln x=2*(t+t^3/3+t^5/5+t^7/7+t^9/9+...), t=(x-1)/(x+1)
@@ -889,7 +900,7 @@ void _stdcall LNX(Pint y, const Pint x0)
 		} while((t[-1]>=z[-1]-z[-3] || t[-1]>=0) && !isZero(t) && !error);
 		MULTI1(z, 2);
 	}
-	if(ex){
+	if(ex && !error){
 		getln2(y[-4]);
 		if(ex<0){
 			MULTI(t, lnBase, -ex);
@@ -901,7 +912,7 @@ void _stdcall LNX(Pint y, const Pint x0)
 		}
 		w=v; v=z; z=w;
 	}
-	if(num2){
+	if(num2 && !error){
 		getln2(y[-4]);
 		MULTIN(t, ln2, num2);
 		MINUSX(v, z, t);
@@ -913,12 +924,12 @@ void _stdcall LNX(Pint y, const Pint x0)
 
 //-------------------------------------------------------------------
 #if 0
-void _stdcall INVERSEROOTI(Pint y,Pint x,Tuint n)
+void _stdcall INVERSEROOTI(Pint y, Pint x, Tuint n)
 {
-	Pint t,u,r,a,w;
+	Pint t, u, r, a, w;
 	Tint precision = 1;
 
-	a=ALLOCN(3,y[-4],&t,&u,&r);
+	a=ALLOCN(3, y[-4], &t, &u, &r);
 
 	SETX(r,1);
 	DIVI1(r,2);
@@ -956,7 +967,7 @@ void _stdcall SQRTRX(Pint y,const Pint x)
 {
 	Pint t=ALLOCX(y[-4]);
 	INVERSEROOTI(t,x,2);
-	MULTX(y,t,x);
+	MULTX(y, t, x);
 	FREEX(t);
 }
 #endif
@@ -1697,7 +1708,7 @@ void _stdcall COSX0(Pint y, const Pint x)
 	DIVI(t, x, 1<<k);
 	ONEX(u);
 	SINCOS(u, t, 1, false);
-	while(--k >= 0){
+	while(--k >= 0 && !error){
 		SQRX(t, u);
 		MULTI1(t, 2);
 		MINUSX(k ? u : y, t, one);
