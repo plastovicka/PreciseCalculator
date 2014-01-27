@@ -15,9 +15,9 @@ ideal
 p386
 model flat,pascal
 
-extrn	_Alloc:proc, _Free:proc, _cerror:proc
+extrn	_Alloc:proc, _Free:proc, _cerror:proc, _MULTX@12:proc 
 extrn	_base:dword, _baseIn:dword, _error:dword, _dwordDigits:dword
-global	_overflow:proc
+global	_overflow:proc;, MULTX:proc
 
 RES	equ	52
 HED	equ	16
@@ -38,6 +38,20 @@ dwordMax dd	0,0, 0, 3486784401, 0, 1220703125, 2176782336, 1977326743
 	dd	1073741824, 1291467969, 1544804416, 1838265625, 2176782336
 
 codeseg
+;-------------------------------------
+proc	@normx
+uses	esi,edi
+	mov	edi,eax
+	call	norm
+	ret
+endp	@normx
+;-------------------------------------
+proc	@addii
+	add	eax,edx
+	jno	@@r
+	call	_overflow	
+@@r:	ret
+endp	@addii
 ;-------------------------------------
 ;[edi]:=[esi]
 ;nemÏnÌ esi,edi,ebx
@@ -2259,221 +2273,6 @@ local	e2
 @@ret:	ret
 endp	MULTX1
 ;-------------------------------------
-;rekurzivnÌ algoritmus
-; x = x0 + x1*B
-; y = y0 + y1*B
-; xy = (B^2 + B)x1*y1 + B(x1-x0)*(y0-y1) + (B + 1)x0*y0
-; sloûitost n^(ln3/ln2) = n^1.58496
-proc	MULTX
-arg	y,x,z
-uses	esi,edi,ebx
-local	x0,y0,t1,t2,t3,n1,n2,n01,n02,xsgn,ysgn
-MULLIM	equ	50
-;zkontroluj, jestli x,y nejsou moc kr·tkÈ
-	mov	eax,[x]
-	mov	ecx,[eax-12]
-	cmp	ecx,MULLIM
-	mov	[n01],ecx
-	jl	@@1
-	mov	eax,[y]
-	mov	edx,[eax-12]
-	cmp	edx,MULLIM
-	mov	[n02],edx
-	jl	@@1
-;zkraù x,y, pokud jsou delöÌ neû v˝sledek
-	mov	eax,[z]
-	mov	esi,[eax-16]
-	inc	esi
-	cmp	esi,ecx
-	jae	@@5
-	mov	ecx,esi
-@@5:	mov	[n1],ecx
-	cmp	esi,edx
-	jae	@@6
-	mov	edx,esi
-@@6:	mov	[n2],edx
-	mov	ebx,edx
-	add	ebx,ecx
-;ecx=n1, edx=n2, ebx=n1+n2, esi=[z-16]+1
-;zkontroluj, jestli jsou x,y zhruba stejnÏ dlouhÈ
-	shl	ecx,1
-	lea	eax,[edx+edx*2]
-	cmp	ecx,eax
-	jg	@@1
-	shl	edx,1
-	mov	ecx,[n1]
-	lea	ecx,[ecx+ecx*2]
-	cmp	edx,ecx
-	jle	@@2
-@@1:	push	[y]
-	push	[x]
-	push	[z]
-	call	MULTX1
-	ret
-@@2:	cmp	esi,ebx
-	jb	@@a
-	mov	esi,ebx
-;alokuj pomocnÈ promÏnnÈ
-@@a:	
-	lea	eax,[t3]
-	push	eax
-	lea	eax,[t2]
-	push	eax
-	lea	eax,[t1]
-	push	eax
-	lea	eax,[y0]
-	push	eax
-	lea	eax,[x0]
-	push	eax
-	push	esi
-	push	5
-	call	ALLOCNX
-	add	esp,28
-;inicializuj x,y,x0,y0
-	inc	ebx
-	shr	ebx,2
-	mov	esi,[x]
-	mov	edi,[y]
-;uchovej star· znamÈnka a nov· dej kladn·
-	mov	eax,[esi-8]
-	mov	[xsgn],eax
-	mov	eax,[edi-8]
-	mov	[ysgn],eax
-	and	[dword edi-8],0
-	and	[dword esi-8],0
-;dÈlky
-	mov	eax,[y0]
-	mov	[eax-12],ebx
-	mov	eax,[x0]
-	mov	[eax-12],ebx
-	mov	eax,[n1]
-	sub	eax,ebx
-	mov	[esi-12],eax
-	mov	eax,[n2]
-	sub	eax,ebx
-	mov	[edi-12],eax
-;exponenty
-;x0[-1]:=x[-1]-n1+b;  y0[-1]:=y[-1]-n2+b
-	mov	eax,[esi-4]
-	sub	eax,[n1]
-	add	eax,ebx
-	mov	ecx,[x0]
-	mov	[ecx-4],eax
-	mov	eax,[edi-4]
-	sub	eax,[n2]
-	add	eax,ebx
-	mov	ecx,[y0]
-	mov	[ecx-4],eax
-;x1[-1]:=x[-1]-b;  y1[-1]:=y[-1]-b;
-	sub	[esi-4],ebx
-	cmp	esi,edi
-	jz	@@3
-	sub	[edi-4],ebx
-;do x0 okopÌruj spodnÌ polovinu x
-@@3:	mov	eax,[n1]
-	lea	esi,[esi+eax*4]
-	mov	ecx,ebx
-	shl	ecx,2
-	sub	esi,ecx
-	mov	edi,[x0]
-	mov	ecx,ebx
-	cld
-	rep movsd
-;normalizace
-	mov	edi,[x0]
-	call	norm
-;do y0 okopÌruj spodnÌ polovinu y
-	mov	edx,[y]
-	mov	eax,[n2]
-	lea	esi,[edx+eax*4]
-	mov	ecx,ebx
-	shl	ecx,2
-	sub	esi,ecx
-	mov	edi,[y0]
-	mov	ecx,ebx
-	rep movsd
-;normalizace
-	mov	edi,[y0]
-	call	norm
-;rekurze a seËtenÌ dÌlËÌch v˝sledk˘
-	mov	esi,[x]
-	mov	edi,[y]
-;t3:=x1-x0
-	push	[x0]
-	push	esi
-	push	[t3]
-	call	MINUSX
-;t1:=y0-y1
-	push	edi
-	push	[y0]
-	push	[t1]
-	call	MINUSX
-;t2:=(x1-x0)*(y0-y1)
-	push	[t1]
-	push	[t3]
-	push	[t2]
-	call	MULTX
-;t3:=x0*y0
-	push	[y0]
-	push	[x0]
-	push	[t3]
-	call	MULTX
-;t1:= B*(x1-x0)*(y0-y1) + x0*y0
-	mov	ecx,[t2]
-	add	[ecx-4],ebx
-	push	[t3]
-	push	[t2]
-	push	[t1]
-	call	PLUSX
-;t2:= B*(x1-x0)*(y0-y1) + (B+1)*x0*y0
-	mov	ecx,[t3]
-	add	[ecx-4],ebx
-	push	[t3]
-	push	[t1]
-	push	[t2]
-	call	PLUSX
-;t3:=x1*y1
-	push	edi
-	push	esi
-	push	[t3]
-	call	MULTX
-;t1:= B*x1*y1 + B*(x1-x0)*(y0-y1) + (B+1)*x0*y0
-	mov	ecx,[t3]
-	add	[ecx-4],ebx
-	push	[t3]
-	push	[t2]
-	push	[t1]
-	call	PLUSX
-;z:= (B^2+B)*x1*y1 + B*(x1-x0)*(y0-y1) + (B+1)*x0*y0
-	mov	ecx,[t3]
-	add	[ecx-4],ebx
-	push	[t3]
-	push	[t1]
-	push	[z]
-	call	PLUSX
-;znamÈnko
-	mov	eax,[xsgn]
-	mov	[esi-8],eax
-	mov	edx,[ysgn]
-	mov	[edi-8],edx
-	xor	eax,edx
-	mov	ecx,[z]
-	mov	[ecx-8],eax
-;obnov parametry x,y
-	mov	ecx,[n01]
-	mov	[esi-12],ecx
-	mov	edx,[n02]
-	mov	[edi-12],edx
-	add	[esi-4],ebx
-	cmp	esi,edi
-	jz	@@f
-	add	[edi-4],ebx
-;uvolni pomocnÈ promÏnnÈ
-@@f:	mov	eax,[x0]
-	call	@freex
-	ret
-endp	MULTX
-;-------------------------------------
 ;vracÌ zbytek dÏlenÌ 32-bitov˝m ËÌslem
 ;nem· smysl pro re·ln˝ operand
 proc	MODI
@@ -3499,11 +3298,11 @@ proc	_overflow
 endp	_overflow
 ;-------------------------------------
 ;calling convention _stdcall
+MULTX:  	jmp	_MULTX@12
 _ALLOCN:	jmp	ALLOCNX
 _COPYX@8:	jmp	COPYX
 _WRITEX1@8:	jmp	WRITEX1
 _READX1@8:	jmp	READX1
-_MULTX@12:	jmp	MULTX
 _MULTX1@12:	jmp	MULTX1
 _MULTI@12:	jmp	MULTI
 _MULTIN@12:	jmp	MULTIN
@@ -3543,6 +3342,8 @@ _XORU@12:	jmp	XORU
 		jmp	@onex
 @FRACTOX@4:	mov	eax,ecx
 		jmp	@fractox
+@NORMX@4:	mov	eax,ecx
+		jmp	@normx
 @NEGX@4:	mov	eax,ecx
 		jmp	@negx
 @ABSX@4:	mov	eax,ecx
@@ -3561,18 +3362,23 @@ _XORU@12:	jmp	XORU
 		jmp	@fracx
 @SCALEX@8:	mov	eax,ecx
 		jmp	@scalex
+@ADDII@8:	mov	eax,ecx
+		jmp	@addii
+
 ;-------------------------------------
+;Borland C++ Builder
 public	@allocx,@freex,@newcopyx,COPYX,WRITEX1,READX1
-public	@setx,@setxn,@zerox,@onex,@fractox
-public	@negx,@absx,@signx,@truncx,@intx,@ceilx,@roundx,@fracx,@scalex
+public	@setx,@setxn,@zerox,@onex,@fractox,@normx
+public	@negx,@absx,@signx,@truncx,@intx,@ceilx,@roundx,@fracx,@scalex,@addii
 public	MULTX,MULTX1,MULTI,MULTIN,MULTI1,DIVX,DIVI,MODI
 public	PLUSX,MINUSX,PLUSU,MINUSU,ANDU,ORU,XORU
 public	CMPX,CMPU,FACTORIALI,FFACTI,SQRTX,SQRTI,PI,ALLOCNX
 
+;Microsoft Visual C++
 public	@ALLOCX@4,@FREEX@4,@NEWCOPYX@4,_COPYX@8,_WRITEX1@8,_READX1@8
-public	@SETX@8,@SETXN@8,@ZEROX@4,@ONEX@4,@FRACTOX@4
-public	@NEGX@4,@ABSX@4,@SIGNX@4,@TRUNCX@4,@INTX@4,@CEILX@4,@ROUNDX@4,@FRACX@4,@SCALEX@8
-public	_MULTX@12,_MULTX1@12,_MULTI@12,_MULTIN@12,_MULTI1@8,_DIVX@12,_DIVI@12,_MODI@8
+public	@SETX@8,@SETXN@8,@ZEROX@4,@ONEX@4,@FRACTOX@4,@NORMX@4
+public	@NEGX@4,@ABSX@4,@SIGNX@4,@TRUNCX@4,@INTX@4,@CEILX@4,@ROUNDX@4,@FRACX@4,@SCALEX@8,@ADDII@8
+public	_MULTX1@12,_MULTI@12,_MULTIN@12,_MULTI1@8,_DIVX@12,_DIVI@12,_MODI@8
 public	_PLUSX@12,_MINUSX@12,_PLUSU@12,_MINUSU@12,_ANDU@12,_ORU@12,_XORU@12
 public	_CMPX@8,_CMPU@8,_FACTORIALI@8,_FFACTI@8,_SQRTX@8,_SQRTI@8,_PI@4,_ALLOCN
 

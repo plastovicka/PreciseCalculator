@@ -64,6 +64,7 @@ extern "C"{
 	void _fastcall SETX(Pint x, Tuint n); //assign unsigned int
 	void _fastcall ZEROX(Pint x);  //assign 0
 	void _fastcall ONEX(Pint x);   //assign 1
+	void _fastcall NORMX(Pint x);  //normalize mantissa
 
 	void _fastcall NEGX(Pint x);   //change sign
 	void _fastcall ABSX(Pint x);   //positive sign
@@ -75,6 +76,7 @@ extern "C"{
 	void _fastcall FRACX(Pint x);  //part after decimal point
 	void _fastcall SCALEX(Pint x, Tint n);  //add n to exponent
 	void _fastcall FRACTOX(Pint x); //convert fraction to real number
+	Tint _fastcall ADDII(Tint a, Tint b);
 
 	int  _stdcall CMPX(const Pint a, const Pint b); //compare, return -1,0,+1
 	int  _stdcall CMPU(const Pint a, const Pint b); //ignore sign and compare
