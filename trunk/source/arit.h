@@ -46,7 +46,7 @@ struct Complex {
 };
 
 /*
- result must be at different memory locations than input parameters (except functions COPYX, MULTI, DIVI)
+ result must be at different memory locations than input parameters (except functions COPYX, MULTI, DIVI, LSHI)
  */
 extern "C"{
 	Pint _fastcall ALLOCX(Tint len); //allocate number (len is in Tint units), initialize to zero, return pointer to mantissa
@@ -96,7 +96,7 @@ extern "C"{
 	void _stdcall LSHX(Pint y, const Pint a, const Pint b);
 	void _stdcall LSHI(Pint y, const Pint a, Tint n);  //shift n bits left or -n bits right
 
-	void _stdcall EXPX(Pint y, Pint x);          //e^x
+	void _stdcall EXPX(Pint y, const Pint x);          //e^x
 	void _stdcall LNX(Pint y, const Pint x);     //natural logarithm
 	void _stdcall INVERSEROOTI(Pint y, Pint x, Tuint n);
 	void _stdcall POWX(Pint y, const Pint a, const Pint b); //a^b
