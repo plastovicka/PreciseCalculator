@@ -63,7 +63,7 @@ double dwordDigits[37]={0, 0, // 32*ln(2)/ln(base)
 7.0740713426401198, 6.9793373435370096, 6.8908249291742889,
 6.8078737137076208, 6.7299173714288791, 6.6564671256483026,
 6.5870986387339023, 6.5214415068961982, 6.4591707706271952,
-6.3999999999999995, 6.3436756214579368, 6.2899722314503235, 
+6.3999999999999995, 6.3436756214579368, 6.2899722314503235,
 6.2386887006011618, 6.1896449157526652
 #else
 64, 40.379504228573276, 32,
@@ -141,11 +141,6 @@ void _stdcall RANDOMX(Pint y, const Pint x)
 	RANDX(y);
 	MULTI1(y, toDword(x));
 	TRUNCX(y);
-}
-
-void _stdcall SQRX(Pint y, const Pint x)
-{
-	MULTX(y, x, x);
 }
 
 //-------------------------------------------------------------------
@@ -351,7 +346,7 @@ void TuintToStr(Tuint x, char *buf)
 #ifdef ARIT64
 	_ui64toa(x, buf, base);
 #else
-	_ultoa(x,buf,base);
+	_ultoa(x, buf, base);
 #endif
 }
 
@@ -494,6 +489,278 @@ char * _stdcall AWRITEX(const Pint x, int digits)
 	WRITEX(buf, x, digits);
 	return buf;
 }
+//-------------------------------------------------------------------
+//Karatsuba algorithm
+// x = x0 + x1*B
+// y = y0 + y1*B
+// x*y = (B^2+B)*x1*y1 + B*(x1-x0)*(y0-y1) + (B+1)*x0*y0
+// complexity O(n^(ln3/ln2)) = O(n^1.585)
+void _stdcall MULTX2(Pint z, const Pint x, const Pint y)
+{
+	Tint n, n1, n2, n01, n02, B, xsgn, ysgn, xexp, yexp;
+	Pint x0, y0, t1, t2, t3;
+
+	n01=x[-3]; n02=y[-3];
+	const int MULT2LIM = 50;
+	if(n01<MULT2LIM || n02<MULT2LIM || 2*n02>3*n01 || 2*n01>3*n02){
+		MULTX1(z, x, y);
+		return;
+	}
+
+	n=z[-4]+1;
+	n1=min(n, n01);
+	n2=min(n, n02);
+	B=n1+n2;
+	if(n>B) n=B;
+	ALLOCN(5, n, &x0, &y0, &t1, &t2, &t3);
+
+	B=(B+1)/4;
+
+	//sign
+	xsgn=x[-2]; ysgn=y[-2];
+	x[-2]=0; y[-2]=0;
+
+	//precision
+	x0[-3]=B; y0[-3]=B;
+	x[-3]=n1-B; y[-3]=n2-B;
+
+	//exponent
+	xexp=x[-1]; yexp=y[-1];
+	x0[-1]= B-n1;
+	y0[-1]= B-n2;
+	x[-1]=y[-1]=-B;
+
+	memcpy(x0, x + (n1-B), B*(TintBits/8));
+	NORMX(x0);
+	memcpy(y0, y + (n2-B), B*(TintBits/8));
+	NORMX(y0);
+
+	MINUSX(t3, x, x0);  //t3= x1-x0
+	MINUSX(t1, y0, y);  //t1= y0-y1
+	MULTX2(t2, t3, t1);//t2= (x1-x0)*(y0-y1)
+	MULTX2(t3, x0, y0);//t3= x0*y0
+	t2[-1]+=B;
+	PLUSX(t1, t3, t2);  //t1= B*(x1-x0)*(y0-y1) + x0*y0
+	t3[-1]+=B;
+	PLUSX(t2, t1, t3);  //t2= B*(x1-x0)*(y0-y1) + (B+1)*x0*y0
+	MULTX2(t3, x, y);  //t3= x1*y1
+	t3[-1]+=B;
+	PLUSX(t1, t2, t3);  //t1= B*x1*y1 + B*(x1-x0)*(y0-y1) + (B+1)*x0*y0
+	t3[-1]+=B;
+	PLUSX(z, t1, t3);   //z= (B^2+B)*x1*y1 + B*(x1-x0)*(y0-y1) + (B+1)*x0*y0
+
+	x[-2]=xsgn; y[-2]=ysgn;
+	z[-2]=xsgn^ysgn;
+	x[-3]=n01; y[-3]=n02;
+	x[-1]=xexp; y[-1]=yexp;
+	z[-1]=ADDII(z[-1], ADDII(xexp, yexp));
+
+	FREEX(x0);
+}
+//-------------------------------------------------------------------
+#ifdef ARIT64
+const int MULT3LIM = 730;
+#else
+const int MULT3LIM = 450;
+#endif
+
+//Toom–Cook (Toom-3) algorithm
+// x = x0 + x1*B + x2*B^2
+// y = y0 + y1*B + y2*B^2
+// complexity O(n^(ln5/ln3)) = O(N^1.465)
+void _stdcall MULTX(Pint z, const Pint x, const Pint y)
+{
+	Tint n, n1, n2, n01, n02, B, xsgn, ysgn, xexp, yexp;
+	Pint rr[5], pp[5], qq[5], x0, y0, t1, t2, t3, t4;
+
+	n01=x[-3]; n02=y[-3];
+	if(n01<MULT3LIM || n02<MULT3LIM || 2*n02>3*n01 || 2*n01>3*n02){
+		MULTX2(z, x, y);
+		return;
+	}
+
+	n=z[-4]+1;
+	n1=min(n, n01); n2=min(n, n02);
+	B=n1+n2;
+	if(n>B) n=B;
+	B=(B+2)/6;
+	ALLOCN(9, n, &x0, &y0, &t1, &pp[1], &pp[2], &pp[3], &qq[1], &qq[2], &qq[3]);
+
+	//sign
+	xsgn=x[-2]; ysgn=y[-2];
+	x[-2]= y[-2]=0;
+
+	//precision
+	x0[-3]= y0[-3]=B;
+	x[-3]=n1-B*2;
+	y[-3]=n2-B*2;
+
+	//exponent
+	xexp=x[-1]; yexp=y[-1];
+	x0[-1]= B-n1;
+	y0[-1]= B-n2;
+	x[-1]= y[-1]= -B*2;
+
+	//splitting and evaluation of the first polynomial
+	memcpy(x0, x + (n1-B), B*(TintBits/8));
+	NORMX(x0);
+	PLUSX(t1, x, x0);
+	t2=qq[3];
+	t2[-1]=x0[-1];
+	t2[-3]=B;
+	memcpy(t2, x + (n1-B*2), B*(TintBits/8));
+	NORMX(t2);
+	PLUSX(pp[1], t1, t2);
+	MINUSX(pp[2], t1, t2);
+	PLUSX(t1, pp[2], x);
+	MULTI1(t1, 2);
+	MINUSX(pp[3], t1, x0);
+
+	//splitting and evaluation of the second polynomial
+	memcpy(y0, y + (n2-B), B*(TintBits/8));
+	NORMX(y0);
+	PLUSX(t1, y, y0);
+	t2[-1]=y0[-1];
+	t2[-3]=B;
+	memcpy(t2, y + (n2-B*2), B*(TintBits/8));
+	NORMX(t2);
+	PLUSX(qq[1], t1, t2);
+	MINUSX(qq[2], t1, t2);
+	PLUSX(t1, qq[2], y);
+	MULTI1(t1, 2);
+	MINUSX(qq[3], t1, y0);
+
+	//pointwise multiplication and interpolation
+	MULTX(t1, pp[3], qq[3]);
+	rr[0]=pp[3];
+	rr[1]=qq[3];
+	MULTX(rr[1], pp[1], qq[1]);
+	rr[2]=pp[1];
+	rr[4]=qq[1];
+	MULTX(rr[0], x0, y0);
+	t3=x0;
+	MINUSX(t3, t1, rr[1]);
+	DIVI1(t3, 3);
+	MULTX(rr[2], pp[2], qq[2]);
+	t2=pp[2];
+	MINUSX(t2, rr[2], rr[0]);
+	MINUSX(t1, t2, t3);
+	DIVI1(t1, 2);
+	MULTX(rr[4], x, y);
+	t4=y0;
+	MULTI(t4, rr[4], 2);
+	PLUSX(t3, t1, t4);
+	MINUSX(t4, rr[1], rr[2]);
+	DIVI1(t4, 2);
+	PLUSX(t1, t2, t4);
+	MINUSX(t2, t1, rr[4]);
+	MINUSX(t1, t4, t3);
+
+	//recomposition
+	t1[-1]+=B;
+	PLUSX(t4, rr[0], t1);
+	t2[-1]+=B*2;
+	PLUSX(t1, t4, t2);
+	t3[-1]+=B*3;
+	PLUSX(t4, t1, t3);
+	rr[4][-1]+=B*4;
+	PLUSX(z, t4, rr[4]);
+
+	x[-2]=xsgn; y[-2]=ysgn;
+	z[-2]=xsgn^ysgn;
+	x[-3]=n01; y[-3]=n02;
+	x[-1]=xexp; y[-1]=yexp;
+	z[-1]=ADDII(z[-1], ADDII(xexp, yexp));
+
+	FREEX(x0);
+}
+//-------------------------------------------------------------------
+#if 0
+void _stdcall SQRX3(Pint z, const Pint x)
+{
+	Tint n, n1, n01, B, xsgn, xexp;
+	Pint rr[5], pp[5], x0, t1, t2, t3, t4;
+
+	n01=x[-3];
+	if(n01<MULT3LIM){
+		MULTX(z, x, x);
+		return;
+	}
+	n=z[-4]+1;
+	n1=min(n, n01);
+	B=n1*2;
+	if(n>B) n=B;
+	B=(n1+1)/3;
+	ALLOCN(8, n, &x0, &t1, &t4, &pp[1], &pp[2], &pp[3], &rr[1], &rr[4]);
+
+	xsgn=x[-2];
+	x[-2]=0;
+
+	x0[-3]=B;
+	x[-3]=n1-B*2;
+
+	xexp=x[-1];
+	x0[-1]= B-n1;
+	x[-1]= -B*2;
+
+	memcpy(x0, x + (n1-B), B*(TintBits/8));
+	NORMX(x0);
+	PLUSX(t1, x, x0);
+	t4[-1]=x0[-1];
+	t4[-3]=B;
+	memcpy(t4, x + (n1-B*2), B*(TintBits/8));
+	NORMX(t4);
+	PLUSX(pp[1], t1, t4);
+	MINUSX(pp[2], t1, t4);
+	PLUSX(t1, pp[2], x);
+	MULTI1(t1, 2);
+	MINUSX(pp[3], t1, x0);
+
+	SQRX(t1, pp[3]);
+	rr[0]=pp[3];
+	SQRX(rr[1], pp[1]);
+	rr[2]=pp[1];
+	SQRX(rr[0], x0);
+	t3=x0;
+	MINUSX(t3, t1, rr[1]);
+	DIVI1(t3, 3);
+	SQRX(rr[2], pp[2]);
+	t2=pp[2];
+	MINUSX(t2, rr[2], rr[0]);
+	MINUSX(t1, t2, t3);
+	DIVI1(t1, 2);
+	SQRX(rr[4], x);
+	MULTI(t4, rr[4], 2);
+	PLUSX(t3, t1, t4);
+	MINUSX(t4, rr[1], rr[2]);
+	DIVI1(t4, 2);
+	PLUSX(t1, t2, t4);
+	MINUSX(t2, t1, rr[4]);
+	MINUSX(t1, t4, t3);
+
+	t1[-1]+=B;
+	PLUSX(t4, rr[0], t1);
+	t2[-1]+=B*2;
+	PLUSX(t1, t4, t2);
+	t3[-1]+=B*3;
+	PLUSX(t4, t1, t3);
+	rr[4][-1]+=B*4;
+	PLUSX(z, t4, rr[4]);
+
+	x[-2]=xsgn;
+	z[-2]=0;
+	x[-3]=n01;
+	x[-1]=xexp;
+	z[-1]=ADDII(z[-1], ADDII(xexp, xexp));
+
+	FREEX(x0);
+}
+#else
+void _stdcall SQRX(Pint z, const Pint x)
+{
+	MULTX(z, x, x);
+}
+#endif
 //-------------------------------------------------------------------
 void _stdcall EXPX(Pint y, Pint x0)
 {
@@ -645,54 +912,54 @@ void _stdcall LNX(Pint y, const Pint x0)
 }
 
 //-------------------------------------------------------------------
-/*
+#if 0
 void _stdcall INVERSEROOTI(Pint y,Pint x,Tuint n)
 {
-Pint t,u,r,a,w;
-Tint precision = 1;
+	Pint t,u,r,a,w;
+	Tint precision = 1;
 
-a=ALLOCN(3,y[-4],&t,&u,&r);
+	a=ALLOCN(3,y[-4],&t,&u,&r);
 
-SETX(r,1);
-DIVI1(r,2);
+	SETX(r,1);
+	DIVI1(r,2);
 
-int iterations = 2;
-for (Tuint m = y[-4]; m > 0 ; m >>= 1) iterations++;
+	int iterations = 2;
+	for (Tuint m = y[-4]; m > 0 ; m >>= 1) iterations++;
 
-//int i=0;
-//r:=r+(r*(1-x*r^n)/n
-do
-{
-precision *= 2;
+	//int i=0;
+	//r:=r+(r*(1-x*r^n)/n
+	do
+	{
+		precision *= 2;
 
-if(precision > r[-4]) precision= r[-4];
-if(r[-3]>0) r[-3]=precision;
+		if(precision > r[-4]) precision= r[-4];
+		if(r[-3]>0) r[-3]=precision;
 
-if(n==2) MULTX(t,r,r);
-else if(n!=1) POWI(t,r,n);
+		if(n==2) MULTX(t,r,r);
+		else if(n!=1) POWI(t,r,n);
 
-MULTX(u,x,t);
-MINUSX(t,one,u);
+		MULTX(u,x,t);
+		MINUSX(t,one,u);
 
-if(t[-3]>0) t[-3]=precision;
+		if(t[-3]>0) t[-3]=precision;
 
-MULTX(u,r,t);
-DIVI1(u,n);
-PLUSX(t,r,u);
-w=t; t=r; r=w;
-}while((precision<y[-4] || (u[-1]>r[-1]-r[-3]) && !isZero(u)) && !error);
-COPYX(y,r);
-FREEX(a);
+		MULTX(u,r,t);
+		DIVI1(u,n);
+		PLUSX(t,r,u);
+		w=t; t=r; r=w;
+	}while((precision<y[-4] || (u[-1]>r[-1]-r[-3]) && !isZero(u)) && !error);
+	COPYX(y,r);
+	FREEX(a);
 }
 
 void _stdcall SQRTRX(Pint y,const Pint x)
 {
-Pint t=ALLOCX(y[-4]);
-INVERSEROOTI(t,x,2);
-MULTX(y,t,x);
-FREEX(t);
+	Pint t=ALLOCX(y[-4]);
+	INVERSEROOTI(t,x,2);
+	MULTX(y,t,x);
+	FREEX(t);
 }
-*/
+#endif
 
 void _stdcall ROOTX(Pint y, const Pint b, const Pint a)
 {
@@ -819,9 +1086,10 @@ void _stdcall LSHI(Pint y, const Pint a, Tint n)
 #else
 	int i= n&31;
 	if(i){
-		MULTI(y,a, 1<<i);
-	}else{
-		COPYX(y,a);
+		MULTI(y, a, 1<<i);
+	}
+	else{
+		COPYX(y, a);
 	}
 	SCALEX(y, n>>5);
 #endif

@@ -17,7 +17,7 @@
 option casemap:none
 option procalign:16
 
-extrn	Alloc:proc, Free:proc, cerror:proc
+extrn	Alloc:proc, Free:proc, cerror:proc, MULTX:proc
 extrn	base:dword, baseIn:dword, error:dword, dwordDigits:qword
 public	digitTab
 public	overflow
@@ -487,6 +487,12 @@ norm	proc
 @@nul:	mov	qword ptr [rdi-24],0
 	ret
 norm	endp
+
+NORMX	proc	uses rsi rdi x
+	mov	rdi,rcx
+	call	norm
+	ret
+NORMX	endp
 ;-------------------------------------
 ;rax:=rcx:=gcd(rax,rcx), rdx:=0
 gcd	proc
@@ -2470,220 +2476,6 @@ MULPREC	equ	10
 @@ret:	ret
 MULTX1	endp
 ;-------------------------------------
-;rekurzivnÌ algoritmus
-; x = x0 + x1*B
-; y = y0 + y1*B
-; xy = (B^2 + B)x1*y1 + B(x1-x0)*(y0-y1) + (B + 1)x0*y0
-; sloûitost n^(ln3/ln2) = n^1.58496
-MULTX	proc 	uses rsi rdi rbx z,x,y
-local	x0,y0,t1,t2,t3,n1,n2,n01,n02,xsgn,ysgn
-MULLIM	equ	50
-;zkontroluj, jestli x,y nejsou moc kr·tkÈ
-	mov	[z],rcx
-	mov	[x],rdx
-	mov	[y],r8
-	mov	rcx,[rdx-24]
-	cmp	rcx,MULLIM
-	mov	[n01],rcx
-	jl	@@1
-	mov	rdx,[r8-24]
-	cmp	rdx,MULLIM
-	mov	[n02],rdx
-	jl	@@1
-;zkraù x,y, pokud jsou delöÌ neû v˝sledek
-	mov	rax,[z]
-	mov	rsi,[rax-32]
-	inc	rsi
-	cmp	rsi,rcx
-	jae	@@5
-	mov	rcx,rsi
-@@5:	mov	[n1],rcx
-	cmp	rsi,rdx
-	jae	@@6
-	mov	rdx,rsi
-@@6:	mov	[n2],rdx
-	mov	rbx,rdx
-	add	rbx,rcx
-;rcx=n1, rdx=n2, rbx=n1+n2, rsi=[z-32]+1
-;zkontroluj, jestli jsou x,y zhruba stejnÏ dlouhÈ
-	shl	rcx,1
-	lea	rax,[rdx+rdx*2]
-	cmp	rcx,rax
-	jg	@@1
-	shl	rdx,1
-	mov	rcx,[n1]
-	lea	rcx,[rcx+rcx*2]
-	cmp	rdx,rcx
-	jle	@@2
-;norm·lnÌ nerekurzivnÌ n·sobenÌ
-@@1:	sub	rsp,32
-	mov	r8,[y]
-	mov	rdx,[x]
-	mov	rcx,[z]
-	call	MULTX1
-	add	rsp,32
-	ret
-@@2:	cmp	rsi,rbx
-	jb	@@a
-	mov	rsi,rbx
-;alokuj pomocnÈ promÏnnÈ
-@@a:	
-	lea	rax,[t3]
-	push	rax
-	lea	rax,[t2]
-	push	rax
-	lea	rax,[t1]
-	push	rax
-	lea	r9,[y0]
-	lea	r8,[x0]
-	mov	rdx,rsi
-	mov	rcx,5
-	sub	rsp,32
-	call	ALLOCNX
-	add	rsp,56
-;inicializuj x,y,x0,y0
-	inc	rbx
-	shr	rbx,2
-	mov	rsi,[x]
-	mov	rdi,[y]
-;uchovej star· znamÈnka a nov· dej kladn·
-	mov	rax,[rsi-16]
-	mov	[xsgn],rax
-	mov	rax,[rdi-16]
-	mov	[ysgn],rax
-	and	qword ptr [rdi-16],0
-	and	qword ptr [rsi-16],0
-;dÈlky
-	mov	rax,[y0]
-	mov	[rax-24],rbx
-	mov	rax,[x0]
-	mov	[rax-24],rbx
-	mov	rax,[n1]
-	sub	rax,rbx
-	mov	[rsi-24],rax
-	mov	rax,[n2]
-	sub	rax,rbx
-	mov	[rdi-24],rax
-;exponenty
-;x0[-1]:=x[-1]-n1+b;  y0[-1]:=y[-1]-n2+b
-	mov	rax,[rsi-8]
-	sub	rax,[n1]
-	add	rax,rbx
-	mov	rcx,[x0]
-	mov	[rcx-8],rax
-	mov	rax,[rdi-8]
-	sub	rax,[n2]
-	add	rax,rbx
-	mov	rcx,[y0]
-	mov	[rcx-8],rax
-;x1[-1]:=x[-1]-b;  y1[-1]:=y[-1]-b;
-	sub	[rsi-8],rbx
-	cmp	rsi,rdi
-	jz	@@3
-	sub	[rdi-8],rbx
-;do x0 okopÌruj spodnÌ polovinu x
-@@3:	mov	rax,[n1]
-	lea	rsi,[rsi+rax*8]
-	mov	rcx,rbx
-	shl	rcx,3
-	sub	rsi,rcx
-	mov	rdi,[x0]
-	mov	rcx,rbx
-	cld
-	rep movsq
-;normalizace
-	mov	rdi,[x0]
-	call	norm
-;do y0 okopÌruj spodnÌ polovinu y
-	mov	rdx,[y]
-	mov	rax,[n2]
-	lea	rsi,[rdx+rax*8]
-	mov	rcx,rbx
-	shl	rcx,3
-	sub	rsi,rcx
-	mov	rdi,[y0]
-	mov	rcx,rbx
-	rep movsq
-;normalizace
-	mov	rdi,[y0]
-	call	norm
-;rekurze a seËtenÌ dÌlËÌch v˝sledk˘
-	mov	rsi,[x]
-	mov	rdi,[y]
-;t3:=x1-x0
-	sub	rsp,32
-	mov	r8,[x0]
-	mov	rdx,rsi
-	mov	rcx,[t3]
-	call	MINUSX
-;t1:=y0-y1
-	mov	r8,rdi
-	mov	rdx,[y0]
-	mov	rcx,[t1]
-	call	MINUSX
-;t2:=(x1-x0)*(y0-y1)
-	mov	r8,[t1]
-	mov	rdx,[t3]
-	mov	rcx,[t2]
-	call	MULTX
-;t3:=x0*y0
-	mov	r8,[y0]
-	mov	rdx,[x0]
-	mov	rcx,[t3]
-	call	MULTX
-;t1:= B*(x1-x0)*(y0-y1) + x0*y0
-	mov	rdx,[t2]
-	mov	r8,[t3]
-	add	[rdx-8],rbx
-	mov	rcx,[t1]
-	call	PLUSX
-;t2:= B*(x1-x0)*(y0-y1) + (B+1)*x0*y0
-	mov	r8,[t3]
-	add	[r8-8],rbx
-	mov	rdx,[t1]
-	mov	rcx,[t2]
-	call	PLUSX
-;t3:=x1*y1
-	mov	r8,rdi
-	mov	rdx,rsi
-	mov	rcx,[t3]
-	call	MULTX
-;t1:= B*x1*y1 + B*(x1-x0)*(y0-y1) + (B+1)*x0*y0
-	mov	r8,[t3]
-	add	[r8-8],rbx
-	mov	rdx,[t2]
-	mov	rcx,[t1]
-	call	PLUSX
-;z:= (B^2+B)*x1*y1 + B*(x1-x0)*(y0-y1) + (B+1)*x0*y0
-	mov	r8,[t3]
-	add	[r8-8],rbx
-	mov	rdx,[t1]
-	mov	rcx,[z]
-	call	PLUSX
-	add	rsp,32
-;znamÈnko
-	mov	rax,[xsgn]
-	mov	[rsi-16],rax
-	mov	rdx,[ysgn]
-	mov	[rdi-16],rdx
-	xor	rax,rdx
-	mov	rcx,[z]
-	mov	[rcx-16],rax
-;obnov parametry x,y
-	mov	rcx,[n01]
-	mov	[rsi-24],rcx
-	mov	rdx,[n02]
-	mov	[rdi-24],rdx
-	add	[rsi-8],rbx
-	cmp	rsi,rdi
-	jz	@@f
-	add	[rdi-8],rbx
-;uvolni pomocnÈ promÏnnÈ
-@@f:	mov	rcx,[x0]
-	call	FREEX
-	ret
-MULTX	endp
-;-------------------------------------
 ;vracÌ zbytek dÏlenÌ 64-bitov˝m ËÌslem
 ;nem· smysl pro re·ln˝ operand
 MODI	proc 	uses rsi rbx a1,ai
@@ -3731,12 +3523,20 @@ overflow	proc
 	ret
 overflow	endp
 ;-------------------------------------
+ADDII	proc	x,y
+	add	rcx,rdx
+	jno	@@m
+	call	overflow	
+@@m:	mov	rax,rcx
+	ret
+ADDII	endp
+;-------------------------------------
 
 public	ALLOCX,FREEX,NEWCOPYX
-public	SETX,SETXN,ZEROX,ONEX,FRACTOX
-public	NEGX,ABSX,SIGNX,TRUNCX,INTX,CEILX,ROUNDX,FRACX,SCALEX
+public	SETX,SETXN,ZEROX,ONEX,FRACTOX,NORMX
+public	NEGX,ABSX,SIGNX,TRUNCX,INTX,CEILX,ROUNDX,FRACX,SCALEX,ADDII
 public	COPYX,WRITEX1,READX1
-public	MULTX,MULTX1,MULTI,MULTIN,MULTI1,DIVX,DIVI,MODI
+public	MULTX1,MULTI,MULTIN,MULTI1,DIVX,DIVI,MODI
 public	PLUSX,MINUSX,PLUSU,MINUSU,ANDU,ORU,XORU
 public	CMPX,CMPU,FACTORIALI,FFACTI,SQRTX,SQRTI,PI,ALLOCNX
 public	ALLOCN,ANDU@12,ORU@12,XORU@12
