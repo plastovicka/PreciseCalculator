@@ -103,8 +103,8 @@ extern "C"{
 	void _stdcall POWX(Pint y, const Pint a, const Pint b); //a^b
 	void _stdcall POWI(Pint y, const Pint x, __int64 n);    //x^n
 	void _stdcall ROOTX(Pint y, const Pint b, const Pint a); //a^(1/b)
-	void _stdcall SQRTX(Pint y, const Pint x);   //square root
-	void _stdcall SQRTRX(Pint y, const Pint x);   //square root /**/
+	void _stdcall SQRTX(Pint y, const Pint x);   //square root - iteration
+	void _stdcall SQRTX1(Pint y, const Pint x); //square root
 	unsigned _stdcall SQRTI(unsigned __int64 x);//square root
 	void _stdcall SQRX(Pint y, const Pint x);
 
