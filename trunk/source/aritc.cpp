@@ -764,13 +764,26 @@ void _stdcall SQRX(Pint z, const Pint x)
 //-------------------------------------------------------------------
 void _stdcall EXPX(Pint y, const Pint x0)
 {
-	Tint ex, n, sgn, k;
+	Tint ex, n, sgn, k, p;
 	Pint z, t, u, w, x, x1;
 
 	x=x0;
 	SETX(y, 1);
 	if(isZero(x)) return; //x^0=1
-	ALLOCN(3, y[-4]+1, &u, &t, &x1);
+
+	p = y[-4] + 2;
+	if(p<40) k=30;
+	else if(p<200 || isOneOrMinusOne(x)) k=80;
+	else if(p<1000) k=150;
+	else if(p<3000) k=250;
+	else if(p<6000) k=400;
+	else k=450;
+	if(x[-1]<0){
+		k += x[-1]*40;
+		if(k<0) k=0;
+	}
+
+	ALLOCN(4, p + k/(TintBits/2), &u, &t, &z, &x1);
 	ex=0;
 	sgn=x[-2];
 	if(x[-1]>0 && (!isFraction(x)
@@ -799,17 +812,11 @@ void _stdcall EXPX(Pint y, const Pint x0)
 	//x<=lnBase
 
 	//exp(x)= (exp(x/2))^2
-#ifdef ARIT64
-	k=30;
-#else
-	k=20;
-#endif
-	DIVI(x1, x, ((Tuint)1)<<k);
+	RSHI(x1, x, k);
 	x=x1;
 
-	z=y;
 	COPYX(u, x);
-	PLUSX(y, one, x);
+	PLUSX(z, one, x);
 	n=2;
 	do{
 		MULTX(t, x, u);
@@ -821,6 +828,7 @@ void _stdcall EXPX(Pint y, const Pint x0)
 
 	while(--k >= 0 && !error)
 	{
+		t[-4] = p + k/(TintBits/2);
 		SQRX(t, z);
 		w=t; t=z; z=w;
 	}
@@ -1106,6 +1114,12 @@ void _stdcall LSHI(Pint y, const Pint a, Tint n)
 #endif
 }
 
+void _stdcall RSHI(Pint y, const Pint a, Tint n)
+{
+	//MULTI is faster than DIVI
+	LSHI(y, a, -n);
+}
+
 void _stdcall DIVI1(Pint y, Tuint n)
 {
 	DIVI(y, y, n);
@@ -1148,7 +1162,7 @@ void _stdcall RSHX(Pint y, const Pint a, const Pint b)
 		cerror(1017, "The shift operand is not integer");
 		return;
 	}
-	LSHI(y, a, -toInt(b));
+	RSHI(y, a, toInt(b));
 }
 
 void _stdcall RSHIX(Pint y, const Pint a, const Pint b)
@@ -1694,21 +1708,24 @@ void _stdcall SINX0(Pint y, const Pint x)
 void _stdcall COSX0(Pint y, const Pint x)
 {
 	Pint t, u;
-	int k;
+	Tint k, p;
 
-	Tint p = y[-4]+1;
-	ALLOCN(2, p, &t, &u);
+	p = y[-4] + 2;
+	if(p<40) k=8;
+	else if(p<200) k=p/7;
+	else if(p<1000) k=p/11;
+	else if(p<3000) k=p/13;
+	else if(p<6000) k=p/15;
+	else k=450;
 
-	if(p>1000) k=30;
-	else if(p>200) k=25;
-	else if(p>40) k=20;
-	else k=10;
+	ALLOCN(2, p + k/(TintBits/2), &t, &u);
 
 	//cos(x)= 2*(cos(x/2))^2 - 1
-	DIVI(t, x, 1<<k);
+	RSHI(t, x, k);
 	ONEX(u);
 	SINCOS(u, t, 1, false);
 	while(--k >= 0 && !error){
+		t[-4] = p + k/(TintBits/2);
 		SQRX(t, u);
 		MULTI1(t, 2);
 		MINUSX(k ? u : y, t, one);

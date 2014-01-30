@@ -93,6 +93,7 @@ extern "C"{
 	void _stdcall IDIVX(Pint y, const Pint a, const Pint b);
 	void _stdcall RSHX(Pint y, const Pint a, const Pint b);
 	void _stdcall RSHIX(Pint y, const Pint a, const Pint b);
+	void _stdcall RSHI(Pint y, const Pint a, Tint n);  //shift n bits right or -n bits left
 	void _stdcall LSHX(Pint y, const Pint a, const Pint b);
 	void _stdcall LSHI(Pint y, const Pint a, Tint n);  //shift n bits left or -n bits right
 
