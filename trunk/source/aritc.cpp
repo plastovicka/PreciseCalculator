@@ -676,14 +676,14 @@ void _stdcall MULTX(Pint z, const Pint x, const Pint y)
 }
 //-------------------------------------------------------------------
 #if 0
-void _stdcall SQRX3(Pint z, const Pint x)
+void _stdcall SQRX(Pint z, const Pint x)
 {
 	Tint n, n1, n01, B, xsgn, xexp;
 	Pint rr[5], pp[5], x0, t1, t2, t3, t4;
 
 	n01=x[-3];
 	if(n01<MULT3LIM){
-		MULTX(z, x, x);
+		MULTX2(z, x, x);
 		return;
 	}
 	n=z[-4]+1;
@@ -931,54 +931,87 @@ void _stdcall LNX(Pint y, const Pint x0)
 }
 
 //-------------------------------------------------------------------
-#if 0
+void _stdcall SetPrec(Pint x, Tint precision)
+{
+	x[-4] = precision;
+	if(x[-3] > precision) x[-3]=precision;
+}
+
 void _stdcall INVERSEROOTI(Pint y, Pint x, Tuint n)
 {
 	Pint t, u, r, a, w;
-	Tint precision = 1;
+	Tint p, precision = 14;
 
-	a=ALLOCN(3, y[-4], &t, &u, &r);
+	p=y[-4] + 1;
 
-	SETX(r,1);
-	DIVI1(r,2);
+	a=ALLOCN(3, p, &t, &u, &r);
 
-	int iterations = 2;
-	for (Tuint m = y[-4]; m > 0 ; m >>= 1) iterations++;
+	if(n==2)
+	{
+		r[-4]=t[-4]=precision*2;
+		SQRTX(t, x);
+		DIVX(r, t, x);
+	}
+	else{
+		SETX(r, 1);
+		DIVI1(r, 2);
+	}
 
-	//int i=0;
+	//int iterations = 2;
+	//for(Tuint m = y[-4]; m > 0; m >>= 1) iterations++;
+
 	//r:=r+(r*(1-x*r^n)/n
 	do
 	{
 		precision *= 2;
+		if(precision>p) precision=p;
+		SetPrec(r, precision);
+		SetPrec(t, precision);
+		SetPrec(u, precision);
 
-		if(precision > r[-4]) precision= r[-4];
-		if(r[-3]>0) r[-3]=precision;
+		if(n==2) SQRX(t, r);
+		else if(n!=1) POWI(t, r, n);
 
-		if(n==2) MULTX(t,r,r);
-		else if(n!=1) POWI(t,r,n);
+		MULTX(u, x, t);
+		MINUSX(t, one, u);
 
-		MULTX(u,x,t);
-		MINUSX(t,one,u);
-
-		if(t[-3]>0) t[-3]=precision;
-
-		MULTX(u,r,t);
-		DIVI1(u,n);
-		PLUSX(t,r,u);
+		MULTX(u, r, t);
+		DIVI1(u, n);
+		PLUSX(t, r, u);
 		w=t; t=r; r=w;
-	}while((precision<y[-4] || (u[-1]>r[-1]-r[-3]) && !isZero(u)) && !error);
-	COPYX(y,r);
+	} while((precision<p || (u[-1]>r[-1]-r[-3]) && !isZero(u)) && !error);
+	COPYX(y, r);
 	FREEX(a);
 }
 
-void _stdcall SQRTRX(Pint y,const Pint x)
+void _stdcall SQRTX(Pint y, const Pint x)
 {
-	Pint t=ALLOCX(y[-4]);
-	INVERSEROOTI(t,x,2);
-	MULTX(y, t, x);
-	FREEX(t);
+	Pint t, u;
+	Tint exp;
+
+	if(y[-4] < 5000){
+		SQRTX1(y, x);
+	}
+	else if(isZero(x)){
+		ZEROX(y);
+	}
+	else{
+		ALLOCN(2, y[-4]+1, &t, &u);
+		exp= x[-1]/2;
+		if(exp!=0)
+		{
+			COPYX(u, x);
+			SCALEX(u, -2*exp);
+		}
+		else{
+			u=x;
+		}
+		INVERSEROOTI(t, u, 2);
+		MULTX(y, t, u);
+		SCALEX(y, exp);
+		FREEX(t);
+	}
 }
-#endif
 
 void _stdcall ROOTX(Pint y, const Pint b, const Pint a)
 {

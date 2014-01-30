@@ -18,7 +18,7 @@
 .386
 .model flat,stdcall
 
-extrn	Alloc:proc, Free:proc, cerror:proc, MULTX@12:proc
+extrn	Alloc:proc, Free:proc, cerror:proc, MULTX@12:proc, SQRTX@8:proc
 extrn	base:dword, baseIn:dword, error:dword, dwordDigits:dword
 public	digitTab
 public	c overflow
@@ -2843,7 +2843,7 @@ SQRTI	proc
 	ret	8
 SQRTI	endp
 ;-------------------------------------
-SQRTX	proc 	uses esi edi ebx a0,a1
+SQRTX1	proc 	uses esi edi ebx a0,a1
 local	sq,s2,s3,s4,d1,d2,k,ro	
 	mov	ecx,[a1]	;operand
 	mov	edx,[a0]	;výsledek
@@ -2887,7 +2887,7 @@ local	sq,s2,s3,s4,d1,d2,k,ro
 	mov	esi,eax
 	push	eax
 	push	edi
-	call	SQRTX
+	call	SQRTX1
 	mov	eax,esi
 	call	@freex
 	ret
@@ -3143,7 +3143,7 @@ local	sq,s2,s3,s4,d1,d2,k,ro
 	call	DIVI
 @@t:	call	trim
 @@ret:	ret
-SQRTX	endp
+SQRTX1	endp
 ;-------------------------------------
 PI	proc 	uses esi edi ebx a0
 local	a,b,z,t,y,x,n	
@@ -3290,6 +3290,7 @@ overflow	endp
 ;-------------------------------------
 
 MULTX:	jmp	MULTX@12
+SQRTX:	jmp	SQRTX@8
 
 ;fastcall
 public	pascal @ALLOCX@4,pascal @FREEX@4,pascal @NEWCOPYX@4
@@ -3300,7 +3301,7 @@ public	pascal @NEGX@4,pascal @ABSX@4,pascal @SIGNX@4,pascal @TRUNCX@4,pascal @IN
 public	COPYX,WRITEX1,READX1
 public	MULTX1,MULTI,MULTIN,MULTI1,DIVX,DIVI,MODI
 public	PLUSX,MINUSX,PLUSU,MINUSU,ANDU,ORU,XORU
-public	CMPX,CMPU,FACTORIALI,FFACTI,SQRTX,SQRTI,PI,ALLOCNX
+public	CMPX,CMPU,FACTORIALI,FFACTI,SQRTX1,SQRTI,PI,ALLOCNX
 public	ALLOCN,ANDU@12,ORU@12,XORU@12
 
 	end

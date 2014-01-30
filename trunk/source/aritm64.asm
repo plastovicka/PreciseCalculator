@@ -17,7 +17,7 @@
 option casemap:none
 option procalign:16
 
-extrn	Alloc:proc, Free:proc, cerror:proc, MULTX:proc
+extrn	Alloc:proc, Free:proc, cerror:proc, MULTX:proc, SQRTX:proc
 extrn	base:dword, baseIn:dword, error:dword, dwordDigits:qword
 public	digitTab
 public	overflow
@@ -3065,7 +3065,7 @@ SQRTI	proc
 	ret
 SQRTI	endp
 ;-------------------------------------
-SQRTX	proc 	uses rsi rdi rbx a0,a1
+SQRTX1	proc 	uses rsi rdi rbx a0,a1
 local	sq,s2,s3,s4,d1,d2,k,ro	
 	mov	[a0],rcx
 	mov	[a1],rdx
@@ -3112,7 +3112,7 @@ local	sq,s2,s3,s4,d1,d2,k,ro
 	sub	rsp,32
 	mov	rdx,rax
 	mov	rcx,rdi
-	call	SQRTX
+	call	SQRTX1
 	add	rsp,32
 	mov	rcx,rsi
 	call	FREEX
@@ -3380,7 +3380,7 @@ local	sq,s2,s3,s4,d1,d2,k,ro
 	add	rsp,32
 @@t:	call	trim
 @@ret:	ret
-SQRTX	endp
+SQRTX1	endp
 ;-------------------------------------
 PI	proc 	uses rsi rdi rbx a0
 local	a,b,z,t,y,x,n	
@@ -3538,7 +3538,7 @@ public	NEGX,ABSX,SIGNX,TRUNCX,INTX,CEILX,ROUNDX,FRACX,SCALEX,ADDII
 public	COPYX,WRITEX1,READX1
 public	MULTX1,MULTI,MULTIN,MULTI1,DIVX,DIVI,MODI
 public	PLUSX,MINUSX,PLUSU,MINUSU,ANDU,ORU,XORU
-public	CMPX,CMPU,FACTORIALI,FFACTI,SQRTX,SQRTI,PI,ALLOCNX
+public	CMPX,CMPU,FACTORIALI,FFACTI,SQRTX1,SQRTI,PI,ALLOCNX
 public	ALLOCN,ANDU@12,ORU@12,XORU@12
 
 	end

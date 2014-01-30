@@ -405,7 +405,7 @@ const Top funcTab[]={
 	{"exp", 8, F EXPX, F EXPC, 0},
 	{"ln", 8, 0, F LNC, 0},
 	{"log", 8, 0, F LOG10C, 0},
-	{"sqrt", 8, 0/*F SQRTRX*/, F SQRTC, 0},/**/
+	{"sqrt", 8, 0, F SQRTC, 0},
 	{"ffact", 8, F FFACTX, 0, 0},
 	{"fact", 8, F FACTORIALX, 0, 0},
 	{"not", 8, F NOTX, F NOTC, F NOTM},
