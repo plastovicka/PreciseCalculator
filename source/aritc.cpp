@@ -2548,6 +2548,48 @@ FREEX(a);
 }
 */
 
+int _stdcall PI(Pint a0)
+{
+	Pint a, b, z, t, x, y, m, w;
+	int n=0;
+
+	m=ALLOCN(6, a0[-4], &a, &b, &z, &t, &x, &y);
+	// x=1; a=1; b=sqrt(1/2); z=1/4
+	ONEX(x);
+	ONEX(a);
+	SQRTX(b, half);
+	DIVI(z, half, 2);
+
+	do{
+		n++;
+		// y=(a+b)/2
+		PLUSX(t, a, b);
+		DIVI(y, t, 2);
+		// b=sqrt(b*a)
+		MULTX(t, b, a);
+		SQRTX(b, t);
+		// a=y
+		w=a; a=y; y=w;
+		// t=x*(a-y)^2
+		MINUSX(t, a, y);
+		SQRX(y, t);
+		MULTX(t, y, x);
+		// z-=t
+		MINUSX(y, z, t);
+		w=z; z=y; y=w;
+		// x*=2
+		MULTI1(x, 2);
+	} while(-t[-1]<=a0[-4] && !isZero(t) && !error);
+
+	// a0= (a+b)^2/4z
+	PLUSX(y, a, b);
+	SQRX(t, y);
+	MULTI1(z, 4);
+	DIVX(a0, t, z);
+	FREEX(m);
+	return n;
+}
+
 void getpi(Tint len)
 {
 	if(len>Npi){

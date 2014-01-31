@@ -17,7 +17,7 @@
 option casemap:none
 option procalign:16
 
-extrn	Alloc:proc, Free:proc, cerror:proc, MULTX:proc, SQRTX:proc
+extrn	Alloc:proc, Free:proc, cerror:proc, MULTX:proc
 extrn	base:dword, baseIn:dword, error:dword, dwordDigits:qword
 public	digitTab
 public	overflow
@@ -3382,138 +3382,6 @@ local	sq,s2,s3,s4,d1,d2,k,ro
 @@ret:	ret
 SQRTX1	endp
 ;-------------------------------------
-PI	proc 	uses rsi rdi rbx a0
-local	a,b,z,t,y,x,n	
-	mov	[a0],rcx
-	mov	rdi,rcx
-;alokuj pomocné promìnné
-	lea	rcx,[a]
-	push	rcx
-	lea	rcx,[b]
-	push	rcx
-	lea	rcx,[z]
-	push	rcx
-	lea	rcx,[t]
-	push	rcx
-	lea	r9,[y]
-	lea	r8,[x]
-	mov	rdx,qword ptr [rdi-32]
-	mov	rcx,6
-	sub	rsp,32
-	call	ALLOCNX
-	add	rsp,64
-
-; x=1; a=1; b=sqrt(1/2); z=1/4
-	mov	rcx,[x]
-	call	ONEX
-	mov	rcx,[a]
-	call	ONEX
-	mov	rax,[y]
-	mov	rdx,8000000000000000h
-	mov	[rax],rdx
-	mov	byte ptr [rax-24],1
-	and	qword ptr [rax-8],0
-	sub	rsp,32
-	mov	rdx,rax
-	mov	rcx,[b]
-	call	SQRTX
-	add	rsp,32
-	mov	rax,[z]
-	mov	rdx,4000000000000000h
-	mov	[rax],rdx
-	mov	byte ptr [rax-24],1
-	and	qword ptr [rax-8],0
-	mov	[n],0
-;cyklus
-@@lp:	inc	[n]
-; y=(a+b)/2
-	sub	rsp,32
-	mov	r8,[b]
-	mov	rdx,[a]
-	mov	rcx,[t]
-	call	PLUSX
-	mov	r8,2
-	mov	rdx,[t]
-	mov	rcx,[y]
-	call	DIVI
-; b=sqrt(b*a)
-	mov	r8,[a]
-	mov	rdx,[b]
-	mov	rcx,[t]
-	call	MULTX
-	mov	rdx,[t]
-	mov	rcx,[b]
-	call	SQRTX
-; a=y
-	push	[a]
-	push	[y]
-	pop	[a]
-	pop	[y]
-; t=x*(a-y)^2
-	mov	r8,[y]
-	mov	rdx,[a]
-	mov	rcx,[t]
-	call	MINUSX
-	mov	r8,[t]
-	mov	rdx,[t]
-	mov	rcx,[y]
-	call	MULTX
-	mov	r8,[x]
-	mov	rdx,[y]
-	mov	rcx,[t]
-	call	MULTX
-; z=z-t
-	mov	r8,[t]
-	mov	rdx,[z]
-	mov	rcx,[y]
-	call	MINUSX
-	push	[y]
-	push	[z]
-	pop	[y]
-	pop	[z]
-; x=x*2
-	mov	rsi,2
-	mov	rdi,[x]
-	call	mult1
-	add	rsp,32
-;until t<d
-	mov	eax,[error]
-	test	eax,eax
-	jnz	@@e
-	mov	rax,[t]
-	cmp	qword ptr [rax-24],0
-	jz	@@e
-	cmp	qword ptr [rax-24],-2
-	jz	@@lp
-	mov	rcx,[rax-8]
-	mov	rax,[a0]
-	add	rcx,[rax-32]
-	jns	@@lp
-; a0= (a+b)^2/4z
-@@e:	sub	rsp,32
-	mov	r8,[b]
-	mov	rdx,[a]
-	mov	rcx,[y]
-	call	PLUSX
-	mov	r8,[y]
-	mov	rdx,[y]
-	mov	rcx,[t]
-	call	MULTX
-	mov	rsi,4
-	mov	rdi,[z]
-	call	mult1
-	mov	r8,[z]
-	mov	rdx,[t]
-	mov	rcx,[a0]
-	call	DIVX
-	add	rsp,32
-;smaž pomocné promìnné
-	mov	rcx,[x]
-	call	FREEX
-	mov	rax,[n]
-	ret
-PI	endp
-;-------------------------------------
 overflow	proc
 	lea	rdx,[E_1011]
 	mov	rcx,1011
@@ -3538,7 +3406,7 @@ public	NEGX,ABSX,SIGNX,TRUNCX,INTX,CEILX,ROUNDX,FRACX,SCALEX,ADDII
 public	COPYX,WRITEX1,READX1
 public	MULTX1,MULTI,MULTIN,MULTI1,DIVX,DIVI,MODI
 public	PLUSX,MINUSX,PLUSU,MINUSU,ANDU,ORU,XORU
-public	CMPX,CMPU,FACTORIALI,FFACTI,SQRTX1,SQRTI,PI,ALLOCNX
+public	CMPX,CMPU,FACTORIALI,FFACTI,SQRTX1,SQRTI,ALLOCNX
 public	ALLOCN,ANDU@12,ORU@12,XORU@12
 
 	end
