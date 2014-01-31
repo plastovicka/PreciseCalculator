@@ -18,7 +18,7 @@
 .386
 .model flat,stdcall
 
-extrn	Alloc:proc, Free:proc, cerror:proc, MULTX@12:proc, SQRTX@8:proc
+extrn	Alloc:proc, Free:proc, cerror:proc, MULTX@12:proc
 extrn	base:dword, baseIn:dword, error:dword, dwordDigits:dword
 public	digitTab
 public	c overflow
@@ -3145,132 +3145,6 @@ local	sq,s2,s3,s4,d1,d2,k,ro
 @@ret:	ret
 SQRTX1	endp
 ;-------------------------------------
-PI	proc 	uses esi edi ebx a0
-local	a,b,z,t,y,x,n	
-	mov	edi,[a0]
-;alokuj pomocné promìnné
-	lea	ecx,[a]
-	push	ecx
-	lea	ecx,[b]
-	push	ecx
-	lea	ecx,[z]
-	push	ecx
-	lea	ecx,[t]
-	push	ecx
-	lea	ecx,[y]
-	push	ecx
-	lea	ecx,[x]
-	push	ecx
-	push	dword ptr [edi-16]
-	push	6
-	call	ALLOCNX
-	add	esp,32
-
-; x=1; a=1; b=sqrt(1/2); z=1/4
-	mov	eax,[x]
-	call	@onex
-	mov	eax,[a]
-	call	@onex
-	mov	eax,[y]
-	mov	edx,80000000h
-	mov	[eax],edx
-	mov	byte ptr [eax-12],1
-	and	dword ptr [eax-4],0
-	push	eax
-	push	[b]
-	call	SQRTX
-	mov	eax,[z]
-	mov	edx,40000000h
-	mov	[eax],edx
-	mov	byte ptr [eax-12],1
-	and	dword ptr [eax-4],0
-	mov	[n],0
-;cyklus
-@@lp:	inc	[n]
-; y=(a+b)/2
-	push	[b]
-	push	[a]
-	push	[t]
-	call	PLUSX
-	push	2
-	push	[t]
-	push	[y]
-	call	DIVI
-; b=sqrt(b*a)
-	push	[a]
-	push	[b]
-	push	[t]
-	call	MULTX
-	push	[t]
-	push	[b]
-	call	SQRTX
-; a=y
-	push	[a]
-	push	[y]
-	pop	[a]
-	pop	[y]
-; t=x*(a-y)^2
-	push	[y]
-	push	[a]
-	push	[t]
-	call	MINUSX
-	push	[t]
-	push	[t]
-	push	[y]
-	call	MULTX
-	push	[x]
-	push	[y]
-	push	[t]
-	call	MULTX
-; z=z-t
-	push	[t]
-	push	[z]
-	push	[y]
-	call	MINUSX
-	push	[y]
-	push	[z]
-	pop	[y]
-	pop	[z]
-; x=x*2
-	mov	esi,2
-	mov	edi,[x]
-	call	mult1
-;until t<d
-	mov	eax,[error]
-	test	eax,eax
-	jnz	@@e
-	mov	eax,[t]
-	cmp	dword ptr [eax-12],0
-	jz	@@e
-	cmp	dword ptr [eax-12],-2
-	jz	@@lp
-	mov	ecx,[eax-4]
-	mov	eax,[a0]
-	add	ecx,[eax-16]
-	jns	@@lp
-; a0= (a+b)^2/4z
-@@e:	push	[b]
-	push	[a]
-	push	[y]
-	call	PLUSX
-	push	[y]
-	push	[y]
-	push	[t]
-	call	MULTX
-	mov	esi,4
-	mov	edi,[z]
-	call	mult1
-	push	[z]
-	push	[t]
-	push	[a0]
-	call	DIVX
-;smaž pomocné promìnné
-	mov	eax,[x]
-	call	@freex
-	mov	eax,[n]
-	ret
-PI	endp
-;-------------------------------------
 overflow	proc c
 	lea	eax,[E_1011]
 	push	eax
@@ -3290,7 +3164,6 @@ overflow	endp
 ;-------------------------------------
 
 MULTX:	jmp	MULTX@12
-SQRTX:	jmp	SQRTX@8
 
 ;fastcall
 public	pascal @ALLOCX@4,pascal @FREEX@4,pascal @NEWCOPYX@4
@@ -3301,7 +3174,7 @@ public	pascal @NEGX@4,pascal @ABSX@4,pascal @SIGNX@4,pascal @TRUNCX@4,pascal @IN
 public	COPYX,WRITEX1,READX1
 public	MULTX1,MULTI,MULTIN,MULTI1,DIVX,DIVI,MODI
 public	PLUSX,MINUSX,PLUSU,MINUSU,ANDU,ORU,XORU
-public	CMPX,CMPU,FACTORIALI,FFACTI,SQRTX1,SQRTI,PI,ALLOCNX
+public	CMPX,CMPU,FACTORIALI,FFACTI,SQRTX1,SQRTI,ALLOCNX
 public	ALLOCN,ANDU@12,ORU@12,XORU@12
 
 	end
