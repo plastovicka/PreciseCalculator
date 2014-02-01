@@ -18,7 +18,7 @@
 .386
 .model flat,stdcall
 
-extrn	Alloc:proc, Free:proc, cerror:proc, MULTX@12:proc
+extrn	Alloc:proc, Free:proc, cerror:proc, MULTX@12:proc, DIVX@12:proc, SQRTX@8:proc
 extrn	base:dword, baseIn:dword, error:dword, dwordDigits:dword
 public	digitTab
 public	c overflow
@@ -1841,7 +1841,7 @@ MULTIN	proc 	a0,a1,ai
 	ret
 MULTIN	endp
 ;-------------------------------------
-DIVX	proc 	uses esi edi ebx a0,a1,a2
+DIVX2	proc 	uses esi edi ebx a0,a1,a2
 local	d1,d2,d,t1,t2	
 	xor	esi,esi
 	mov	ebx,[a1]	;dìlenec
@@ -2150,7 +2150,7 @@ local	d1,d2,d,t1,t2
 	pop	dword ptr [ebx-4]
 	pop	dword ptr [ebx-8]
 @@ret:	ret
-DIVX	endp
+DIVX2	endp
 ;-------------------------------------
 MULTX1	proc 	uses esi edi ebx a0,a1,a2
 local	e2
@@ -2179,7 +2179,7 @@ local	e2
 	push	eax
 	push	ecx
 	push	edx
-	call	DIVX
+	call	DIVX2
 	add	esp,HED+8
 	ret
 @@f1:   cmp	dword ptr [ecx-12],-2
@@ -2854,7 +2854,7 @@ SQRTI	proc
 	ret	8
 SQRTI	endp
 ;-------------------------------------
-SQRTX1	proc 	uses esi edi ebx a0,a1
+SQRTX2	proc 	uses esi edi ebx a0,a1
 local	sq,s2,s3,s4,d1,d2,k,ro	
 	mov	ecx,[a1]	;operand
 	mov	edx,[a0]	;výsledek
@@ -2898,7 +2898,7 @@ local	sq,s2,s3,s4,d1,d2,k,ro
 	mov	esi,eax
 	push	eax
 	push	edi
-	call	SQRTX1
+	call	SQRTX
 	mov	eax,esi
 	call	@freex
 	ret
@@ -3154,7 +3154,7 @@ local	sq,s2,s3,s4,d1,d2,k,ro
 	call	DIVI
 @@t:	call	trim
 @@ret:	ret
-SQRTX1	endp
+SQRTX2	endp
 ;-------------------------------------
 overflow	proc c
 	lea	eax,[E_1011]
@@ -3175,6 +3175,8 @@ overflow	endp
 ;-------------------------------------
 
 MULTX:	jmp	MULTX@12
+DIVX:	jmp	DIVX@12
+SQRTX:	jmp	SQRTX@8
 
 ;fastcall
 public	pascal @ALLOCX@4,pascal @FREEX@4,pascal @NEWCOPYX@4
@@ -3183,9 +3185,9 @@ public	pascal @NEGX@4,pascal @ABSX@4,pascal @SIGNX@4,pascal @TRUNCX@4,pascal @IN
 
 ;stdcall
 public	COPYX,WRITEX1,READX1
-public	MULTX1,MULTI,MULTIN,MULTI1,DIVX,DIVI,MODI
+public	MULTX1,MULTI,MULTIN,MULTI1,DIVX2,DIVI,MODI
 public	PLUSX,MINUSX,PLUSU,MINUSU,ANDU,ORU,XORU
-public	CMPX,CMPU,FACTORIALI,FFACTI,SQRTX1,SQRTI,ALLOCNX
+public	CMPX,CMPU,FACTORIALI,FFACTI,SQRTX2,SQRTI,ALLOCNX
 public	ALLOCN,ANDU@12,ORU@12,XORU@12
 
 	end

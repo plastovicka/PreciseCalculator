@@ -17,7 +17,7 @@
 option casemap:none
 option procalign:16
 
-extrn	Alloc:proc, Free:proc, cerror:proc, MULTX:proc
+extrn	Alloc:proc, Free:proc, cerror:proc, MULTX:proc, DIVX:proc, SQRTX:proc
 extrn	base:dword, baseIn:dword, error:dword, dwordDigits:qword
 public	digitTab
 public	overflow
@@ -465,7 +465,7 @@ inclen:	inc	qword ptr [rdi-24]
 ;normalizace [rdi] - mantisa nebude zaèínat ani konèit na nulu
 ;zmìní rsi,rdi
 norm	proc
-	cmp	[rdi-24],0
+	cmp	qword ptr [rdi-24],0
 	jbe	@@ret    ;zlomek nebo nula
 	call	trim
 	mov	rcx,[rdi-24]
@@ -2006,7 +2006,7 @@ MULTIN	proc 	a0,a1,ai
 	ret
 MULTIN	endp
 ;-------------------------------------
-DIVX	proc 	uses rsi rdi rbx a0,a1,a2
+DIVX2	proc 	uses rsi rdi rbx a0,a1,a2
 local	d1,d2,d,t1,t2	
 	xor	rsi,rsi
 	mov	[a0],rcx
@@ -2333,7 +2333,7 @@ local	d1,d2,d,t1,t2
 	pop	qword ptr [rbx-8]
 	pop	qword ptr [rbx-16]
 @@ret:	ret
-DIVX	endp
+DIVX2	endp
 ;-------------------------------------
 MULTX1	proc 	uses rsi rdi rbx a0,a1,a2
 local	e2
@@ -2366,7 +2366,7 @@ local	e2
 	mov	rax,rdx
 	mov	rdx,rcx
 	mov	rcx,rax
-	call	DIVX
+	call	DIVX2
 	add	rsp,32+HED+16
 	ret
 @@f1:	cmp	qword ptr [rcx-24],-2
@@ -3076,7 +3076,7 @@ SQRTI	proc
 	ret
 SQRTI	endp
 ;-------------------------------------
-SQRTX1	proc 	uses rsi rdi rbx a0,a1
+SQRTX2	proc 	uses rsi rdi rbx a0,a1
 local	sq,s2,s3,s4,d1,d2,k,ro	
 	mov	[a0],rcx
 	mov	[a1],rdx
@@ -3123,7 +3123,7 @@ local	sq,s2,s3,s4,d1,d2,k,ro
 	sub	rsp,32
 	mov	rdx,rax
 	mov	rcx,rdi
-	call	SQRTX1
+	call	SQRTX
 	add	rsp,32
 	mov	rcx,rsi
 	call	FREEX
@@ -3391,7 +3391,7 @@ local	sq,s2,s3,s4,d1,d2,k,ro
 	add	rsp,32
 @@t:	call	trim
 @@ret:	ret
-SQRTX1	endp
+SQRTX2	endp
 ;-------------------------------------
 overflow	proc
 	lea	rdx,[E_1011]
@@ -3415,9 +3415,9 @@ public	ALLOCX,FREEX,NEWCOPYX
 public	SETX,SETXN,ZEROX,ONEX,FRACTOX,NORMX
 public	NEGX,ABSX,SIGNX,TRUNCX,INTX,CEILX,ROUNDX,FRACX,SCALEX,ADDII
 public	COPYX,WRITEX1,READX1
-public	MULTX1,MULTI,MULTIN,MULTI1,DIVX,DIVI,MODI
+public	MULTX1,MULTI,MULTIN,MULTI1,DIVX2,DIVI,MODI
 public	PLUSX,MINUSX,PLUSU,MINUSU,ANDU,ORU,XORU
-public	CMPX,CMPU,FACTORIALI,FFACTI,SQRTX1,SQRTI,ALLOCNX
+public	CMPX,CMPU,FACTORIALI,FFACTI,SQRTX2,SQRTI,ALLOCNX
 public	ALLOCN,ANDU@12,ORU@12,XORU@12
 
 	end

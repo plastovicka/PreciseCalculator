@@ -88,12 +88,10 @@ void getln2(Tint len)
 		FREEX(lnBase);
 		lnBase= ALLOCX(len);
 		ln2= ALLOCX(len);
-		// ln2 = ln(2/e)+1
-		EXPX(lnBase, one);
-		DIVX(ln2, two, lnBase);
-		LNX(lnBase, ln2);
-		PLUSX(ln2, lnBase, one);
-		// ln(2^32) = 32*ln2
+		// ln(2)=-ln(1/2)
+		LNX(ln2, half);
+		NEGX(ln2);
+		// ln(2^32)=32*ln2
 		MULTI(lnBase, ln2, TintBits);
 		Nln2= error ? 0 : len;
 	}
@@ -537,16 +535,16 @@ void _stdcall MULTX2(Pint z, const Pint x, const Pint y)
 
 	MINUSX(t3, x, x0);  //t3= x1-x0
 	MINUSX(t1, y0, y);  //t1= y0-y1
-	MULTX2(t2, t3, t1);//t2= (x1-x0)*(y0-y1)
-	MULTX2(t3, x0, y0);//t3= x0*y0
-	t2[-1]+=B;
+	MULTX2(t2, t3, t1); //t2= (x1-x0)*(y0-y1)
+	MULTX2(t3, x0, y0); //t3= x0*y0
+	SCALEX(t2, B);
 	PLUSX(t1, t3, t2);  //t1= B*(x1-x0)*(y0-y1) + x0*y0
-	t3[-1]+=B;
+	SCALEX(t3, B);
 	PLUSX(t2, t1, t3);  //t2= B*(x1-x0)*(y0-y1) + (B+1)*x0*y0
-	MULTX2(t3, x, y);  //t3= x1*y1
-	t3[-1]+=B;
+	MULTX2(t3, x, y);   //t3= x1*y1
+	SCALEX(t3, B);
 	PLUSX(t1, t2, t3);  //t1= B*x1*y1 + B*(x1-x0)*(y0-y1) + (B+1)*x0*y0
-	t3[-1]+=B;
+	SCALEX(t3, B);
 	PLUSX(z, t1, t3);   //z= (B^2+B)*x1*y1 + B*(x1-x0)*(y0-y1) + (B+1)*x0*y0
 
 	x[-2]=xsgn; y[-2]=ysgn;
@@ -656,13 +654,13 @@ void _stdcall MULTX(Pint z, const Pint x, const Pint y)
 	MINUSX(t1, t4, t3);
 
 	//recomposition
-	t1[-1]+=B;
+	SCALEX(t1, B);
 	PLUSX(t4, rr[0], t1);
-	t2[-1]+=B*2;
+	SCALEX(t2, B*2);
 	PLUSX(t1, t4, t2);
-	t3[-1]+=B*3;
+	SCALEX(t3, B*3);
 	PLUSX(t4, t1, t3);
-	rr[4][-1]+=B*4;
+	SCALEX(rr[4], B*4);
 	PLUSX(z, t4, rr[4]);
 
 	x[-2]=xsgn; y[-2]=ysgn;
@@ -670,6 +668,12 @@ void _stdcall MULTX(Pint z, const Pint x, const Pint y)
 	x[-3]=n01; y[-3]=n02;
 	x[-1]=xexp; y[-1]=yexp;
 	z[-1]=ADDII(z[-1], ADDII(xexp, yexp));
+
+#ifndef NDEBUG
+	t1[-4]=z[-4];
+	MULTX2(t1, x, y);
+	assert(!CMPX(z, t1) || error);
+#endif
 
 	FREEX(x0);
 }
@@ -699,13 +703,12 @@ void _stdcall SQRX(Pint z, const Pint x)
 	x[-3]=n1-B*2;
 
 	xexp=x[-1];
-	x0[-1]= B-n1;
+	t4[-1]=x0[-1]= B-n1;
 	x[-1]= -B*2;
 
 	memcpy(x0, x + (n1-B), B*(TintBits/8));
 	NORMX(x0);
 	PLUSX(t1, x, x0);
-	t4[-1]=x0[-1];
 	t4[-3]=B;
 	memcpy(t4, x + (n1-B*2), B*(TintBits/8));
 	NORMX(t4);
@@ -737,13 +740,13 @@ void _stdcall SQRX(Pint z, const Pint x)
 	MINUSX(t2, t1, rr[4]);
 	MINUSX(t1, t4, t3);
 
-	t1[-1]+=B;
+	SCALEX(t1, B);
 	PLUSX(t4, rr[0], t1);
-	t2[-1]+=B*2;
+	SCALEX(t2, B*2);
 	PLUSX(t1, t4, t2);
-	t3[-1]+=B*3;
+	SCALEX(t3, B*3);
 	PLUSX(t4, t1, t3);
-	rr[4][-1]+=B*4;
+	SCALEX(rr[4], B*4);
 	PLUSX(z, t4, rr[4]);
 
 	x[-2]=xsgn;
@@ -837,18 +840,48 @@ void _stdcall EXPX(Pint y, const Pint x0)
 	FREEX(u);
 }
 //-------------------------------------------------------------------
-//ln x=2*(t+t^3/3+t^5/5+t^7/7+t^9/9+...), t=(x-1)/(x+1)
-void _stdcall LNX(Pint y, const Pint x0)
+void _stdcall AGMX(Pint z, const Pint x0, const Pint y0)
 {
-	Tint ex;
-	int num2, n;
-	Pint z, t, u, v, w, x;
+	Pint a, b, y, t, m, w;
+	Tint p;
+
+	p=z[-4]+3;
+	m=ALLOCN(4, p, &a, &b, &t, &y);
+	COPYX(a, x0);
+	COPYX(b, y0);
+	int n=0;
+	while(!error)
+	{
+		MINUSX(y, a, b);
+		if((y[-1]<a[-1]-z[-4] && y[-1]<0) || isZero(y))
+			break; /**/
+
+		// y=(a+b)/2
+		PLUSX(t, a, b);
+		DIVI(y, t, 2);
+		// b=sqrt(a*b)
+		MULTX(t, b, a);
+		SQRTX(b, t);
+		// a=y
+		w=a; a=y; y=w;
+		n++;
+	}
+	COPYX(z, a);
+	FREEX(m);
+}
+//-------------------------------------------------------------------
+static void _stdcall LNX(Pint y, const Pint x0, bool useAGM)
+{
+	Tint ex, p;
+	int num2;
+	Pint z, t, v, w, x;
 
 	if(x0[-2] || isZero(x0)){
 		cerror(1009, "Logarithm of not positive number");
 		return;
 	}
-	ALLOCN(4, y[-4], &x, &t, &u, &v);
+	p=y[-4]+2;
+	ALLOCN(3, p, &x, &t, &v);
 	COPYX(x, x0);
 	ex=num2=0;
 	if(isFraction(x)){
@@ -884,29 +917,68 @@ void _stdcall LNX(Pint y, const Pint x0)
 			MULTI1(x, 2);
 		}
 	}
-	//now is x<1
+	//now is 0.5 <= x < 1.42
 	z=y;
-	//x:=(x-1)/(x+1)
-	MINUSX(t, x, one);
-	PLUSX(u, x, one);
-	DIVX(x, t, u);
 
-	SETX(t, 1);
-	COPYX(z, x);
-	if(!isZero(x)){
-		COPYX(u, x);
-		SQRX(x, u);
-		n=3;
-		do{
-			MULTX(t, u, x);
-			w=t; t=u; u=w;
-			DIVI(t, u, n);
-			PLUSX(v, z, t);
-			w=v; v=z; z=w;
-			n+=2;
-		} while((t[-1]>=z[-1]-z[-3] || t[-1]>=0) && !isZero(t) && !error);
-		MULTI1(z, 2);
+	if(useAGM)
+	{
+		getpi(p);
+
+		//m=precision/2
+		Tint m;
+		if(CMPX(x, half)==0)
+		{
+			//ln(1/2)=-ln(2^m)/m
+			m=(p*TintBits)/2+6;
+			RSHI(v, one, m-2);
+			AGMX(t, one, v);
+			DIVX(v, pi2, t);
+			DIVI(z, v, m);
+			NEGX(z);
+		}
+		else
+		{
+			//ln(x)=pi/2/(1 agm ((4 rsh m)/x)) - m*ln2
+			m=p/2+6;
+			ex-=m;
+			SETX(t, 4);
+			SCALEX(t, -m);
+			DIVX(v, t, x);
+			COPYX(z, v);
+			AGMX(t, one, v);
+			DIVX(z, pi2, t);
+		}
 	}
+#ifndef NDEBUG
+	else
+	{
+		//x:=(x-1)/(x+1)
+		MINUSX(t, x, one);
+		PLUSX(v, x, one);
+		DIVX(x, t, v);
+
+		//ln(x)=2*(t+t^3/3+t^5/5+t^7/7+t^9/9+...), t=(x-1)/(x+1)
+		SETX(t, 1);
+		COPYX(z, x);
+		if(!isZero(x)){
+			Pint u=ALLOCX(p);
+			COPYX(u, x);
+			SQRX(x, u);
+			int n=3;
+			do{
+				MULTX(t, u, x);
+				w=t; t=u; u=w;
+				DIVI(t, u, n);
+				PLUSX(v, z, t);
+				w=v; v=z; z=w;
+				n+=2;
+			} while((t[-1]>=z[-1]-z[-3] || t[-1]>=0) && !isZero(t) && !error);
+			MULTI1(z, 2);
+			FREEX(u);
+		}
+	}
+#endif
+
 	if(ex && !error){
 		getln2(y[-4]);
 		if(ex<0){
@@ -929,6 +1001,17 @@ void _stdcall LNX(Pint y, const Pint x0)
 	FREEX(x);
 }
 
+void _stdcall LNX(Pint y, const Pint x0)
+{
+	LNX(y, x0, true);
+
+#ifndef NDEBUG
+	Pint z=ALLOCX(y[-4]);
+	LNX(z, x0, false);
+	assert(!CMPX(z, y) || error);
+	FREEX(z);
+#endif
+}
 //-------------------------------------------------------------------
 void _stdcall SetPrec(Pint x, Tint precision)
 {
@@ -955,9 +1038,6 @@ void _stdcall INVERSEROOTI(Pint y, Pint x, Tuint n)
 		SETX(r, 1);
 		DIVI1(r, 2);
 	}
-
-	//int iterations = 2;
-	//for(Tuint m = y[-4]; m > 0; m >>= 1) iterations++;
 
 	//r:=r+(r*(1-x*r^n)/n
 	do
@@ -988,29 +1068,93 @@ void _stdcall SQRTX(Pint y, const Pint x)
 	Pint t, u;
 	Tint exp;
 
-	if(y[-4] < 5000){
-		SQRTX1(y, x);
+	if(y[-4] < 5000 || x[-3]<=0){
+		SQRTX2(y, x);
+		return;
 	}
-	else if(isZero(x)){
-		ZEROX(y);
+
+	ALLOCN(2, y[-4]+1, &t, &u);
+	exp= x[-1]/2;
+	if(exp!=0)
+	{
+		COPYX(u, x);
+		SCALEX(u, -2*exp);
 	}
 	else{
-		ALLOCN(2, y[-4]+1, &t, &u);
-		exp= x[-1]/2;
-		if(exp!=0)
-		{
-			COPYX(u, x);
-			SCALEX(u, -2*exp);
+		u=x;
+	}
+	INVERSEROOTI(t, u, 2);
+	MULTX(y, t, u);
+	SCALEX(y, exp);
+
+#ifndef NDEBUG
+	t[-4]=y[-4];
+	SQRTX2(t, x);
+	assert(!CMPX(t, y) || error);
+#endif
+
+	FREEX(t);
+}
+
+void _stdcall DIVX(Pint y, const Pint a, const Pint b)
+{
+	if(y[-4]<5000 || b[-3]<20 || a[-3]<=0){
+		DIVX2(y, a, b);
+		return;
+	}
+
+	Pint t, u, r, w, m, b1;
+	Tint p, bp, precision;
+
+	bp = b[-3];
+	p=(Tint)(y[-4] + 2);
+
+	m=ALLOCN(4, p, &t, &u, &r, &b1);
+	COPYX(b1, b);
+
+	Tint len=0;
+	for(precision=p; precision>10; precision>>=1) len++;
+
+	r[-4]=p>>len;
+	DIVX(r, one, b);
+
+	int fin=0;
+
+	//r:=r*(2-b*r)
+	do
+	{
+		precision = p>>len;
+		if(len>0){
+			len--;
 		}
 		else{
-			u=x;
+			fin++;
 		}
-		INVERSEROOTI(t, u, 2);
-		MULTX(y, t, u);
-		SCALEX(y, exp);
-		FREEX(t);
-	}
+		//if(precision>p){ precision=p; fin++; }
+		SetPrec(r, precision);
+		SetPrec(t, precision);
+		SetPrec(u, precision);
+		SetPrec(b1, precision);
+		b1[-3]=min(precision, bp);
+
+		MULTX(u, b1, r);
+		if(b[-2]) NEGX(u);
+		MINUSX(t, two, u);
+		MULTX(u, r, t);
+		w=u; u=r; r=w;
+	} while(fin<2 && !error);/**/
+	MULTX(y, r, a);
+	if(b[-2]) NEGX(y);
+
+#ifndef NDEBUG
+	t[-4]=y[-4];
+	DIVX2(t, a, b);
+	assert(!CMPX(t, y) || error);
+#endif
+
+	FREEX(m);
 }
+
 
 void _stdcall ROOTX(Pint y, const Pint b, const Pint a)
 {
@@ -2547,20 +2691,20 @@ FREEX(a);
 }
 */
 
+//Brent–Salamin algorithm (1975)
 int _stdcall PI(Pint a0)
 {
-	Pint a, b, z, t, x, y, m, w;
-	int n=0;
+	Pint a, b, z, t, y, m, w;
+	Tint n;
 
-	m=ALLOCN(6, a0[-4], &a, &b, &z, &t, &x, &y);
-	// x=1; a=1; b=sqrt(1/2); z=1/4
-	ONEX(x);
+	m=ALLOCN(5, a0[-4], &a, &b, &z, &t, &y);
+	// n=0; a=1; b=sqrt(1/2); z=1/4
+	n=0;
 	ONEX(a);
 	SQRTX(b, half);
 	DIVI(z, half, 2);
 
 	do{
-		n++;
 		// y=(a+b)/2
 		PLUSX(t, a, b);
 		DIVI(y, t, 2);
@@ -2569,24 +2713,23 @@ int _stdcall PI(Pint a0)
 		SQRTX(b, t);
 		// a=y
 		w=a; a=y; y=w;
-		// t=x*(a-y)^2
+		// t=(a-y)^2*(2^n)
 		MINUSX(t, a, y);
 		SQRX(y, t);
-		MULTX(t, y, x);
+		LSHI(t, y, n);
+		n++;
 		// z-=t
 		MINUSX(y, z, t);
 		w=z; z=y; y=w;
-		// x*=2
-		MULTI1(x, 2);
 	} while(-t[-1]<=a0[-4] && !isZero(t) && !error);
 
-	// a0= (a+b)^2/4z
+	// a0= (a+b)^2/(4*z)
 	PLUSX(y, a, b);
 	SQRX(t, y);
 	MULTI1(z, 4);
 	DIVX(a0, t, z);
 	FREEX(m);
-	return n;
+	return (int)n;
 }
 
 void getpi(Tint len)
