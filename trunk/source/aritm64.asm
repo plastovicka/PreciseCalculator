@@ -1,4 +1,4 @@
-; (C) 2005-2011  Petr Lastovicka
+; (C) 2005-2014  Petr Lastovicka
  
 ; This program is free software; you can redistribute it and/or
 ; modify it under the terms of the GNU General Public License.
@@ -462,12 +462,15 @@ round2:	mov	rax,[rsi]
 inclen:	inc	qword ptr [rdi-24]
 	ret
 ;-------------------------------------
-;normalizace [rdi] - mantisa nebude zaèínat na nulu
+;normalizace [rdi] - mantisa nebude zaèínat ani konèit na nulu
 ;zmìní rsi,rdi
 norm	proc
+	cmp	[rdi-24],0
+	jbe	@@ret    ;zlomek nebo nula
+	call	trim
 	mov	rcx,[rdi-24]
 	test	rcx,rcx
-	jz	@@ret
+	jz	@@ret   ;trim výsledek vynulovalo 
 	xor	rdx,rdx
 	cmp	[rdi],rdx
 	jnz	@@ret
@@ -765,16 +768,25 @@ cmpu	proc	uses rsi rdi
 	cmp	rax,[rcx-8]
 	jg	@@gr1
 	jl	@@gr2
-;nejvyšší øád
+;rychlé porovnání nejvyššího øádu
 	mov	rax,[rdx]
 	cmp	rax,[rcx]
 	jnz	@@ret
+;oøíznutí koncových nul
 	mov	rax,[rdx-24]
-	lea	rsi,[rdx+8*rax]
-	mov	rax,[rcx-24]
-	lea	rdi,[rcx+8*rax]
 	add	rdx,8
+	lea	rsi,[rdx+8*rax]
+@@t1:	sub	rsi,8
+	mov	rax,[rsi-8]
+	test	rax,rax
+	jz	@@t1
+	mov	rax,[rcx-24]
 	add	rcx,8
+	lea	rdi,[rcx+8*rax]
+@@t2:	sub	rdi,8
+	mov	rax,[rdi-8]
+	test	rax,rax
+	jz	@@t2
 ;mantisy
 @@lp:	cmp	rdx,rsi
 	jnc	@@2
@@ -2939,8 +2951,7 @@ READX1	proc	uses rsi rdi rbx a1,buf
 	jmp	@@d0
 ;uøíznutí koncových nul a normalizace
 @@de:	pop	rdi
-@@trim:	call	trim
-	call	norm
+@@trim:	call	norm
 	pop	rax	;ukazatel na znak za èíslem
 	ret
 @@end:	push	rsi 

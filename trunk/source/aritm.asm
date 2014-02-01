@@ -1,4 +1,4 @@
-; (C) 2005-2011  Petr Lastovicka
+; (C) 2005-2014  Petr Lastovicka
 
 ; This program is free software; you can redistribute it and/or
 ; modify it under the terms of the GNU General Public License.
@@ -444,12 +444,15 @@ round2:	mov	eax,[esi]
 @@ret:	ret
 endp	roundi
 ;-------------------------------------
-;normalizace [edi] - mantisa nebude zaèínat na nulu
+;normalizace [edi] - mantisa nebude zaèínat ani konèit na nulu
 ;zmìní esi,edi
 proc	norm
+	cmp	[dword edi-12],0
+	jbe	@@ret    ;zlomek nebo nula
+	call	trim
 	mov	ecx,[edi-12]
 	test	ecx,ecx
-	jz	@@ret
+	jz	@@ret   ;trim výsledek vynulovalo
 	xor	edx,edx
 	cmp	[edi],edx
 	jnz	@@ret
@@ -712,16 +715,25 @@ uses	esi,edi
 	cmp	eax,[ecx-4]
 	jg	@@gr1
 	jl	@@gr2
-;nejvyšší øád
+;rychlé porovnání nejvyššího øádu
 	mov	eax,[edx]
 	cmp	eax,[ecx]
 	jnz	@@ret
+;oøíznutí koncových nul
 	mov	eax,[edx-12]
-	lea	esi,[edx+4*eax]
-	mov	eax,[ecx-12]
-	lea	edi,[ecx+4*eax]
 	add	edx,4
+	lea	esi,[edx+4*eax]
+@@t1:	sub	esi,4
+	mov	eax,[esi-4]
+	test	eax,eax
+	jz	@@t1
+	mov	eax,[ecx-12]
 	add	ecx,4
+	lea	edi,[ecx+4*eax]
+@@t2:	sub	edi,4
+	mov	eax,[edi-4]
+	test	eax,eax
+	jz	@@t2
 ;mantisy
 @@lp:	cmp	edx,esi
 	jnc	@@2
@@ -2727,8 +2739,7 @@ uses	esi,edi,ebx
         jmp	@@d0
 ;uøíznutí koncových nul a normalizace
 @@de:	pop	edi
-@@trim:	call	trim
-	call	norm
+@@trim:	call	norm
 	pop	eax
 	ret
 @@end:	push	esi
