@@ -868,6 +868,13 @@ void _stdcall LNC(Complex y, const Complex x)
 			lnSetArg(y, x);
 			return;
 		}
+		if(!CMPU(x.r, half)){
+			getln2(y.r[-4]);
+			COPYX(y.r, ln2);
+			NEGX(y.r);
+			lnSetArg(y, x);
+			return;
+		}
 		if(!CMPU(x.r, ten)){
 			getln10(y.r[-4]);
 			COPYX(y.r, ln10);

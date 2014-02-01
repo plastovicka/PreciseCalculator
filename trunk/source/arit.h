@@ -87,6 +87,7 @@ extern "C"{
 	void _stdcall MULTIN(Pint y, const Pint a, Tint i);
 	void _stdcall MULTI1(Pint y, Tuint i);
 	void _stdcall DIVX(Pint y, const Pint a, const Pint b);  //divide
+	void _stdcall DIVX2(Pint y, const Pint a, const Pint b); //slow divide
 	void _stdcall DIVI(Pint y, const Pint a, Tuint i);
 	void _stdcall DIVI1(Pint y, Tuint n);
 	void _stdcall MODX(Pint y, const Pint a, const Pint b);  //modulus
@@ -100,11 +101,12 @@ extern "C"{
 	void _stdcall EXPX(Pint y, const Pint x);          //e^x
 	void _stdcall LNX(Pint y, const Pint x);     //natural logarithm
 	void _stdcall INVERSEROOTI(Pint y, Pint x, Tuint n);
+	void _stdcall AGMX(Pint z, const Pint x0, const Pint y0);
 	void _stdcall POWX(Pint y, const Pint a, const Pint b); //a^b
 	void _stdcall POWI(Pint y, const Pint x, __int64 n);    //x^n
 	void _stdcall ROOTX(Pint y, const Pint b, const Pint a); //a^(1/b)
-	void _stdcall SQRTX(Pint y, const Pint x);   //square root - iteration
-	void _stdcall SQRTX1(Pint y, const Pint x); //square root
+	void _stdcall SQRTX(Pint y, const Pint x);  //square root - iteration
+	void _stdcall SQRTX2(Pint y, const Pint x); //slow square root
 	unsigned _stdcall SQRTI(unsigned __int64 x);//square root
 	void _stdcall SQRX(Pint y, const Pint x);
 
@@ -212,7 +214,7 @@ extern "C"{
 	extern int enableFractions, separator1, separator2, sepFreq1, sepFreq2, useSeparator1, useSeparator2;
 	extern double dwordDigits[];
 	extern char digitTab[];
-	extern Pint lnBase, ln2, ln10, pi, pi2, pi4, one, minusone, two, ten, seedx;
+	extern Pint lnBase, ln2, ln10, pi, pi2, pi4, one, minusone, half, two, ten, seedx;
 	extern Tint precision, Nseed;
 }
 
@@ -324,6 +326,8 @@ typedef void(_stdcall *Tarrayarg)(Pint, const Complex*);
 
 #ifndef NDEBUG
 extern void showx(Pint x);
+extern void logx(char *msg, Pint x);
+void logs(char *fmt, ...);
 #else 
 inline void showx(Pint){};
 #endif

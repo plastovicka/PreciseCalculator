@@ -6,13 +6,16 @@
 	*/
 #include "hdr.h"
 #include "preccalc.h"
+#ifndef NDEBUG
+#include <stdarg.h>
+#endif
 
 #pragma comment(lib,"version.lib")
 #pragma comment(lib,"htmlhelp.lib")
 
 
 int width=518,
- height=435,
+height=435,
  left=50,
  top=60,
  right,
@@ -42,7 +45,7 @@ UINT inv, hyp;
 const bool dual=true; //NOT YET IMPLEMENTED !
 
 bool clearInput,
- resizing,
+resizing,
  delreg,
  modif,
  richEdit20,
@@ -238,9 +241,52 @@ bool saveDlg(OPENFILENAME *o)
 #ifndef NDEBUG
 void showx(Pint x)
 {
-	char *buf= AWRITEX(x,digits);
-	msg("%s",buf);
+	char *buf= AWRITEX(x, digits);
+	msg("%s", buf);
 	delete[] buf;
+}
+
+
+const char *logfile="C:\\a\\preccalc.log";
+static int logLock=0;
+
+void logs(char *fmt, ...)
+{
+	if(logLock) return;
+	va_list ap;
+	va_start(ap, fmt);
+	if(!fmt){
+		remove(logfile);
+	}
+	else
+	{
+		FILE *f = fopen(logfile, "a");
+		if(f){
+			vfprintf(f, fmt, ap);
+			fclose(f);
+		}
+	}
+	va_end(ap);
+}
+
+
+void logx(char *msg, Pint x)
+{
+	if(logLock) return;
+	logLock++;
+	FILE *f = fopen(logfile, "a");
+	if(!x)
+		fputs(msg, f);
+	else{
+		const int d=200;
+		digits+=d;
+		char *buf= AWRITEX(x, digits);
+		digits-=d;
+		fprintf(f, "%s=%s;\n", msg, buf);
+		delete[] buf;
+	}
+	fclose(f);
+	logLock--;
 }
 #endif
 

@@ -15,7 +15,7 @@ ideal
 p386
 model flat,pascal
 
-extrn	_Alloc:proc, _Free:proc, _cerror:proc, _MULTX@12:proc 
+extrn	_Alloc:proc, _Free:proc, _cerror:proc, _MULTX@12:proc, _DIVX@12:proc, _SQRTX@8:proc 
 extrn	_base:dword, _baseIn:dword, _error:dword, _dwordDigits:dword
 global	_overflow:proc;, MULTX:proc
 
@@ -1838,7 +1838,7 @@ uses	esi,edi,ebx
 	ret
 endp	MULTIN
 ;-------------------------------------
-proc	DIVX
+proc	DIVX2
 arg	a2,a1,a0
 local	d1,d2,d,t1,t2
 uses	esi,edi,ebx
@@ -2149,7 +2149,7 @@ uses	esi,edi,ebx
 	pop	[dword ebx-4]
 	pop	[dword ebx-8]
 @@ret:	ret
-endp	DIVX
+endp	DIVX2
 ;-------------------------------------
 proc	MULTX1
 arg	a2,a1,a0
@@ -2180,7 +2180,7 @@ local	e2
 	push	eax
 	push	ecx
 	push	edx
-	call	DIVX
+	call	DIVX2
 	add	esp,HED+8
 	ret
 @@f1:   cmp	[dword ecx-12],-2
@@ -2867,7 +2867,7 @@ proc	SQRTI
 	ret	8
 endp	SQRTI
 ;-------------------------------------
-proc	SQRTX1
+proc	SQRTX2
 arg	a1,a0
 local	sq,s2,s3,s4,d1,d2,k,ro
 uses	esi,edi,ebx
@@ -2913,7 +2913,7 @@ uses	esi,edi,ebx
 	mov	esi,eax
 	push	eax
 	push	edi
-	call	SQRTX1
+	call	SQRTX
 	mov	eax,esi
 	call	@freex
 	ret
@@ -3169,7 +3169,7 @@ uses	esi,edi,ebx
 	call	DIVI
 @@t:	call	trim
 @@ret:	ret
-endp	SQRTX1
+endp	SQRTX2
 ;-------------------------------------
 proc	_overflow
 	lea	eax,[E_1011]
@@ -3182,6 +3182,8 @@ endp	_overflow
 ;-------------------------------------
 ;calling convention _stdcall
 MULTX:  	jmp	_MULTX@12
+DIVX:   	jmp	_DIVX@12
+SQRTX:  	jmp	_SQRTX@8
 _ALLOCN:	jmp	ALLOCNX
 _COPYX@8:	jmp	COPYX
 _WRITEX1@8:	jmp	WRITEX1
@@ -3190,7 +3192,7 @@ _MULTX1@12:	jmp	MULTX1
 _MULTI@12:	jmp	MULTI
 _MULTIN@12:	jmp	MULTIN
 _MULTI1@8:	jmp	MULTI1
-_DIVX@12:	jmp	DIVX
+_DIVX2@12:	jmp	DIVX2
 _DIVI@12:	jmp	DIVI
 _MODI@8:	jmp	MODI
 _PLUSX@12:	jmp	PLUSX
@@ -3201,7 +3203,7 @@ _CMPX@8:	jmp	CMPX
 _CMPU@8:	jmp	CMPU
 _FACTORIALI@8:	jmp	FACTORIALI
 _FFACTI@8:	jmp	FFACTI
-_SQRTX1@8:	jmp	SQRTX1
+_SQRTX2@8:	jmp	SQRTX2
 _SQRTI@8:	jmp	SQRTI
 _ANDU@12:	jmp	ANDU
 _ORU@12:	jmp	ORU
@@ -3252,17 +3254,17 @@ _XORU@12:	jmp	XORU
 public	@allocx,@freex,@newcopyx,COPYX,WRITEX1,READX1
 public	@setx,@setxn,@zerox,@onex,@fractox,@normx
 public	@negx,@absx,@signx,@truncx,@intx,@ceilx,@roundx,@fracx,@scalex,@addii
-public	MULTX,MULTX1,MULTI,MULTIN,MULTI1,DIVX,DIVI,MODI
+public	MULTX,MULTX1,MULTI,MULTIN,MULTI1,DIVX2,DIVI,MODI
 public	PLUSX,MINUSX,PLUSU,MINUSU,ANDU,ORU,XORU
-public	CMPX,CMPU,FACTORIALI,FFACTI,SQRTX1,SQRTI,ALLOCNX
+public	CMPX,CMPU,FACTORIALI,FFACTI,SQRTX2,SQRTI,ALLOCNX
 
 ;Microsoft Visual C++
 public	@ALLOCX@4,@FREEX@4,@NEWCOPYX@4,_COPYX@8,_WRITEX1@8,_READX1@8
 public	@SETX@8,@SETXN@8,@ZEROX@4,@ONEX@4,@FRACTOX@4,@NORMX@4
 public	@NEGX@4,@ABSX@4,@SIGNX@4,@TRUNCX@4,@INTX@4,@CEILX@4,@ROUNDX@4,@FRACX@4,@SCALEX@8,@ADDII@8
-public	_MULTX1@12,_MULTI@12,_MULTIN@12,_MULTI1@8,_DIVX@12,_DIVI@12,_MODI@8
+public	_MULTX1@12,_MULTI@12,_MULTIN@12,_MULTI1@8,_DIVX2@12,_DIVI@12,_MODI@8
 public	_PLUSX@12,_MINUSX@12,_PLUSU@12,_MINUSU@12,_ANDU@12,_ORU@12,_XORU@12
-public	_CMPX@8,_CMPU@8,_FACTORIALI@8,_FFACTI@8,_SQRTX1@8,_SQRTI@8,_ALLOCN
+public	_CMPX@8,_CMPU@8,_FACTORIALI@8,_FFACTI@8,_SQRTX2@8,_SQRTI@8,_ALLOCN
 
 public	_overflow,_digitTab
 	end
