@@ -597,7 +597,8 @@ void _stdcall MULTX(Pint z, const Pint x, const Pint y)
 
 	//exponent
 	xexp=x[-1]; yexp=y[-1];
-	x0[-1]= B-n1;
+	t2=qq[3];
+	t2[-1]= x0[-1]= B-n1;
 	y0[-1]= B-n2;
 	x[-1]= y[-1]= -B*2;
 
@@ -605,8 +606,6 @@ void _stdcall MULTX(Pint z, const Pint x, const Pint y)
 	memcpy(x0, x + (n1-B), B*(TintBits/8));
 	NORMX(x0);
 	PLUSX(t1, x, x0);
-	t2=qq[3];
-	t2[-1]=x0[-1];
 	t2[-3]=B;
 	memcpy(t2, x + (n1-B*2), B*(TintBits/8));
 	NORMX(t2);
@@ -617,10 +616,10 @@ void _stdcall MULTX(Pint z, const Pint x, const Pint y)
 	MINUSX(pp[3], t1, x0);
 
 	//splitting and evaluation of the second polynomial
+	t2[-1]=y0[-1];
 	memcpy(y0, y + (n2-B), B*(TintBits/8));
 	NORMX(y0);
 	PLUSX(t1, y, y0);
-	t2[-1]=y0[-1];
 	t2[-3]=B;
 	memcpy(t2, y + (n2-B*2), B*(TintBits/8));
 	NORMX(t2);
