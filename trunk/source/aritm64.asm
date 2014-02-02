@@ -2053,7 +2053,9 @@ local	d1,d2,d,t1,t2
 	mov	rdx,rdi
 	jmp	@@f3
 ;(a/b)/x
-@@f0:	sub	rsp,32+HED+16
+@@f0:	mov	rsi,rsp
+	sub	rsp,32+HED+16
+	and	rsp,-16
 ;a ulož na zásobník
 	lea	rax,[rsp+32+HED]
 	mov	qword ptr [rax-32],1
@@ -2073,7 +2075,7 @@ local	d1,d2,d,t1,t2
 	mov	rdx,[a0]
 	mov	rcx,rdx
 	call	DIVI
-	add	rsp,32+HED+16
+	mov	rsp,rsi
 	ret
 @@f1:	cmp	qword ptr [rcx-24],-2
 	jnz	@@f2
@@ -3120,13 +3122,15 @@ local	sq,s2,s3,s4,d1,d2,k,ro
 	ret
 @@fe:	call	fractonewx
 	mov	rsi,rax
+	mov	rbx,rsp
 	sub	rsp,32
+	and	rsp,-16
 	mov	rdx,rax
 	mov	rcx,rdi
 	call	SQRTX
-	add	rsp,32
 	mov	rcx,rsi
 	call	FREEX
+	mov	rsp,rbx
 	ret
 ;alokuj promìnnou sq
 @@f2:	sub	rsp,16
@@ -3187,12 +3191,14 @@ local	sq,s2,s3,s4,d1,d2,k,ro
 @@r:	mov	[ro],rax
 	mov	rcx,[sq]
 	call	sqr
-	sub	rsp,32
 	mov	r8,[sq]
 	mov	rdx,rsi
 	mov	rcx,rdi
+	mov	rsi,rsp
+	and	rsp,-16
+	sub	rsp,32
 	call	MULTX
-	add	rsp,32
+	mov	rsp,rsi
 	jmp	@@12
 @@c:	call	copyx
 	mov	[ro],0
