@@ -302,12 +302,17 @@ void initLang()
 
 	scanLangDir();
 	if(!lang[0]){
-		//language autodetection
-		strcpy(lang, "English");
-		BYTE id= (BYTE)GetUserDefaultLangID();
-		if(id==0x05) strcpy(lang, "Èesky");
-		if(id==0x0a) strcpy(lang, "Español");
-		if(id==0x19) lstrcpy(lang, "Russian");
+		//language detection
+		const char* s;
+		switch(PRIMARYLANGID(GetUserDefaultLangID()))
+		{
+			case LANG_CATALAN: s="Catalan"; break;
+			case LANG_CZECH: s="Èesky"; break;
+			case LANG_SPANISH: s="Español"; break;
+			case LANG_RUSSIAN: s="Russian"; break;
+			default: s="English"; break;
+		}
+		strcpy(lang, s);
 	}
 	loadLang();
 }
