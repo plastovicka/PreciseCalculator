@@ -1,0 +1,166 @@
+;menu
+450=&Fitxer
+451=&Llenguatge
+223=&Font...
+230=Opc&ions...\tAlt+O
+224=&Colors...
+111=&botons d'obrir...\tCtrl+B
+106=expressió d'&Obrir ...\tCtrl+O
+108=&Guardar resultat...\tCtrl+S
+109=Obrir &macros...
+110=Guardar m&acros com a...
+102=Guardar se&ttings
+105=&Esborrar configuració
+103=&Sortir
+
+453=&Editar
+205=&Desfer\tCtrl+Z
+200=&Tallar\tCtrl+X
+201=&Copiar\tCtrl+C
+202=&Enganxar\tCtrl+V
+204=Net&ejar\tEsc
+203=Copiar &resultat\tAlt+C
+234=&Històric...\tCtrl+H
+232=Anter&ior\tCtrl+up
+233=&Proper\tCtrl+down
+241=&1r  paràmetre\tCtrl+1
+242=&2n paràmetre\tCtrl+2
+243=&3r  paràmetre\tCtrl+3
+244=&4t  paràmetre\tCtrl+4
+206=&Variables...\tCtrl+L
+
+454=Constan&ts
+
+455=&Unitats
+
+465=&Macro
+210=&Nou\tCtrl+N
+211=&Esborrar\tCtrl+D
+212=&Reanomenar
+
+452=&Ajuda
+122=&Contingut\tCtrl+F1
+120=&Funcions\tF1
+121=&Sobre...
+
+
+296=Presició:
+
+1=OK
+2=Cancel·lar
+9=&Tancar
+
+;finstres de diàleg
+11=Sobre
+503=Versió
+504=Calculadora de precisió
+
+14=Crear una nova macro
+507=Nom de la macro:
+
+16=Reanomenar macro
+505=Nom original:
+506=Nou nom:
+
+15=Esborrar macro
+
+17=Variables
+20=Història
+520=&Enganxar
+521=&Esborrar
+522=Esborrar &tot
+
+18=Opcions
+537=&Guardar configuració al Sortir
+530=separador &abans del punt
+532=&Caràcter:
+534=F&requencia:
+531=separador &despres del punt
+533=C&aracter:
+535=Fr&eqüència:
+536=&Màxim numero de items a Història:
+538=&Exportar totes les expressions i resultats a un fitxer:
+539=&guardar la longitud del fitxer :
+
+19=Colors
+550=Numeros
+551=Funcions
+
+;error messages
+1010=Divisó per zero
+1011=Overflow, el numero és massa gran
+1017=L'operand canviat no és un enter
+1018=L'operand de combinació no és un enter
+1019=L'operand de permutació no és un enter
+1020=L'operand de factorial no és un enter
+1026=El màxim comú divisor de no-enters
+1027=El mínim comú múltiple de no-enters
+1030=divisor de numero real
+1031=El càlcul és massa difícil
+1032=Angle de punt [0,0]
+1033=Número invàlid després de goto
+1034=Resultat infinit
+1035=La funció no soporta números imaginaris
+1036=Logaritme de zero
+1037=Potència de zero complexe o negativa
+1038=Arrel de zero complexe o negativa
+1039=argtanh,argcoth desde 1 o -1
+1040=arctan, arccot desde 1i o -1i
+1041=Les matrius tenen un tamany incorrecte
+1042=Increment o decrement d'una matriu
+1043=La funció no suporta matrius
+1044=Les matrius no tenen el mateix tamany
+1045=El número de columnes de la primera matriu no és igual al numero de columnes de la segona
+1046=Els vectors tenen longituds diferents
+1047=Potència de la matriu no sencera
+1048=La matriu no és quadrada
+1049=Els arguments han de ser de longitud 3
+1050=La matriu no és regular
+1051=Index fora de rang
+1052=L'Index no és un enter
+1053=La matriu no té 2 columnes
+1054=La matriu ha de tenir més d'una columna
+1055=Les equacions no son resolubles
+1056=El paràmetre no és un vector
+1057=El primer paràmetre ha de ser una variable
+1058=El quart argument ha de ser un enter
+1059=La funció matriu ha de tenir els paràmetres de número de files, Númeroo de columnes
+1060=L'operand de la funció trigonometrica és massa gran
+1061=Els paràmetres han de ser variables
+1062=El resultat és massa llarg
+1063=El primer operand de la funció MOD és més gran que la precisió
+
+960=Hi ha una expressió numèrica a l'esquerra d'una assignació
+961=Increment o decrement d'una expressió
+962=S'esperava un ]
+954=El dígit és fora de la base seleccionada
+950=Funció o variable desconeguda
+951=Operator desconegut
+957=S'esperava un parèntesi esquerra
+958=Número d'arguments equivocat
+952=S'esperava un número, variabla o funció prefix
+953=S'esperava un operador binari
+959=Comete perduda al final d'un text imprès
+1029=Error fatal
+956=coma desaparellada
+963=paréntesi dret desaparellat
+955=paréntesi desaparellat
+964=No hi ha final de comentari
+
+755=Error a la  %s\nLinia %d
+756=Error a %s\nMissatge número %d és massa gran
+757=Error a %s\nNúmero duplicat %d
+753=El fitxer %s és massa llarg
+754=Error llegint el fitxer %s
+730=No es pot obrir el fitxer %s
+733=No es pot crear el fitxer %s
+735=No es pot escriure al registre de Windows
+736=Vols esborrar la teva configuració ?
+801=La macro "%s" ja existeix
+731=Mal format de %s
+802=Primerament, escriu alguna expressió a la caixa de input
+1028=No hi ha prou memòria !!!
+
+508=Fitxers de texte (*.txt)\0*.txt\0Tots el fitxers\0*.*\0
+509=Macros (*.cal)\0*.cal\0Tots els fitxers\0*.*\0
+510=Botons (*.cbt)\0*.cbt\0Tots els fitxers\0*.*\0
