@@ -1756,6 +1756,8 @@ UINT_PTR APIENTRY CFHookProc(HWND hDlg, UINT message, WPARAM wParam, LPARAM)
 	return 0;
 }
 
+static bool helpVisible;
+
 void showHelp(char *topic)
 {
 	char buf[MAX_PATH], buf2[MAX_PATH+24];
@@ -1764,7 +1766,7 @@ void showHelp(char *topic)
 	//if ZIP file has been extracted by Explorer, CHM has internet zone identifier which must be deleted before displaying help
 	sprintf(buf2, "%s:Zone.Identifier:$DATA", buf);
 	DeleteFile(buf2); //delete only alternate data stream
-	HtmlHelp(hWin, buf, 0, (DWORD_PTR)topic);
+	if(HtmlHelp(hWin, buf, 0, (DWORD_PTR)topic)) helpVisible=true;
 }
 //-----------------------------------------------------------------
 LRESULT CALLBACK MainWndProc(HWND hWnd, UINT mesg, WPARAM wP, LPARAM lP)
@@ -2239,6 +2241,9 @@ int pascal WinMain(HINSTANCE hInstance, HINSTANCE, LPSTR, int)
 	}
 	DeleteObject(hFont);
 	FreeLibrary(richLib);
+
+	//HtmlHelp bug workaround, process freezes in itss.dll CITUnknown::CloseActiveObjects() if help is visible and user closes both windows from the taskbar
+	if(helpVisible) Sleep(600);
 	return 0;
 }
 //-----------------------------------------------------------------
