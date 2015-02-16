@@ -2171,6 +2171,12 @@ int pascal WinMain(HINSTANCE hInstance, HINSTANCE, LPSTR, int)
 	WNDCLASS wc;
 
 	inst=hInstance;
+
+	//DPIAware
+	typedef BOOL(WINAPI *TGetProcAddress)();
+	TGetProcAddress getProcAddress = (TGetProcAddress) GetProcAddress(GetModuleHandle("user32"), "SetProcessDPIAware");
+	if(getProcAddress) getProcAddress();
+
 	initFuncTab();
 	ans=ALLOCC(1);
 
