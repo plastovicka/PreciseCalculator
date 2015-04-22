@@ -2090,7 +2090,7 @@ void _stdcall ATNX0(Pint y, const Pint x)
 	x[-2]=0;
 	ALLOCN(4, y[-4], &t, &u, &v, &x2);
 	if(isFraction(x)) big= Tuint(x[0])/(float)Tuint(x[1]) > 0.414214;
-	else big= Tuint(x[0]) >
+	else big= (x[-1]==0) && Tuint(x[0]) >
 #ifdef ARIT64
 		7640891576956012809; //(sqrt(2)-1)*2^64
 #else
