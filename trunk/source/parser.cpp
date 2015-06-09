@@ -1030,10 +1030,10 @@ int args(const char *input, const char **end)
 	j=-1;
 	if(formula) i-=2;
 	for(; unsigned(-j)<=i; j--){
-		Complex &s= stackEnd[j];
-		if(o->mfunc!=SWAPM) deref(s);
-		if(isMatrix(s)) matrix=true;
-		if(isImag(s)) imag=true;
+		Complex &v= stackEnd[j];
+		if(o->mfunc!=SWAPM) deref(v);
+		if(isMatrix(v)) matrix=true;
+		if(isImag(v)) imag=true;
 	}
 	if(formula) i++;
 
