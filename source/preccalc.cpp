@@ -611,7 +611,7 @@ HMENU insertSubmenu(HMENU menu, char *name)
 		}
 	}
 	p=CreatePopupMenu();
-	AppendMenu(menu, MF_POPUP, (UINT)p, name);
+	AppendMenu(menu, MF_POPUP, (UINT_PTR)p, name);
 	return p;
 }
 
@@ -657,32 +657,32 @@ void initMenu()
 	DeleteMenu(h1, 0, MF_BYPOSITION);
 }
 
-void rdMacro(HANDLE f, Darray<Tmacro> &macros, char *&macroFile, int &macroFileLen)
+void rdMacro(HANDLE f, Darray<Tmacro> &_macros, char *&_macroFile, int &_macroFileLen)
 {
 	char *s, *t, *n;
 	Tmacro *m;
 
-	macroFileLen=GetFileSize(f, 0);
-	aminmax(macroFileLen, 0, 10000000);
-	delete[] macroFile;
-	s= new char[macroFileLen+1];
-	macroFile=s;
+	_macroFileLen=GetFileSize(f, 0);
+	aminmax(_macroFileLen, 0, 10000000);
+	delete[] _macroFile;
+	s= new char[_macroFileLen+1];
+	_macroFile=s;
 	DWORD r;
-	ReadFile(f, s, macroFileLen, &r, 0);
+	ReadFile(f, s, _macroFileLen, &r, 0);
 	CloseHandle(f);
-	s[macroFileLen]=0;
+	s[_macroFileLen]=0;
 
 	for(;;){
 		//find left bracket
 		for(;;){
 			s=strchr(s, '[');
 			if(!s) return;
-			if(s==macroFile || s[-1]=='\n' || s[-1]=='\r') break;
+			if(s==_macroFile || s[-1]=='\n' || s[-1]=='\r') break;
 			s++;
 		}
 		//trim trailing EOL
 		t=s;
-		while(t>macroFile && (t[-1]=='\r' || t[-1]=='\n')) t--;
+		while(t>_macroFile && (t[-1]=='\r' || t[-1]=='\n')) t--;
 		*t=0;
 		//find right bracket
 		s++;
@@ -696,7 +696,7 @@ void rdMacro(HANDLE f, Darray<Tmacro> &macros, char *&macroFile, int &macroFileL
 		*s++=0;
 		while(*s=='\r' || *s=='\n') s++;
 		//add macro
-		m= macros++;
+		m= _macros++;
 		m->name=n;
 		m->content=s;
 	}
@@ -908,12 +908,12 @@ void moveW(HDWP p, HWND hDlg, int id, int dx, int dy)
 		SWP_NOMOVE|SWP_NOZORDER);
 }
 
-void historySize(HWND hWnd, LPARAM lP, int &oldW, int &oldH)
+void historySize(HWND hWnd, LPARAM lP, int &oldWidth, int &oldHeight)
 {
-	if(oldW){
+	if(oldWidth){
 		//adjust controls positions
-		int dw=LOWORD(lP)-oldW;
-		int dh=HIWORD(lP)-oldH;
+		int dw=LOWORD(lP)-oldWidth;
+		int dh=HIWORD(lP)-oldHeight;
 		HDWP p = BeginDeferWindowPos(5);
 		moveX(p, hWnd, 520, dw);
 		moveX(p, hWnd, 521, dw);
@@ -922,8 +922,8 @@ void historySize(HWND hWnd, LPARAM lP, int &oldW, int &oldH)
 		moveW(p, hWnd, 101, dw, dh); //listBox
 		EndDeferWindowPos(p);
 	}
-	oldW=LOWORD(lP);
-	oldH=HIWORD(lP);
+	oldWidth=LOWORD(lP);
+	oldHeight=HIWORD(lP);
 }
 
 BOOL CALLBACK VarListProc(HWND hWnd, UINT mesg, WPARAM wP, LPARAM lP)
@@ -937,11 +937,11 @@ BOOL CALLBACK VarListProc(HWND hWnd, UINT mesg, WPARAM wP, LPARAM lP)
 	MEASUREITEMSTRUCT *lpmis;
 	TEXTMETRIC tm;
 	RECT rc;
-	static int oldW, oldH;
+	static int oldWidth, oldHeight;
 
 	switch(mesg){
 		case WM_INITDIALOG:
-			oldW=oldH=0;
+			oldWidth=oldHeight=0;
 			setDlgTexts(hWnd, 17);
 			initVarList(listBox);
 			return 1;
@@ -977,7 +977,7 @@ BOOL CALLBACK VarListProc(HWND hWnd, UINT mesg, WPARAM wP, LPARAM lP)
 			return TRUE;
 
 		case WM_SIZE:
-			if(lP){ historySize(hWnd, lP, oldW, oldH); InvalidateRect(GetDlgItem(hWnd, 101), 0, TRUE); }
+			if(lP){ historySize(hWnd, lP, oldWidth, oldHeight); InvalidateRect(GetDlgItem(hWnd, 101), 0, TRUE); }
 			break;
 
 		case WM_GETMINMAXINFO:
@@ -1031,11 +1031,11 @@ BOOL CALLBACK HistoryProc(HWND hWnd, UINT mesg, WPARAM wP, LPARAM lP)
 	MEASUREITEMSTRUCT *lpmis;
 	TEXTMETRIC tm;
 	RECT rc;
-	static int oldW, oldH;
+	static int oldWidth, oldHeight;
 
 	switch(mesg){
 		case WM_INITDIALOG:
-			oldW=oldH=0;
+			oldWidth=oldHeight=0;
 			setDlgTexts(hWnd);
 			SetWindowText(hWnd, lng(20, "History"));
 			initHistoryList(listBox);
@@ -1065,7 +1065,7 @@ BOOL CALLBACK HistoryProc(HWND hWnd, UINT mesg, WPARAM wP, LPARAM lP)
 			return TRUE;
 
 		case WM_SIZE:
-			if(lP){ historySize(hWnd, lP, oldW, oldH); InvalidateRect(GetDlgItem(hWnd, 101), 0, TRUE); }
+			if(lP){ historySize(hWnd, lP, oldWidth, oldHeight); InvalidateRect(GetDlgItem(hWnd, 101), 0, TRUE); }
 			break;
 
 		case WM_GETMINMAXINFO:
@@ -1645,7 +1645,7 @@ HWND createRichEdit(int x, int y, int r, int b, int id)
 	HWND w=CreateWindowEx(0, richEditClass, "",
 		ES_MULTILINE|ES_AUTOVSCROLL|WS_BORDER|WS_VSCROLL|WS_TABSTOP|WS_VISIBLE|WS_CHILD,
 		rc.left, rc.top, rc.right-rc.left, rc.bottom-rc.top,
-		hWin, (HMENU)id, inst, 0);
+		hWin, (HMENU)(UINT_PTR)id, inst, 0);
 	SendMessage(w, EM_SETLANGOPTIONS, 0, 0);
 	SendMessage(w, EM_SETTEXTMODE, TM_PLAINTEXT|TM_MULTILEVELUNDO|TM_SINGLECODEPAGE, 0);
 	SendMessage(w, EM_SETLIMITTEXT, 10000000, 0);
@@ -1720,7 +1720,7 @@ void loadButtons()
 					WS_CHILD|WS_VISIBLE|BS_OWNERDRAW,
 					rc.left+b->x*dpix/96, rc.top+b->y*dpiy/96,
 					b->w*dpix/96-xgap, b->h*dpiy/96-ygap, hWin,
-					(HMENU)(300+i), inst, 0);
+					(HMENU)(UINT_PTR)(300+i), inst, 0);
 				if(!strcmp(b->f, "EXE")){
 					idEnter=300+i;
 					btnProc= (WNDPROC)SetWindowLongPtr(b->wnd, GWLP_WNDPROC, (LONG_PTR)enterProc);
@@ -1803,12 +1803,12 @@ LRESULT CALLBACK MainWndProc(HWND hWnd, UINT mesg, WPARAM wP, LPARAM lP)
 			break;
 		case WM_MOUSEMOVE:
 		{
-			bool b=isBetweenInOut(lP, y);
+			bool between=isBetweenInOut(lP, y);
 			if(resizing){
 				resizeInOut(y);
-				b=true;
+				between=true;
 			}
-			SetCursor(LoadCursor(0, b ? IDC_SIZENS : IDC_ARROW));
+			SetCursor(LoadCursor(0, between ? IDC_SIZENS : IDC_ARROW));
 			break;
 		}
 		case WM_LBUTTONDOWN:
@@ -1959,10 +1959,10 @@ LRESULT CALLBACK MainWndProc(HWND hWnd, UINT mesg, WPARAM wP, LPARAM lP)
 						paste(units[cmd-ID_UNITS].content);
 					}
 					if(cmd>=ID_MACROS && cmd<ID_MACROS+macros.len){
-						bool c=clearInput;
+						bool old=clearInput;
 						paste(macros[cmd-ID_MACROS].content);
 						strcpy(lastMacro, macros[cmd-ID_MACROS].name);
-						clearInput=c;
+						clearInput=old;
 					}
 					break;
 				case IDC_DEG:
