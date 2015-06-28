@@ -309,6 +309,7 @@ void initLang()
 			case LANG_CATALAN: s="Catalan"; break;
 			case LANG_CZECH: s="Èesky"; break;
 			case LANG_SPANISH: s="Español"; break;
+			case LANG_FRENCH: s="French"; break;
 			case LANG_RUSSIAN: s="Russian"; break;
 			default: s="English"; break;
 		}

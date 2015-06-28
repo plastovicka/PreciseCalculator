@@ -1,0 +1,101 @@
+
+[&Vitesse de la lumière [m/s]]
+299792458
+[&g [m/s^2]]
+9.80665
+[&Gravitationnel [m^3/s^2.kg]]
+6.6742 E-11
+[&Avogadro [1/mol]]
+6.0221415 E23
+[&Gas universel [J/mol.K]]
+8.314472
+[&Volume molaire du gaz [m^3/mol]]
+0.022413996
+[Permitivité du vide [F/m]]
+(1 (299792458^2*4e-7*pi))
+[Permeabilité du vide [H/m]]
+(4e-7*pi)
+[Faraday [C/mol]]
+96485.3383
+[Charge élémentaire [C]]
+1.60217653 E-19
+[Masse atomique [kilogramme]]
+1.66053886 E-27
+[Masse de l'électron [kilogramme]]
+9.1093826 E-31
+[Masse du proton [kilogramme]]
+1.67262171 E-27
+[Masse du neutron [kilogramme]]
+1.67492728 E-27
+[Rydberg [en 1/m]]
+10973731.568525
+[Planck [J.s]]
+6.6260693 E-34
+[Boltzmann [J/K]]
+1.3806505 E-23
+[Stefan-Boltzmann [W/m^2.K^4]]
+5.6704 E-8
+[Magneton de Bohr [J/T]]
+9.27400949 E-24
+[Magneton nuclear [J/T]]
+5.05078343 E-27
+[&Conversion\Unité anglaise à métrique\Inch -> cm]
+*2.54
+[&Conversion\Unité anglaise à métrique\Pied -> Metre]
+*0.3048
+[&Conversion\Unité anglaise à métrique\Gallon(Us) -> Litre]
+*3.785411784
+[&Conversion\Unité anglaise à métrique\Cheval vapeur -> Kilowatt]
+*0.7354988
+[&Conversion\Unité anglaise à métrique\Miles -> Kilometres]
+*1.609344
+[&Conversion\Unité anglaise à métrique\Miles Nautiques -> Metres]
+*1852
+[&Conversion\Unité anglaise à métrique\Once -> Gramme]
+*28.349523125
+[&Conversion\Unité anglaise à métrique\Livre -> Kilogramme]
+*0.45359237
+[&Conversion\Unité anglaise à métrique\Yards -> Metres]
+*0.45359237
+[&Conversion\Unité anglaise à métrique\Acre -> Metre carré]
+*4046,8564224
+[&Conversion\Unité anglaise à métrique\Calories -> Joule]
+*4.1868
+[&Conversion\Unité anglaise à métrique\Once liquide(us) -> milimetre]
+*29.5735295625
+
+[&Conversion\Métrique à unité anglaise\cm -> Inch]
+*0.393700787401575
+[&Conversion\Métrique à unité anglaise\Mètre -> Pied]
+*0,393700787401575
+[&Conversion\Métrique à unité anglaise\Litre -> gallon(Us)]
+*0,264172052358148
+[&Conversion\Métrique à unité anglaise\Kilowatt -> Cheval vapeur]
+*1,35962152487536
+[&Conversion\Métrique à unité anglaise\Kilomètres -> miles]
+*0,621371192237334
+[&Conversion\Métrique à unité anglaise\Metres -> Miles Nautiques]
+*0,000539956803455724
+[&Conversion\Métrique à unité anglaise\Grames -> Onces]
+*0,0352739619495804
+[&Conversion\Métrique à unité anglaise\Kilogrammes -> Livres]
+*2,20462262184878
+[&Conversion\Métrique à unité anglaise\Metres -> Yards]
+*1,09361329833771
+[&Conversion\Métrique à unité anglaise\Mètre carré -> Acre]
+*0,000247105381467165
+[&Conversion\Métrique à unité anglaise\Joule -> Calories]
+*0,238845896627496
+[&Conversion\Métrique à unité anglaise\Millimètres -> once liquide(us)]
+*0,033814022701843
+Métrique à unité anglaise\Centimètre cube -> Litre]
+*0.001
+[&Conversion\Durée\Année Julienne -> Grégorienne]
+*1.000021
+[&Conversion\Durée\Heure -> Année Julienne]
+*0.0001140771
+[Notes sur les conversions]
+Chercher sur le site http://www.convert-me.com/en/
+ou utiliser les applications dans ce dossier
+Convert.exe ou pcconvert.exe
+
