@@ -1,0 +1,102 @@
+
+[&Velocità della luce [m/s]]
+299792458
+[&g [m/s^2]]
+9.80665
+[&Gravitazionale [m^3/s^2.kg]]
+6.6742 E-11
+[&Avogadro [1/mol]]
+6.0221415 E23
+[&Gas universale [J/mol.K]]
+8.314472
+[&Volume molare del gas [m^3/mol]]
+0.022413996
+[Permettività del vuoto [F/m]]
+(1 (299792458^2*4e-7*pi))
+[Permeabilità del vuoto [H/m]]
+(4e-7*pi)
+[Faraday [C/mol]]
+96485.3383
+[Carica elementare [C]]
+1.60217653 E-19
+[Massa atomica [kilogrammo]]
+1.66053886 E-27
+[Massa dell'elettrone [kilogrammo]]
+9.1093826 E-31
+[Massa del protone [kilogrammo]]
+1.67262171 E-27
+[Massa del neutrone [kilogrammo]]
+1.67492728 E-27
+[Rydberg [en 1/m]]
+10973731.568525
+[Planck [J.s]]
+6.6260693 E-34
+[Boltzmann [J/K]]
+1.3806505 E-23
+[Stefan-Boltzmann [W/m^2.K^4]]
+5.6704 E-8
+[Magnetone di Bohr [J/T]]
+9.27400949 E-24
+[Magnetone nucleare [J/T]]
+5.05078343 E-27
+[&Conversione\Unità Metrica inglese\Pollice -> cm]
+*2.54
+[&Conversione\Unità Metrica inglese\Piede -> Metro]
+*0.3048
+[&Conversione\Unità Metrica inglese\Gallone(Us) -> Litro]
+*3.785411784
+[&Conversione\Unità Metrica inglese\Cavallo vapore -> Kilowatt]
+*0.7354988
+[&Conversione\Unità Metrica inglese\Miglio -> Kilometro]
+*1.609344
+[&Conversione\Unità Metrica inglese\Miglio Nautico -> Metro]
+*1852
+[&Conversione\Unità Metrica inglese\Oncia -> Grammo]
+*28.349523125
+[&Conversione\Unità Metrica inglese\Libbra -> Kilogrammo]
+*0.45359237
+[&Conversione\Unità Metrica inglese\Yarda -> Metro]
+*0.45359237
+[&Conversione\Unità Metrica inglese\Acro -> Metro quadrato]
+*4046,8564224
+[&Conversione\Unità Metrica inglese\Caloria -> Joule]
+*4.1868
+[&Conversione\Unità Metrica inglese\Oncia liquida(us) -> millimetro]
+*29.5735295625
+
+[&Conversione\Unità Metrica inglese\cm -> Pollice]
+*0.393700787401575
+[&Conversione\Unità Metrica inglese\Metro -> Piede]
+*0,393700787401575
+[&Conversione\Unità Metrica inglese\Litro -> gallone(Us)]
+*0,264172052358148
+[&Conversione\Unità Metrica inglese\Kilowatt -> Cavallo vapore]
+*1,35962152487536
+[&Conversione\Unità Metrica inglese\Kilometro -> miglio]
+*0,621371192237334
+[&Conversione\Unità Metrica inglese\Metro -> Miglio Nautico]
+*0,000539956803455724
+[&Conversione\Unità Metrica inglese\Grammo -> Oncia]
+*0,0352739619495804
+[&Conversione\Unità Metrica inglese\Kilogrammo -> Libbra]
+*2,20462262184878
+[&Conversione\Unità Metrica inglese\Metro -> Yarda]
+*1,09361329833771
+[&Conversione\Unità Metrica inglese\Metro quadrato -> Acro]
+*0,000247105381467165
+[&Conversione\Unità Metrica inglese\Joule -> Caloria]
+*0,238845896627496
+[&Conversione\Unità Metrica inglese\Millimetro -> oncia liquida(us)]
+*0,033814022701843
+Unità Metrica inglese\Centimetro cubico -> Litro]
+*0.001
+[&Conversione\Tempo\Anno Giuliano -> Gregoriano]
+*1.000021
+[&Conversione\Tempo\Ora -> Anno Giuliano]
+*0.0001140771
+[Note sulle conversioni]
+Cerca sul sito http://www.convert-me.com/en/
+o utilizza le applicazioni nella cartella
+Convert.exe o pcconvert.exe
+
+

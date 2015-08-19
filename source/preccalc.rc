@@ -254,32 +254,32 @@ BEGIN
     PUSHBUTTON      "&Close",9,242,76,50,14
 END
 
-IDD_OPTIONS DIALOG DISCARDABLE  0, 0, 218, 197
+IDD_OPTIONS DIALOG DISCARDABLE  0, 0, 223, 197
 STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
 CAPTION "Options"
 FONT 9, "MS Shell Dlg"
 BEGIN
     CONTROL         "&Save settings on exit",537,"Button",BS_AUTOCHECKBOX | 
                     WS_TABSTOP,7,7,204,10
-    GROUPBOX        "",IDC_STATIC,3,20,98,68
+    GROUPBOX        "",IDC_STATIC,3,20,106,68
     CONTROL         "separator &before point",530,"Button",BS_AUTOCHECKBOX | 
-                    WS_TABSTOP,8,31,88,10
+                    WS_TABSTOP,8,31,98,10
     LTEXT           "&Character:",532,11,49,45,8
     EDITTEXT        101,61,48,17,14
     LTEXT           "F&requency:",534,11,68,45,8
     EDITTEXT        103,61,67,24,14,ES_NUMBER
-    GROUPBOX        "",IDC_STATIC,107,20,100,68
+    GROUPBOX        "",IDC_STATIC,113,20,106,68
     CONTROL         "separator &after point",531,"Button",BS_AUTOCHECKBOX | 
-                    WS_TABSTOP,113,31,87,10
-    LTEXT           "C&haracter:",533,116,49,45,8
-    EDITTEXT        102,166,48,17,14
-    LTEXT           "Fr&equency:",535,116,68,45,8
-    EDITTEXT        104,166,67,24,14,ES_NUMBER
+                    WS_TABSTOP,119,31,93,10
+    LTEXT           "C&haracter:",533,122,49,45,8
+    EDITTEXT        102,172,48,17,14
+    LTEXT           "Fr&equency:",535,122,68,45,8
+    EDITTEXT        104,172,67,24,14,ES_NUMBER
     LTEXT           "&Maximum number of items in history:",536,7,101,132,8
     EDITTEXT        105,146,98,32,14,ES_AUTOHSCROLL | ES_NUMBER
     CONTROL         "&Log all expressions and results to a file:",538,"Button",
                     BS_AUTOCHECKBOX | WS_TABSTOP,7,121,204,10
-    EDITTEXT        106,20,135,191,14,ES_AUTOHSCROLL
+    EDITTEXT        106,20,135,193,14,ES_AUTOHSCROLL
     RTEXT           "Lo&g file length:",539,7,156,73,8
     EDITTEXT        107,89,153,40,14,ES_AUTOHSCROLL
     LTEXT           "KB",IDC_STATIC,133,155,10,8
@@ -352,7 +352,7 @@ END
 //
 
 VS_VERSION_INFO VERSIONINFO
- FILEVERSION 2,6,0,0
+ FILEVERSION 2,6,3,0
  PRODUCTVERSION 0,0,0,0
  FILEFLAGSMASK 0x3fL
 #ifdef _DEBUG
@@ -368,18 +368,11 @@ BEGIN
     BEGIN
         BLOCK "040504b0"
         BEGIN
-            VALUE "Comments", "\0"
             VALUE "CompanyName", "Petr Laštovièka\0"
             VALUE "FileDescription", "Precise Calculator\0"
-            VALUE "FileVersion", "2, 6, 0, 0\0"
-            VALUE "InternalName", "\0"
-            VALUE "LegalCopyright", "© 2004-2013  Petr Laštovièka\0"
-            VALUE "LegalTrademarks", "\0"
+            VALUE "FileVersion", "2, 6, 3, 0\0"
+            VALUE "LegalCopyright", "© 2004-2015  Petr Laštovièka\0"
             VALUE "OriginalFilename", "preccalc.exe\0"
-            VALUE "PrivateBuild", "\0"
-            VALUE "ProductName", "\0"
-            VALUE "ProductVersion", "\0"
-            VALUE "SpecialBuild", "\0"
         END
     END
     BLOCK "VarFileInfo"
@@ -439,7 +432,7 @@ BEGIN
     IDD_OPTIONS, DIALOG
     BEGIN
         LEFTMARGIN, 7
-        RIGHTMARGIN, 211
+        RIGHTMARGIN, 218
         TOPMARGIN, 7
         BOTTOMMARGIN, 189
     END
