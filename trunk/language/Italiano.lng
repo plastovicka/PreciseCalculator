@@ -1,0 +1,160 @@
+503=Versione
+504=Precise Calculator 
+13=language\\IT.chm
+10=language\\const_IT.cns
+12=language\\units_IT.unt
+21=language\\examples_IT.cal
+
+296=Precisione:
+
+1=OK
+2=Annulla
+9=Ferma
+11=Info
+16=Rinomina Macro
+14=Crea nuova Macro
+15=Cancella Macro
+17=Variabili
+18=Opzioni
+19=Colori
+20=Cronologia
+
+;menu
+450=File
+451=Lingua
+452=Aiuto
+453=Modifica
+454=Costanti
+455=Unità
+465=Macro
+470=Conversione
+471=nose
+
+102=Salva impostazioni
+103=Chiudi
+111=Apri pulsanti...\tCtrl+B
+224=Colori...
+105=Cancella impostazioni
+106=Apri espressioni...\tCtrl+O
+108=Cancella risultato...\tCtrl+S
+109=Apri Macro...
+110=Salva Macros come...
+200=Taglia\tCtrl+X
+201=Copia\tCtrl+C
+202=Incolla\tCtrl+V
+203=Copia risultato\tAlt+C
+204=Cancella\tEsc
+205=Annulla\tCtrl+Z
+210=Nuovo\tCtrl+N
+211=Cancella\tCtrl+D
+212=Rinomina
+223=Font...
+230=Opzioni...\tAlt+O
+234=Cronologia...\tCtrl+H
+232=Precedente\tCtrl+up
+233=Successivo\tCtrl+down
+241=&1. parametro\tCtrl+1
+242=&2. parametro\tCtrl+2
+243=&3. parametro\tCtrl+3
+244=&4. parametro\tCtrl+4
+206=Variabili...\tCtrl+L
+122=Guida\tCtrl+F1
+120=Funzioni\tF1
+121=Info...
+
+
+505=Nome originale:
+506=Nuovo nome:
+507=Nome macro:
+508=File di Testo (*.txt)\0*.txt\0Tutti i file\0*.*\0
+509=Macro (*.cal)\0*.cal\0Tutti i file\0*.*\0
+510=Pulsanti (*.cbt)\0*.cbt\0Tutti i file\0*.*\0
+520=Incolla
+521=Chiudi
+522=Chiudi tutto
+
+;Options
+530=separatore prima del punto
+531=separatore dopo il punto
+532=Carattere:
+533=Carattere:
+534=Frequenza:
+535=Frequenza:
+536=Numero voci della cronologia:
+537=Salva impostazioni all'uscita
+538=Salva tutte le espressioni ed i risultati su file..:
+539=&Lunghezza file log:
+
+;Barvy
+550=Numeri
+551=Funzioni
+
+
+730=Impossibile aprire il file %s
+731=Errore formato su %s
+733=Impossibile creare il file %s
+735=Impossibile scrivere nel Registro 
+736=Vuoi eliminare le impostazioni? 
+753=Impostazione %s troppo lungo
+754=Errore su impostazione vuota
+755=Errore in %s \ nRiga %d 
+756=Errore in %s \ nNumero messaggio %d è troppo grande 
+757=Errore in %s \ nNumero duplicato %d 
+801=La Macro "%s" esiste già
+802=Prima indica un'espressione nella casella
+
+950=Funzione o variabile sconosciuta
+951=Operazione sconosciuta
+952=Numero, variabile o funzione attesa
+953=Atteso operatore binario
+954=Una cifra è fuori dalla base selezionata
+955=Le parentesi non coincidono
+956=La virgola non corrisponde
+957=Attesa parentesi a sinistra 
+958=Numero di argomenti non corretto
+959=Manca citazione alla fine del testo stampato 
+960=Espressione numerica a sinistra dell'assegnazione
+961=Aumenta o diminuisci espressione 
+962=attendere 
+963=Parentesi destra non coincidete
+964=Fine commento mancante
+
+1010=Divisione per zero
+1011=Eccesso, il numero è troppo grande 
+1017=Il cambio dell'operando non è un numero intero 
+1018=l'operatore della combinazione non è un numero intero
+1019=l'operatore della permutazione non è un numero intero
+1020=il fattoriale dell'operatore non è un numero intero
+1026=Il massimo comun divisore del numero effettivo
+1027=Il minimo comune multiplo del numero effettivo
+1030=divisore del numero effettivo
+1031=Calcolo molto complesso
+1032=Angolo del punto [0,0]
+1033=numero non valido dopo goto
+1034=Risultato infinito 
+1035=La funzione non supporta numeri immaginari
+1036=logaritmo di zero
+1037=Complesso o potenza negativa di zero
+1038=Complesso o radice negativa di zero
+1039=argtanh, argcoth a partire da 1 o -1
+1040=arctan, arccot di 1i o -1i
+1041=le matrici hanno il formato non corretto
+1042=Aumento o diminuzione della matrice
+1043=La funzione non è compatibile con le matrici
+1044=Le matrici hanno lo stesso formato
+1045=Il numero di colonne della prima matrice non è uguale a quello nella seconda matrice
+1046=I vettori hanno lunghezze differenti
+1047=Non è una potenza della matrice
+1048=La matrice non è quadrata
+1049=Gli argomenti devono essere vettori di lunghezza 3
+1050=La matrice non è regolare
+1051=L'indice è fuori intervallo
+1052=L'indice non è un numero intero
+1053=La matrice non ha 2 colonne
+1054=La matrice deve avere più di una colonna
+1055=Le equazioni non sono risolvibili
+1056=Il parametro non è un vettore
+1057=Il primo parametro deve essere una variabile
+1058=Il quarto argomento deve essere un numero intero
+1059=I parametri di funzione matrice devono avere il numero delle righe ed il numero delle colonne 
+
