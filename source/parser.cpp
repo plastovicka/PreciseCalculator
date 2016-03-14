@@ -1331,6 +1331,24 @@ void checkInfinite(Complex &y, Tint prec)
 	}
 }
 //---------------------------------------------------------------
+void ClearError(int err)
+{
+#ifdef ARIT64
+	InterlockedCompareExchange((Tinterlock*)&error, 0, (Tinterlock)err);
+#else
+	typedef LONG(WINAPI *TInterlockedCompareExchange)(LONG volatile *, LONG, LONG);
+	static TInterlockedCompareExchange pInterlockedCompareExchange;
+	if(!pInterlockedCompareExchange){
+		pInterlockedCompareExchange = (TInterlockedCompareExchange)GetProcAddress(GetModuleHandle("kernel32"), "InterlockedCompareExchange");
+		if(!pInterlockedCompareExchange){
+			if(error==err) error=0;
+			return;
+		}
+	}
+	pInterlockedCompareExchange((Tinterlock*)&error, 0, (Tinterlock)err);
+#endif
+}
+//---------------------------------------------------------------
 DWORD WINAPI threadLoop(char *param)
 {
 	DWORD time= getTickCount();
@@ -1435,10 +1453,10 @@ DWORD WINAPI threadLoop(char *param)
 					y=retValue;
 					e=strchr(input, 0);
 					if(!y.r){
-						InterlockedCompareExchange((Tinterlock*)&error, 0, (Tinterlock)1102);
+						ClearError(1102);
 						goto lout;
 					}
-					InterlockedCompareExchange((Tinterlock*)&error, 0, (Tinterlock)1101);
+					ClearError(1101);
 				}
 				else{
 					if(error){
