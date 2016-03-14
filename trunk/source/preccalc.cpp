@@ -2173,9 +2173,9 @@ int pascal WinMain(HINSTANCE hInstance, HINSTANCE, LPSTR, int)
 	inst=hInstance;
 
 	//DPIAware
-	typedef BOOL(WINAPI *TGetProcAddress)();
-	TGetProcAddress getProcAddress = (TGetProcAddress) GetProcAddress(GetModuleHandle("user32"), "SetProcessDPIAware");
-	if(getProcAddress) getProcAddress();
+	typedef BOOL(WINAPI *TSetProcessDPIAware)();
+	TSetProcessDPIAware pDPIAware = (TSetProcessDPIAware)GetProcAddress(GetModuleHandleA("user32"), "SetProcessDPIAware");
+	if(pDPIAware) pDPIAware();
 
 	initFuncTab();
 	ans=ALLOCC(1);
