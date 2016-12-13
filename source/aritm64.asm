@@ -1,4 +1,4 @@
-; (C) 2005-2014  Petr Lastovicka
+; (C) 2005-2016  Petr Lastovicka
  
 ; This program is free software; you can redistribute it and/or
 ; modify it under the terms of the GNU General Public License.
@@ -2601,7 +2601,8 @@ WRITEX1	proc 	uses rsi rdi rbx buf,a1
 ;èást vlevo od teèky
 @@high:	xor	rdx,rdx
 	mov	edx,[base]
-	mov	rbx,[qwordMax+rdx*8]
+	lea	r11,[qwordMax]
+	mov	rbx,[r11+rdx*8]
 ;cyklus od teèky smìrem vlevo, rcx je poèítadlo
 @@h1:	push	rcx
 	push	rdi
@@ -2622,11 +2623,13 @@ WRITEX1	proc 	uses rsi rdi rbx buf,a1
 @@h3:	xor	rdi,rdi
 	mov	edi,[base]
 	mov	rax,rdx
-	mov	cl,[qwordDigitsI+rdi]
+	lea	r11,[qwordDigitsI]
+	mov	cl,[r11+rdi]
+	lea	r10,[digitTab]
 @@2:	xor	rdx,rdx
 	div	rdi
 ;zbytek dìlení je výsledná èíslice
-@@d:	mov	dl,[digitTab+rdx]
+@@d:	mov	dl,[r10+rdx]
 	mov	[rsi],dl
 	inc	rsi
 	dec	cl
@@ -2673,7 +2676,8 @@ WRITEX1	proc 	uses rsi rdi rbx buf,a1
 	xor	rax,rax
 	mov	eax,[base]
 	fild	qword ptr [rsp]
-	fld	qword ptr [dwordDigits+8*rax]
+	lea	r11,[dwordDigits]
+	fld	qword ptr [r11+8*rax]
 	fmul
 	fistp	qword ptr [rsp]
 	pop	rdx
@@ -2686,7 +2690,8 @@ WRITEX1	proc 	uses rsi rdi rbx buf,a1
 	push	rcx
 	xor	rax,rax
 	mov	eax,[base]
-	mov	rax,[qwordMax+rax*8]
+	lea	r11,[qwordMax]
+	mov	rax,[r11+rax*8]
 	test	rax,rax
 	jnz	@@low1
 	mov	rbx,[rdi]
@@ -2710,12 +2715,14 @@ WRITEX1	proc 	uses rsi rdi rbx buf,a1
 @@low2:	mov	rax,rbx
 	xor	rdi,rdi
 	mov	edi,[base]
-	movzx	rcx,[qwordDigitsI+rdi]
+	lea	r11,[qwordDigitsI]
+	movzx	rcx,byte ptr [r11+rdi]
 	mov	rbx,rcx
+	lea	r10,[digitTab]
 @@d2:	xor	rdx,rdx
 	div	rdi
 ;zbytek dìlení je výsledná èíslice
-	mov	dl,[digitTab+rdx]
+	mov	dl,[r10+rdx]
 	dec	rcx
 	mov	[rsi+rcx],dl
 	jnz	@@d2
