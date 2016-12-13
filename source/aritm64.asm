@@ -2662,7 +2662,7 @@ WRITEX1	proc 	uses rsi rdi rbx buf,a1
 	mov	rdi,[rsp+8]
 	mov	rdx,[rdi-8]
 	mov	rcx,[rdi-24]
-	mov	rbx,[edi-32]
+	mov	rbx,[rdi-32]
 	lea	rdi,[rdi+8*rdx]
 	sub	rcx,rdx
 	jle	@@end  ;celé èíslo
