@@ -1262,7 +1262,7 @@ BOOL CALLBACK RenameMacroProc(HWND hWnd, UINT mesg, WPARAM wP, LPARAM)
 	return FALSE;
 }
 
-DWORD getVer()
+VS_FIXEDFILEINFO *getVer()
 {
 	HRSRC r;
 	HGLOBAL h;
@@ -1274,19 +1274,20 @@ DWORD getVer()
 	h=LoadResource(0, r);
 	s=LockResource(h);
 	if(!s || !VerQueryValue(s, "\\", (void**)&v, &i)) return 0;
-	return v->dwFileVersionMS;
+	return v;
 }
 
 BOOL CALLBACK AboutProc(HWND hWnd, UINT mesg, WPARAM wP, LPARAM)
 {
 	char buf[64];
-	DWORD d;
+	VS_FIXEDFILEINFO *v;
 
 	switch(mesg){
 		case WM_INITDIALOG:
 			setDlgTexts(hWnd, 11);
-			d=getVer();
-			sprintf(buf, "%d.%d", HIWORD(d), LOWORD(d));
+			v=getVer();
+			sprintf(buf, HIWORD(v->dwFileVersionLS) ? "%d.%d.%d" : "%d.%d",
+				HIWORD(v->dwFileVersionMS), LOWORD(v->dwFileVersionMS), HIWORD(v->dwFileVersionLS));
 			SetDlgItemText(hWnd, 101, buf);
 			return TRUE;
 
