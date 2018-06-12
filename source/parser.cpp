@@ -244,6 +244,7 @@ CMDLEFT=401, CMDGOTO=402, CMDRIGHT=455, CMDEND=460, CMDVARARG=500,
 const Top opNeg={0, 9, F NEGX, F NEGC, F NEGM};
 const Top opImag={0, 2, 0, F ISUFFIXC, 0};
 const Top opTransp={0, 2, 0, 0, F TRANSP2M};
+char degSymbol[4];
 
 /*
  0=number or variable
@@ -378,12 +379,13 @@ const Top funcTab[]={
 	{"permut", 111, F PERMUTX, 0, 0}, {"npr", 111, F PERMUTX, 0, 0},
 	{"^", 5, 0, F POWC, F POWM},
 	{"#", 4, 0, F ROOTC, 0},
+	//{"agm", 121, F AGMX, 0, 0},
 
 	//postfix operators
 	{"!!", 2, F FFACTX, 0, 0},
 	{"!", 2, F FACTORIALX, 0, 0},
 	{"[", 2, 0, 0, F INDEXM},
-	{"°", 2, F DEGX, 0, 0},
+	{degSymbol, 2, F DEGX, 0, 0},
 
 	//constants
 	{"pi", 1, F PIX, 0, 0},
@@ -821,10 +823,10 @@ int token(const char *&s, bool isFor=false, bool isPostfix=false)
 	char c;
 	const char *a;
 	Complex x;
-	const Top *o, **po;
+	const Top *o, **po, **po1;
 	Tstack *t;
 	Tvar *v;
-	int varNameLen;
+	int i, varNameLen;
 	TsearchInfo si;
 
 	if(error) return -3;
@@ -871,7 +873,11 @@ int token(const char *&s, bool isFor=false, bool isPostfix=false)
 		if(po){
 			//one function can be prefix of another function,
 			// find the longest function that match input string
-			while(po < funcTabSorted+sizeA(funcTab)-1 && !cmpSearchOp(&si, po+1)) po++;
+			for (po1 = po + 1; po1 < funcTabSorted + sizeA(funcTab); po1++) {
+				i = cmpSearchOp(&si, po1);
+				if (i < 0) break;
+				if (i == 0) po = po1;
+			}
 			//add operation to the stack
 			t= opStack++;
 			t->inputPtr= s;
@@ -1375,7 +1381,7 @@ DWORD WINAPI threadLoop(char *param)
 	Nseed=prec2;
 	baseOld=baseIn;
 
-	for(precision= (prec2>60) ? (8*32/TintBits+1) : prec2;;){
+	for(precision= (prec2>60) ? (8*32/TintBits+1) : prec2; ; ){
 		baseIn=baseOld;
 		input=param;
 		buf.setLen(1);
@@ -1646,6 +1652,8 @@ static int __cdecl cmpOp(const void *a, const void *b)
 
 void initFuncTab()
 {
+	WideCharToMultiByte(CP_ACP, WC_NO_BEST_FIT_CHARS, L"\xb0\0", 1, degSymbol, 2, "°", 0);
+
 	funcTabSorted = new const Top*[sizeA(funcTab)];
 	for(int i=0; i<sizeA(funcTab); i++){
 		funcTabSorted[i]= funcTab + i;
