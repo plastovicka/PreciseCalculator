@@ -828,7 +828,7 @@ plusfrac	endp
 
 ;bezznaménkové plus
 PLUSU	proc 	uses esi edi ebx a0,a1,a2
-local	k0,k1,k2,e0,e1,e2
+local	z0,z1,z2,e0,e1,e2
 	mov	edx,[a0]
 	mov	ebx,[a1]
 	mov	ecx,[a2]
@@ -885,15 +885,15 @@ local	k0,k1,k2,e0,e1,e2
 ;nastav promìnné urèující exponent na konci operandù
 	mov	eax,[ebx-4]
 	sub	eax,[ebx-12]
-	mov	[k1],eax
+	mov	[z1],eax
 	mov	eax,[ecx-4]
 	sub	eax,[ecx-12]
-	mov	[k2],eax
+	mov	[z2],eax
 	mov	eax,[ebx-4]
 	mov	esi,[edx-16]
 	mov	[edx-4],eax	;exponent výsledku
 	mov	[edx-12],esi	;délka výsledku
-	sub	eax,esi		;[k0]
+	sub	eax,esi		;[z0]
 	cmp	eax,[ecx-4]
 	jl	@@7
 ;2.operand je moc malý
@@ -904,7 +904,7 @@ local	k0,k1,k2,e0,e1,e2
 	call	copyx
 	pop	dword ptr [edi-8]
 	ret
-@@7:	mov	[k0],eax
+@@7:	mov	[z0],eax
 ;spoèti adresy koncù operandù
 	mov	eax,[ebx-12]
 	lea	eax,[4*eax+ebx-4]
@@ -916,16 +916,16 @@ local	k0,k1,k2,e0,e1,e2
 	lea	edi,[4*eax+edx-4]
 	mov	[e0],edi
 ;oøízni operandy, které jsou moc dlouhé
-	mov	eax,[k0]
-	sub	eax,[k1]
+	mov	eax,[z0]
+	sub	eax,[z1]
 	jle	@@2
-	add	[k1],eax
+	add	[z1],eax
 	shl	eax,2
 	sub	[e1],eax
-@@2:	mov	edi,[k0]
-	sub	edi,[k2]
+@@2:	mov	edi,[z0]
+	sub	edi,[z2]
 	jle	@@3
-	add	[k2],edi
+	add	[z2],edi
 	shl	edi,2
 	sub	[e2],edi
 ;zmenši délku výsledku, pokud jsou operandy moc krátké
@@ -935,7 +935,7 @@ local	k0,k1,k2,e0,e1,e2
 @@4:	test	eax,eax
 	jns	@@5
 	add	[edx-12],eax
-	sub	[k0],eax
+	sub	[z0],eax
 	shl	eax,2
 	add	[e0],eax
 ;zjisti, který operand je delší
@@ -943,8 +943,8 @@ local	k0,k1,k2,e0,e1,e2
 	std
 	mov	edx,ecx
 	mov	edi,[e0]
-	mov	ecx,[k1]
-	sub	ecx,[k2]
+	mov	ecx,[z1]
+	sub	ecx,[z2]
 	jz	@@plus
 	jg	@@6
 ;okopíruj konec 1.operandu
@@ -953,7 +953,7 @@ local	k0,k1,k2,e0,e1,e2
 	rep movsd
 	mov	[e1],esi
 	jmp	@@plus
-@@6:	mov	eax,[k1]
+@@6:	mov	eax,[z1]
 	sub	eax,[edx-4]
 	mov	esi,[e2]
 	jle	@@cpe
@@ -1029,7 +1029,7 @@ negf	endp
 ;-------------------------------------
 ;bezznaménkové minus
 MINUSU	proc 	uses esi edi ebx a0,a1,a2
-local	k0,k1,k2,e0,e1,e2
+local	z0,z1,z2,e0,e1,e2
 	mov	edx,[a0]
 	mov	ebx,[a1]
 	mov	ecx,[a2]
@@ -1073,15 +1073,15 @@ local	k0,k1,k2,e0,e1,e2
 ;nastav promìnné urèující exponent na konci operandù
 	mov	eax,[ebx-4]
 	sub	eax,[ebx-12]
-	mov	[k1],eax
+	mov	[z1],eax
 	mov	eax,[ecx-4]
 	sub	eax,[ecx-12]
-	mov	[k2],eax
+	mov	[z2],eax
 	mov	eax,[ebx-4]
 	mov	esi,[edx-16]
 	mov	[edx-4],eax	;exponent výsledku
 	mov	[edx-12],esi	;délka výsledku
-	sub	eax,esi		;[k0]
+	sub	eax,esi		;[z0]
 	cmp	eax,[ecx-4]
 	jl	@@7
 ;2.operand je moc malý
@@ -1092,7 +1092,7 @@ local	k0,k1,k2,e0,e1,e2
 	call	copyx
 	pop	dword ptr [edi-8]
 	ret
-@@7:	mov	[k0],eax
+@@7:	mov	[z0],eax
 ;spoèti adresy koncù operandù
 	mov	eax,[ebx-12]
 	lea	eax,[4*eax+ebx-4]
@@ -1104,16 +1104,16 @@ local	k0,k1,k2,e0,e1,e2
 	lea	edi,[4*eax+edx-4]
 	mov	[e0],edi
 ;oøízni operandy, které jsou moc dlouhé
-	mov	eax,[k0]
-	sub	eax,[k1]
+	mov	eax,[z0]
+	sub	eax,[z1]
 	jle	@@2
-	add	[k1],eax
+	add	[z1],eax
 	shl	eax,2
 	sub	[e1],eax
-@@2:	mov	edi,[k0]
-	sub	edi,[k2]
+@@2:	mov	edi,[z0]
+	sub	edi,[z2]
 	jle	@@3
-	add	[k2],edi
+	add	[z2],edi
 	shl	edi,2
 	sub	[e2],edi
 ;zmenši délku výsledku, pokud jsou operandy moc krátké
@@ -1123,7 +1123,7 @@ local	k0,k1,k2,e0,e1,e2
 @@4:	test	eax,eax
 	jns	@@5
 	add	[edx-12],eax
-	sub	[k0],eax
+	sub	[z0],eax
 	shl	eax,2
 	add	[e0],eax
 ;zjisti, který operand je delší
@@ -1131,8 +1131,8 @@ local	k0,k1,k2,e0,e1,e2
 	std
 	mov	edx,ecx
 	mov	edi,[e0]
-	mov	ecx,[k1]
-	sub	ecx,[k2]
+	mov	ecx,[z1]
+	sub	ecx,[z2]
 	jz	@@minus
 	jg	@@6
 ;okopíruj konec 1.operandu
@@ -1142,7 +1142,7 @@ local	k0,k1,k2,e0,e1,e2
 	mov	[e1],esi
 	clc
 	jmp	@@minus
-@@6:	mov	eax,[k1]
+@@6:	mov	eax,[z1]
 	sub	eax,[edx-4]
 	mov	esi,[e2]
 	jle	@@nege
@@ -1256,7 +1256,7 @@ MINUSX	endp
 ;-------------------------------------
 ;bezznaménkové or nebo xor
 ORXORU0	proc 	uses esi edi ebx a0,a1,a2
-local	k0,k1,k2,e0,e1,e2
+local	z0,z1,z2,e0,e1,e2
 local	isxor:byte	
 	mov	[isxor],al
 	mov	edx,[a0]
@@ -1287,15 +1287,15 @@ local	isxor:byte
 ;nastav promìnné urèující exponent na konci operandù
 	mov	eax,[ebx-4]
 	sub	eax,[ebx-12]
-	mov	[k1],eax
+	mov	[z1],eax
 	mov	eax,[ecx-4]
 	sub	eax,[ecx-12]
-	mov	[k2],eax
+	mov	[z2],eax
 	mov	eax,[ebx-4]
 	mov	esi,[edx-16]
 	mov	[edx-4],eax	;exponent výsledku
 	mov	[edx-12],esi	;délka výsledku
-	sub	eax,esi		;[k0]
+	sub	eax,esi		;[z0]
 	cmp	eax,[ecx-4]
 	jl	@@7
 ;2.operand je moc malý
@@ -1305,7 +1305,7 @@ local	isxor:byte
 	call	copyx
 	pop	dword ptr [edi-8]
 	ret
-@@7:	mov	[k0],eax
+@@7:	mov	[z0],eax
 ;spoèti adresy koncù operandù
 	mov	eax,[ebx-12]
 	lea	eax,[4*eax+ebx-4]
@@ -1317,16 +1317,16 @@ local	isxor:byte
 	lea	edi,[4*eax+edx-4]
 	mov	[e0],edi
 ;oøízni operandy, které jsou moc dlouhé
-	mov	eax,[k0]
-	sub	eax,[k1]
+	mov	eax,[z0]
+	sub	eax,[z1]
 	jle	@@2
-	add	[k1],eax
+	add	[z1],eax
 	shl	eax,2
 	sub	[e1],eax
-@@2:	mov	edi,[k0]
-	sub	edi,[k2]
+@@2:	mov	edi,[z0]
+	sub	edi,[z2]
 	jle	@@3
-	add	[k2],edi
+	add	[z2],edi
 	shl	edi,2
 	sub	[e2],edi
 ;zmenši délku výsledku, pokud jsou operandy moc krátké
@@ -1336,7 +1336,7 @@ local	isxor:byte
 @@4:	test	eax,eax
 	jns	@@5
 	add	[edx-12],eax
-	sub	[k0],eax
+	sub	[z0],eax
 	shl	eax,2
 	add	[e0],eax
 ;zjisti, který operand je delší
@@ -1344,8 +1344,8 @@ local	isxor:byte
 	std
 	mov	edx,ecx
 	mov	edi,[e0]
-	mov	ecx,[k1]
-	sub	ecx,[k2]
+	mov	ecx,[z1]
+	sub	ecx,[z2]
 	jz	@@plus
 	jg	@@6
 ;okopíruj konec 1.operandu
@@ -1354,7 +1354,7 @@ local	isxor:byte
 	rep movsd
 	mov	[e1],esi
 	jmp	@@plus
-@@6:	mov	eax,[k1]
+@@6:	mov	eax,[z1]
 	sub	eax,[edx-4]
 	mov	esi,[e2]
 	jle	@@cpe
