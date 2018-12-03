@@ -46,7 +46,7 @@ BEGIN
         MENUITEM "&Font...",                    ID_FONT
         MENUITEM "Opt&ions...\tAlt+O",          ID_OPTIONS
         MENUITEM "&Colors...",                  ID_COLORS
-        MENUITEM "Open &buttons...\tCtrl+B",    ID_OPENBUTTONS
+        MENUITEM "Load &buttons...\tCtrl+B",    ID_OPENBUTTONS
         MENUITEM SEPARATOR
         MENUITEM "&Open expression...\tCtrl+O", ID_OPEN
         MENUITEM "&Save result...\tCtrl+S",     ID_SAVE
@@ -178,9 +178,9 @@ BEGIN
     CTEXT           "Version",503,32,27,28,9
     CTEXT           "Precise Calculator",504,5,4,104,14,SS_CENTERIMAGE | 
                     SS_SUNKEN | WS_BORDER
-    ICON            1,IDC_STATIC,10,23,20,20
-    ICON            1,IDC_STATIC,83,23,20,20
-    LTEXT           "",101,63,27,12,8
+    ICON            1,IDC_STATIC,9,23,16,16
+    ICON            1,IDC_STATIC,86,23,16,16
+    LTEXT           "",101,63,27,19,8
 END
 
 IDD_MAIN DIALOG DISCARDABLE  0, 0, 380, 237
@@ -352,7 +352,7 @@ END
 //
 
 VS_VERSION_INFO VERSIONINFO
- FILEVERSION 2,6,3,0
+ FILEVERSION 2,6,4,0
  PRODUCTVERSION 0,0,0,0
  FILEFLAGSMASK 0x3fL
 #ifdef _DEBUG
@@ -370,8 +370,8 @@ BEGIN
         BEGIN
             VALUE "CompanyName", "Petr Laštovièka\0"
             VALUE "FileDescription", "Precise Calculator\0"
-            VALUE "FileVersion", "2, 6, 3, 0\0"
-            VALUE "LegalCopyright", "© 2004-2017  Petr Laštovièka\0"
+            VALUE "FileVersion", "2, 6, 4, 0\0"
+            VALUE "LegalCopyright", "© 2004-2018  Petr Laštovièka\0"
             VALUE "OriginalFilename", "preccalc.exe\0"
         END
     END

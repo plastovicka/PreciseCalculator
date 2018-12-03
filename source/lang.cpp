@@ -285,6 +285,7 @@ static void loadLang()
 int setLang(int cmd)
 {
 	if(cmd>=30000 && cmd<30000+MAXLANG && lngNames[cmd-30000]){
+		langChanging();
 		strcpy(lang, lngNames[cmd-30000]);
 		loadLang();
 		langChanged();
@@ -310,6 +311,10 @@ void initLang()
 			case LANG_CZECH: s="Èesky"; break;
 			case LANG_SPANISH: s="Español"; break;
 			case LANG_FRENCH: s="French"; break;
+			case LANG_CHINESE: s="ChineseSimplified";
+				if(SUBLANGID(GetUserDefaultLangID())==SUBLANG_CHINESE_TRADITIONAL)
+					s= (GetACP() == 950) ? "ChineseTraditionalBig5" : "ChineseTraditionalGBK";
+				break;
 			case LANG_ITALIAN: s="Italiano"; break;
 			case LANG_RUSSIAN: s="Russian"; break;
 			default: s="English"; break;

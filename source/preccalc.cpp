@@ -1372,6 +1372,15 @@ BOOL CALLBACK ColorProc(HWND hWnd, UINT msg, WPARAM wP, LPARAM lP)
 }
 
 //-----------------------------------------------------------------
+static bool IsDefaultMacro;
+
+void langChanging()
+{
+	TfileName buf;
+	getExeDir(buf, lng(21, "examples.cal"));
+	IsDefaultMacro = !strcmp(buf, fnMacro);
+}
+
 void langChanged()
 {
 	rdConstants();
@@ -1385,6 +1394,10 @@ void langChanged()
 	exprOfn.lpstrFilter= lng(508, "Text files (*.txt)\0*.txt\0All files\0*.*\0");
 	macroOfn.lpstrFilter= lng(509, "Macros (*.cal)\0*.cal\0All files\0*.*\0");
 	btnOfn.lpstrFilter= lng(510, "Buttons (*.cbt)\0*.cbt\0All files\0*.*\0");
+	if (IsDefaultMacro) {
+		getExeDir(fnMacro, lng(21, "examples.cal"));
+		if (!modif) rdMacros();
+	}
 }
 
 void resizeInOut(int y)
