@@ -21,6 +21,7 @@ void setDlgTexts(HWND hDlg, int id);
 void getExeDir(char *fn, char *e);
 char *cutPath(char *s);
 
+extern void langChanging();
 extern void langChanged();
 extern void msg(char *text, ...);
 extern HINSTANCE inst;
