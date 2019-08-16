@@ -40,7 +40,7 @@ enum { clNumber, clFunction, clDelC, clOperator, clExe, Ncl };
 #define ID_MACROS 5000
 #define ID_CONSTANTS 6000
 #define ID_UNITS 7000
-#define MAX_MACRO_LEN 32
+#define MAX_MACRO_LEN 100
 
 #define sizeA(a) (sizeof(a)/sizeof(*a))
 #define endA(a) (a+(sizeof(a)/sizeof(*a)))
