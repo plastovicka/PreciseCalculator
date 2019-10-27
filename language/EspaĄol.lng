@@ -1,4 +1,4 @@
-503=Verze
+503=Versión
 504=Precise Calculator - Omar Perez
 10=language\\const_ES.cns
 12=language\\units_ES.unt
@@ -73,17 +73,17 @@
 
 ;Opciones
 530=separador antes punto
-531=separador despues punto
+531=separador después punto
 532=Caracter:
 533=Caracter:
 534=Frecuencia:
 535=Frecuencia:
 536=Cantidad de items en historia:
 537=Grabar configuracion al salir
-538=Grabar todaslas expresiones y resultaods en el archivo..:
+538=Grabar todaslas expresiones y resultados en el archivo..:
 
-;Barvy
-550=Numeros
+;Colores
+550=Números
 551=Funciones
 
 
@@ -93,30 +93,30 @@
 735=No se puede escribir al registro de Windows 
 736=¿Quiere borrar su configuración? 
 753=Conjunto %s demasiado largo
-754=Error sobre conjunto vacio
-755=Error en %s \ nLine %d 
-756=Error en %s \ nMessage número %d es demasiado grande 
-757=Error en %s \ nDuplicated número %d 
+754=Error sobre conjunto %s
+755=Error en %s \nLine %d 
+756=Error en %s \nMessage número %d es demasiado grande 
+757=Error en %s \nDuplicated número %d 
 801=Macro "%s" ya existe
-802=Primero ingrese una expresion en el box
+802=Primero ingrese una expresión en el box
 
-950=Funcion o variable desconocida
+950=Función o variable desconocida
 951=Operador desconocido
-952=Numero, variable o funcion esperada
+952=Numero, variable o función esperada
 953=Operador binario esperado
-954=Un digito esta fuera de la base seleccionada
+954=Un dígito esta fuera de la base seleccionada
 955=No coinciden los parentesis
 956=No coincide la coma
 957=Paréntesis izquierdo espera 
 958=Número erróneo de argumentos 
 959=Falta citar al final de un texto impreso 
-960=Expresion numerica a la izquierda de una asignacion
+960=Expresión numérica a la izquierda de una asignación
 961=Incremento o decremento de una expresión 
-962=espera 
+962=espera ]
 963=No coincide corchete derecho
-964=faltan Fin del comentario
+964=Faltan Fin del comentario
 
-1010=Division por cero
+1010=División por cero
 1011=Overflow, el número es demasiado grande 
 1017=El cambio de operandos no es entero 
 1018=operador de combinación no es entero
@@ -127,30 +127,30 @@
 1030=divisor del número real
 1031=Calculo muy complejo
 1032=Angulo del punto [0,0]
-1033=número no válido después de goto
+1033=Número no válido después de goto
 1034=Resultado Infinito 
 1035=Función no admite números imaginarios
-1036=logaritmo de cero
+1036=Logaritmo de cero
 1037=Complejo o poder negativo de cero
 1038=Complejo o raíz negativo de cero
 1039=argtanh, argcoth a partir del 1 o -1
-1040=arctan, arccot de 1i o-1i
-1041=las matrices tienen el tamaño incorrecto
+1040=arctan, arccot de 1i o -1i
+1041=Las matrices tienen el tamaño incorrecto
 1042=Incremento o decremento de una matriz
 1043=La función no es compatible con matrices
-1044=matrices no tienen el mismo tamaño
+1044=Matrices no tienen el mismo tamaño
 1045=Número de columnas de la primera matriz no es igual al número de columnas de la segunda matriz
 1046=Vectores tienen diferentes longitudes
 1047=No es potencia de la matriz
-1048=matriz no es cuadrada
+1048=Matriz no es cuadrada
 1049=Los argumentos tienen que ser vectores de longitud 3
-1050=matriz no es regular
+1050=Matriz no es regular
 1051=Índice está fuera de rango
 1052=Índice no es entero
-1053=matriz no tiene 2 columnas
-1054=matriz debe tener más de una columna
+1053=Matriz no tiene 2 columnas
+1054=Matriz debe tener más de una columna
 1055=Ecuaciones no son solucionables
 1056=Parámetro no es un vector
 1057=El primer parámetro tiene que ser una variable
 1058=El cuarto argumento tiene que ser entero
-1059=Función matriz de parámetros debe tener el número de filas, el número de columnas 
+1059=Función matrix de parámetros debe tener el número de filas, el número de columnas 
