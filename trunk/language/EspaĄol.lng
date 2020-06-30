@@ -1,156 +1,173 @@
-503=Versión
-504=Precise Calculator - Omar Perez
-10=language\\const_ES.cns
-12=language\\units_ES.unt
+; Traducción: Ricardo A. Rivas
+; https://sites.google.com/site/rivica
+; Versión 2.6.3 - 10-junio-2020
+;menú
+450=&Archivo
+451=&Idioma
+223=&Fuente...
+230=&Opciones...\tAlt+O
+224=&Colores...
+111=Abrir &botones...\tCtrl+B
+106=Abrir e&xpresión...\tCtrl+O
+108=G&uardar resultado...\tCtrl+S
+109=Abrir &macros...
+110=Gua&rdar macros como...
+102=Guardar opcio&nes
+105=Borrar o&pciones
+103=&Salir
 
-296=Precision:
+453=&Editar
+205=&Deshacer\tCtrl+Z
+200=Cor&tar\tCtrl+X
+201=&Copiar\tCtrl+C
+202=&Pegar\tCtrl+V
+204=&Limpiar\tEsc
+203=Copiar &resultado\tAlt+C
+234=&Historial...\tCtrl+H
+232=Anter&ior\tCtrl+up
+233=&Siguiente\tCtrl+down
+241=Pri&mer parámetro\tCtrl+1
+242=Segu&ndo parámetro\tCtrl+2
+243=&Tercer parámetro\tCtrl+3
+244=Cuart&o parámetro\tCtrl+4
+206=&Variables...\tCtrl+L
 
-1=OK
+454=Constan&tes
+
+455=&Unidades
+
+465=&Macro
+210=&Nuevo\tCtrl+N
+211=&Borrar\tCtrl+D
+212=&Renombrar
+
+452=A&yuda
+122=&Contenido\tCtrl+F1
+120=&Funciones\tF1
+121=&Detalles...
+
+296=Precisión:
+
+1=Aceptar
 2=Cancelar
-9=Cerrar
-11=Acerca de
-16=Renombrar Macro
-14=Crear nueva Macro
-15=Borrar Macro
+9=&Cerrar
+
+;ventanas de diálogo
+11=Detalles
+503=Versión
+504=Precise Calculator
+
+14=Crear macro
+507=Nombre de macro:
+
+16=Renombrar macro
+505=Nombre original:
+506=Nombre nuevo:
+
+15=Remover macro
+
 17=Variables
+20=Historial
+520=&Pegar
+521=&Remover
+522=Remover &todo
+
 18=Opciones
+537=&Guardar opciones al salir
+530=separador &antes de punto
+532=&Carácter:
+534=F&recuencia:
+531=&separador luego de punto
+533=Carác&ter:
+535=Fr&ecuencia:
+536=&Máxima cifra de elementos de historial:
+538=&Registrar expresiones y resultados en archivo:
+539=&Longitud de archivo de registro:
+
 19=Colores
-20=Historia
-
-;menu
-450=Archivo
-451=Lenguaje
-452=Ayuda
-453=Editar
-454=Constante
-455=Unidades
-465=Macros
-470=Conversion
-471=nose
-
-102=Grabar configuracion
-103=Salir
-111=Abrir botones...\tCtrl+B
-224=Colores...
-105=Borrar configuracion
-106=Abrir Espresiones...\tCtrl+O
-108=Grabar resultado...\tCtrl+S
-109=Abrir Macros...
-110=Grabar Macros como...
-200=Cortar\tCtrl+X
-201=Copiar\tCtrl+C
-202=Pegar\tCtrl+V
-203=Copiar resultado\tAlt+C
-204=Limpiar\tEsc
-205=Deshacer\tCtrl+Z
-210=Nueva\tCtrl+N
-211=Borrar\tCtrl+D
-212=Renombrar
-223=Letra...
-230=Opciones...\tAlt+O
-234=Historia...\tCtrl+H
-232=Anterior\tCtrl+up
-233=Siguiente\tCtrl+down
-241=&1. parametro\tCtrl+1
-242=&2. parametro\tCtrl+2
-243=&3. parametro\tCtrl+3
-244=&4. parametro\tCtrl+4
-206=Variables...\tCtrl+L
-122=Contenido\tCtrl+F1
-120=Funciones\tF1
-121=Acerca de...
-
-
-505=Nombre Original:
-506=Nuevo Nombre:
-507=Nombre del macro:
-508=Archivos de Texto (*.txt)\0*.txt\0Todos los archivos\0*.*\0
-509=Macros (*.cal)\0*.cal\0Todos los archivos\0*.*\0
-510=Botones (*.cbt)\0*.cbt\0Todos los archivos\0*.*\0
-520=Pegar
-521=Quitar
-522=Quitar todo
-
-;Opciones
-530=separador antes punto
-531=separador después punto
-532=Caracter:
-533=Caracter:
-534=Frecuencia:
-535=Frecuencia:
-536=Cantidad de items en historia:
-537=Grabar configuracion al salir
-538=Grabar todaslas expresiones y resultados en el archivo..:
-
-;Colores
-550=Números
+550=Cifras
 551=Funciones
 
+;mensajes de error
+1010=División por cero
+1011=Exceso - cifra enorme
+1017=operando shift no es entero
+1018=operando de combinaciones no es entero
+1019=operando de permutaciones no es entero
+1020=operando de factorial no es entero
+1026=Máximo común divisor de no enteros
+1027=Mínimo común multiplo de no enteros
+1030=divisor de número real
+1031=Cálculo muy difícil
+1032=Ángulo de punto [0,0]
+1033=Cifra inválida luego de goto
+1034=Resultado infinito
+1035=Función no aplicable a números imaginarios
+1036=Logaritmo de cero
+1037=Potencia compleja o negativa de cero
+1038=Raíz compleja o negativa de cero
+1039=argtanh,argcoth de 1 o -1
+1040=arctan, arccot de 1i o -1i
+1041=Tamaño incorrecto de matrices
+1042=Incremento o decremento de matriz
+1043=Función no aplicable a matrices
+1044=Matrices de tamaños desiguales
+1045=Cifra de columnas de primera matriz desigual a cifra de columnas de segunda matriz
+1046=Vectores de longitudes desiguales
+1047=Potencia no entera de matriz
+1048=Matriz no cuadrada
+1049=Argumentos deben ser vectores de longitud 3
+1050=Matriz irregular
+1051=Índice fuera de valores normales
+1052=Índice no entero
+1053=Matriz no tiene 2 columnas
+1054=Matriz debe tener al menos dos columnas
+1055=Ecuaciones irresolubles
+1056=Parámetro no es vector
+1057=Primer parámetro debe ser variable
+1058=Cuarto argumento debe ser entero
+1059=Matriz de función debe tener cifra de parámetros de filas, cifra de columnas
+1060=Operador de función trigonométrica es enorme
+1061=Parámetros deben ser variables
+1062=Resultado muy largo
+1063=Primer operando de función MOD excede precisión
 
-730=No se puede abrir el archivo %s
-731=Error de tamaño sobre %s
-733=No se puede crear el fichero %s
-735=No se puede escribir al registro de Windows 
-736=¿Quiere borrar su configuración? 
-753=Conjunto %s demasiado largo
-754=Error sobre conjunto %s
-755=Error en %s \nLine %d 
-756=Error en %s \nMessage número %d es demasiado grande 
-757=Error en %s \nDuplicated número %d 
-801=Macro "%s" ya existe
-802=Primero ingrese una expresión en el box
-
+960=Hay una expresión numérica al lado izquierdo de una asignación
+961=Incremento o decremento de expresión
+962=] esperado
+954=Cifra fuera de base elegida
 950=Función o variable desconocida
 951=Operador desconocido
-952=Numero, variable o función esperada
-953=Operador binario esperado
-954=Un dígito esta fuera de la base seleccionada
-955=No coinciden los parentesis
-956=No coincide la coma
-957=Paréntesis izquierdo espera 
-958=Número erróneo de argumentos 
-959=Falta citar al final de un texto impreso 
-960=Expresión numérica a la izquierda de una asignación
-961=Incremento o decremento de una expresión 
-962=espera ]
-963=No coincide corchete derecho
-964=Faltan Fin del comentario
+957=Se espera paréntesis izquierdo
+958=Cifra inválida de argumentos
+952=Se espera función de cifra, variable o prefijo
+953=Se espera operador binario
+959=Comilla faltante al final de texto impreso
+1029=Error grave
+956=Coma aislada
+963=Corchete derecho aislado
+955=Paréntesis aislado
+964=Final de comentario faltante
 
-1010=División por cero
-1011=Overflow, el número es demasiado grande 
-1017=El cambio de operandos no es entero 
-1018=operador de combinación no es entero
-1019=operador de permutación no es entero
-1020=factorial de un operador no es entero
-1026=El máximo común divisor del número real
-1027=El múltiplo de menos número real
-1030=divisor del número real
-1031=Calculo muy complejo
-1032=Angulo del punto [0,0]
-1033=Número no válido después de goto
-1034=Resultado Infinito 
-1035=Función no admite números imaginarios
-1036=Logaritmo de cero
-1037=Complejo o poder negativo de cero
-1038=Complejo o raíz negativo de cero
-1039=argtanh, argcoth a partir del 1 o -1
-1040=arctan, arccot de 1i o -1i
-1041=Las matrices tienen el tamaño incorrecto
-1042=Incremento o decremento de una matriz
-1043=La función no es compatible con matrices
-1044=Matrices no tienen el mismo tamaño
-1045=Número de columnas de la primera matriz no es igual al número de columnas de la segunda matriz
-1046=Vectores tienen diferentes longitudes
-1047=No es potencia de la matriz
-1048=Matriz no es cuadrada
-1049=Los argumentos tienen que ser vectores de longitud 3
-1050=Matriz no es regular
-1051=Índice está fuera de rango
-1052=Índice no es entero
-1053=Matriz no tiene 2 columnas
-1054=Matriz debe tener más de una columna
-1055=Ecuaciones no son solucionables
-1056=Parámetro no es un vector
-1057=El primer parámetro tiene que ser una variable
-1058=El cuarto argumento tiene que ser entero
-1059=Función matrix de parámetros debe tener el número de filas, el número de columnas 
+755=Error en %s\nlínea %d
+756=Error en %s\mensaje número %d es enorme
+757=Error en %s\ncifra duplicada %d
+753=Archivo %s es muy largo
+754=Error al leer archivo %s
+730=Imposible abrir archivo %s
+733=Imposible crear archivo %s
+735=Imposible escribir en Registro de Windows
+736=¿Borrar opciones?
+801=Macro "%s" existente
+731=Formato inválido de %s
+802=Escribir primero alguna expresión en recuadro de entrada
+1028=Memoria insuficiente
+
+508=Archivos de texto (*.txt)\0*.txt\0Todo archivo\0*.*\0
+509=Macros (*.cal)\0*.cal\0Todo archivo\0*.*\0
+510=Botones (*.cbt)\0*.cbt\0Todo archivo\0*.*\0
+
+13=preccalc.chm
+10=language\\const_ES.cns
+12=language\\units_ES.unt
+21=examples.cal
