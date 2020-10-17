@@ -86,7 +86,7 @@ copyx	proc	uses rsi rdi
 @@ret:	ret
 copyx	endp
 
-COPYX	proc 	uses rsi rdi a0,a1
+COPYX	proc 	uses rsi rdi a0:qword,a1:qword
 	mov	rdi,rcx
 	mov	rsi,rdx
 	call	copyx
@@ -491,7 +491,7 @@ norm	proc
 	ret
 norm	endp
 
-NORMX	proc	uses rsi rdi x
+NORMX	proc	uses rsi rdi x:qword
 	mov	rdi,rcx
 	call	norm
 	ret
@@ -550,7 +550,7 @@ fracexp	endp
 ;-------------------------------------
 ;a0:=a1/ai
 ;a0 mùže být rovno a1
-DIVI	proc 	uses rsi rdi rbx a0,a1,ai
+DIVI	proc 	uses rsi rdi rbx a0:qword,a1:qword,ai:qword
 	mov	[ai],r8
 	mov	rsi,rdx
 	mov	rdi,rcx
@@ -810,7 +810,7 @@ cmpu	proc	uses rsi rdi
 @@ret:	ret
 cmpu	endp
 
-CMPU	proc 	a1,a2
+CMPU	proc 	a1:qword,a2:qword
 	call	cmpu
 	jb	@@gr1
 	ja	@@gr2
@@ -823,7 +823,7 @@ CMPU	proc 	a1,a2
 CMPU	endp
 ;-------------------------------------
 ;porovnání, výsledek -1,0,+1
-CMPX	proc 	a1,a2
+CMPX	proc 	a1:qword,a2:qword
 	cmp	qword ptr [rdx-24],0
 	jnz	@@1
 	cmp	qword ptr [rcx-24],0
@@ -883,8 +883,8 @@ plusfrac	proc
 plusfrac	endp
 
 ;bezznaménkové plus
-PLUSU	proc 	uses rsi rdi rbx a0,a1,a2
-local	k0,k1,k2,e0,e1,e2
+PLUSU	proc 	uses rsi rdi rbx a0:qword,a1:qword,a2:qword
+local	k0:qword,k1:qword,k2:qword,e0:qword,e1:qword,e2:qword
 	mov	[a1],rdx
 	mov	[a2],r8
 	mov	rbx,rdx
@@ -1117,8 +1117,8 @@ negf	proc
 negf	endp
 ;-------------------------------------
 ;bezznaménkové minus
-MINUSU	proc 	uses rsi rdi rbx a0,a1,a2
-local	k0,k1,k2,e0,e1,e2
+MINUSU	proc 	uses rsi rdi rbx a0:qword,a1:qword,a2:qword
+local	k0:qword,k1:qword,k2:qword,e0:qword,e1:qword,e2:qword
 	mov	[a0],rcx
 	mov	[a1],rdx
 	mov	[a2],r8
@@ -1326,7 +1326,7 @@ local	k0,k1,k2,e0,e1,e2
 	ret
 MINUSU	endp
 ;-------------------------------------
-PLUSX	proc 	a0,a1,a2
+PLUSX	proc 	a0:qword,a1:qword,a2:qword
 	sub	rsp,32
 	mov	rax,[rdx-16]
 	mov	[rcx-16],rax	;znaménko prvního operandu
@@ -1355,7 +1355,7 @@ PLUSX	proc 	a0,a1,a2
 	ret
 PLUSX	endp
 ;-------------------------------------
-MINUSX	proc 	a0,a1,a2
+MINUSX	proc 	a0:qword,a1:qword,a2:qword
 	sub	rsp,32
 	mov	rax,[rdx-16]
 	mov	[rcx-16],rax	;znaménko prvního operandu
@@ -1386,8 +1386,8 @@ MINUSX	proc 	a0,a1,a2
 MINUSX	endp
 ;-------------------------------------
 ;bezznaménkové or nebo xor
-ORXORU0	proc 	uses rsi rdi rbx a0,a1,a2
-local	k0,k1,k2,e0,e1,e2
+ORXORU0	proc 	uses rsi rdi rbx a0:qword,a1:qword,a2:qword
+local	k0:qword,k1:qword,k2:qword,e0:qword,e1:qword,e2:qword
 local	isxor:byte	
 	mov	[isxor],al
 	mov	[a0],rcx
@@ -1544,7 +1544,7 @@ local	isxor:byte
 	ret
 ORXORU0	endp
 ;-------------------------------------
-ANDU0	proc 	uses rsi rdi rbx a0,a1,a2
+ANDU0	proc 	uses rsi rdi rbx a0:qword,a1:qword,a2:qword
 	mov	[a0],rcx
 	mov	[a1],rdx
 	mov	[a2],r8
@@ -1605,7 +1605,7 @@ ANDU0	proc 	uses rsi rdi rbx a0,a1,a2
 ANDU0	endp
 ;-------------------------------------
 ;rax=function
-defrac	proc 	a0,a1,a2
+defrac	proc 	a0:qword,a1:qword,a2:qword
 	cmp	qword ptr [rdx-24],-2
 	jz	@@fr
 	cmp	qword ptr [r8-24],-2
@@ -1892,7 +1892,7 @@ mult1	proc
 mult1	endp
 
 ;a0*=ai
-MULTI1	proc 	uses rsi rdi rbx a0,ai
+MULTI1	proc 	uses rsi rdi rbx a0:qword,ai:qword
 	mov	rdi,rcx
 	mov	rsi,rdx
 	call	mult1
@@ -1901,7 +1901,7 @@ MULTI1	endp
 ;-------------------------------------
 ;a0:=a1*ai
 ;a0 mùže být rovno a1
-MULTI	proc 	uses rsi rdi rbx a0,a1,ai
+MULTI	proc 	uses rsi rdi rbx a0:qword,a1:qword,ai:qword
 	mov	rdi,rcx
 	mov	rsi,rdx
 	mov	rcx,[rsi-24]
@@ -1993,7 +1993,7 @@ MULTI	proc 	uses rsi rdi rbx a0,a1,ai
 @@ret:	ret
 MULTI	endp
 
-MULTIN	proc 	a0,a1,ai
+MULTIN	proc 	a0:qword,a1:qword,ai:qword
 	test	r8,r8
 	jns	@f
 	neg	r8
@@ -2006,8 +2006,8 @@ MULTIN	proc 	a0,a1,ai
 	ret
 MULTIN	endp
 ;-------------------------------------
-DIVX2	proc 	uses rsi rdi rbx a0,a1,a2
-local	d1,d2,d,t1,t2	
+DIVX2	proc 	uses rsi rdi rbx a0:qword,a1:qword,a2:qword
+local	d1:qword,d2:qword,d:qword,t1:qword,t2:qword
 	xor	rsi,rsi
 	mov	[a0],rcx
 	mov	[a1],rdx
@@ -2337,8 +2337,8 @@ local	d1,d2,d,t1,t2
 @@ret:	ret
 DIVX2	endp
 ;-------------------------------------
-MULTX1	proc 	uses rsi rdi rbx a0,a1,a2
-local	e2
+MULTX1	proc 	uses rsi rdi rbx a0:qword,a1:qword,a2:qword
+local	e2:qword
 	mov	[a0],rcx
 	mov	[a1],rdx
 	mov	[a2],r8
@@ -2492,7 +2492,7 @@ MULTX1	endp
 ;-------------------------------------
 ;vrací zbytek dìlení 64-bitovým èíslem
 ;nemá smysl pro reálný operand
-MODI	proc 	uses rsi rbx a1,ai
+MODI	proc 	uses rsi rbx a1:qword,ai:qword
 	mov	r8,rcx
 	mov	rsi,rcx
 	mov	rbx,rdx
@@ -2535,7 +2535,7 @@ MODI	endp
 ;-------------------------------------
 ;vypíše èíslo do bufferu
 ;neumí zobrazit exponent -> èárka musí být uvnitø mantisy !!!
-WRITEX1	proc 	uses rsi rdi rbx buf,a1
+WRITEX1	proc 	uses rsi rdi rbx buf:qword,a1:qword
 	mov	[buf],rcx
 	mov	[a1],rdx
 	mov	rsi,rdx
@@ -2823,7 +2823,7 @@ rdFrac	proc	uses rsi
 @@ret:	ret
 rdFrac	endp
 ;-------------------------------------
-READX1	proc	uses rsi rdi rbx a1,buf
+READX1	proc	uses rsi rdi rbx a1:qword,buf:qword
 	mov	[a1],rcx
 	mov	rdi,rcx
 	mov	rsi,rdx
@@ -2967,7 +2967,7 @@ READX1	proc	uses rsi rdi rbx a1,buf
 	jmp	@@trim
 READX1	endp
 ;-------------------------------------
-FACTORIALI	proc 	uses rsi rdi rbx a0,ai
+FACTORIALI	proc 	uses rsi rdi rbx a0:qword,ai:qword
 	mov	[a0],rcx
 	mov	[ai],rdx
 	call	ONEX
@@ -2986,7 +2986,7 @@ FACTORIALI	proc 	uses rsi rdi rbx a0,ai
 @@ret:	ret
 FACTORIALI	endp
 
-FFACTI	proc 	uses rsi rdi rbx a0,ai
+FFACTI	proc 	uses rsi rdi rbx a0:qword,ai:qword
 	mov	[a0],rcx
 	mov	[ai],rdx
 	call	ONEX
@@ -3085,8 +3085,8 @@ SQRTI	proc
 	ret
 SQRTI	endp
 ;-------------------------------------
-SQRTX2	proc 	uses rsi rdi rbx a0,a1
-local	sq,s2,s3,s4,d1,d2,k,ro	
+SQRTX2	proc 	uses rsi rdi rbx a0:qword,a1:qword
+local	sq:qword,s2:qword,s3:qword,s4:qword,d1:qword,d2:qword,k:qword,ro:qword
 	mov	[a0],rcx
 	mov	[a1],rdx
 	mov	rcx,rdx	;operand
@@ -3415,7 +3415,7 @@ overflow	proc
 	ret
 overflow	endp
 ;-------------------------------------
-ADDII	proc	x,y
+ADDII	proc	x:qword,y:qword
 	add	rcx,rdx
 	jno	@@m
 	call	overflow	
