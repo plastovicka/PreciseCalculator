@@ -1,5 +1,5 @@
 /*
-	(C) 2002-2008  Petr Lastovicka
+	(C) Petr Lastovicka
 
 	This program is free software; you can redistribute it and/or
 	modify it under the terms of the GNU General Public License.
@@ -24,6 +24,22 @@ char *langFile;        //file content (\n is replaced by \0)
 char *lngstr[MAXLNGSTR];    //pointers to lines in langFile
 char *lngNames[MAXLANG+1];  //all found languages names
 bool isWin9X;
+UINT codePage;
+//-------------------------------------------------------------------------
+// 1) File name.
+// 2) Unicode name to display on Windows NT+.
+const struct Tlng { char *a; WCHAR *u; } lngInter[]={
+#pragma setlocale("CZECH")
+{"Czech", L"\x10c" L"esky" },
+#pragma setlocale("SPANISH")
+{"Spanish", L"Espa\xf1ol"},
+#pragma setlocale("FRENCH")
+{"French", L"Fran\xe7" L"ais"},
+#pragma setlocale("RUSSIAN")
+{"Russian", L"\x420\x443\x441\x441\x43a\x438\x439"},
+{"Ukrainian", L"\x423\x43a\x440\x430\x457\x43d\x441\x44c\x43a\x430"},
+#pragma setlocale("C")
+};
 //-------------------------------------------------------------------------
 #define sizeA(A) (sizeof(A)/sizeof(*A))
 
@@ -98,24 +114,29 @@ static void fillPopup(HMENU h)
 {
 	int i, id, j;
 	char *s, *a;
-	WCHAR w[16];
+	BOOL u;
 	UINT f;
 	HMENU sub;
 	MENUITEMINFO mii;
+	WCHAR buf[64];
+	buf[sizeA(buf) - 1] = 0;
 
 	for(i=GetMenuItemCount(h)-1; i>=0; i--){
 		id=GetMenuItemID(h, i);
 		if(id==29999){
 			for(j=0; (a=lngNames[j])!=0; j++){
+				if (!_strnicmp(a + 1, "esky", 4) || !_strnicmp(a, "Espa", 4)) continue; //ignore Cesky and Expanol from old version
 				f=MF_BYPOSITION|(_stricmp(a, lang) ? 0 : MF_CHECKED);
-				w[0]=0;
-				if(!isWin9X){
-					// L"\x10c" does not compile correctly in Microsoft Visual C++ 6.0
-					if(!_strnicmp(a+1, "esky", 4)){ wcscpy(w, L"0esky"); w[0]=0x10c; }
-					if(!_strnicmp(a, "Espa", 4)){ wcscpy(w, L"Espa0ol"); w[4]=0xF1; }
-				}
-				if(w[0]) InsertMenuW(h, 0xFFFFFFFF, f, 30000+j, w);
-				else InsertMenuA(h, 0xFFFFFFFF, f, 30000+j, a);
+				u = FALSE;
+				if(!isWin9X)
+					for(int k=0; k<sizeA(lngInter); k++)
+						if(!_stricmp(a, lngInter[k].a)) {
+							_snwprintf(buf, sizeA(buf)-1, L"%S (%s)", a, lngInter[k].u);
+							InsertMenuW(h, 0xFFFFFFFF, f, 30000+j, buf);
+							u = TRUE;
+							break;
+						}
+				if(!u) InsertMenuA(h, 0xFFFFFFFF, f, 30000+j, a);
 			}
 			DeleteMenu(h, 0, MF_BYPOSITION);
 		}
@@ -133,9 +154,16 @@ static void fillPopup(HMENU h)
 				mii.fMask=MIIM_TYPE|MIIM_STATE;
 				mii.fType=MFT_STRING;
 				mii.fState=MFS_ENABLED;
-				mii.dwTypeData=s;
-				mii.cch= (UINT)strlen(s);
-				SetMenuItemInfo(h, i, TRUE, &mii);
+				if (codePage) {
+					mii.dwTypeData = reinterpret_cast<LPSTR>(buf);
+					MultiByteToWideChar(codePage, 0, s, -1, buf, sizeA(buf)-1);
+					SetMenuItemInfoW(h, i, TRUE, reinterpret_cast<MENUITEMINFOW*>(&mii));
+				}
+				else {
+					mii.dwTypeData = s;
+					mii.cch = (UINT)strlen(s);
+					SetMenuItemInfo(h, i, TRUE, &mii);
+				}
 			}
 		}
 	}
@@ -251,6 +279,7 @@ void scanLangDir()
 static void loadLang()
 {
 	memset(lngstr, 0, sizeof(lngstr));
+	codePage = 0;
 	char buf[256];
 	GetModuleFileName(0, buf, sizeof(buf)-strleni(lang)-14);
 	strcpy(cutPath(buf), "language\\");
@@ -272,6 +301,10 @@ static void loadLang()
 				msg(lng(754, "Error reading file %s"), fn);
 			}
 			else{
+				if(langFile[0]=='#' && langFile[1]=='C' && langFile[2]=='P' && !isWin9X){
+					codePage=atoi(langFile+3);
+					if(codePage == GetACP()) codePage=0;
+				}
 				langFile[len]='\n';
 				langFile[len+1]='\n';
 				langFile[len+2]='\0';
@@ -286,7 +319,7 @@ int setLang(int cmd)
 {
 	if(cmd>=30000 && cmd<30000+MAXLANG && lngNames[cmd-30000]){
 		langChanging();
-		strcpy(lang, lngNames[cmd-30000]);
+		strncpy(lang, lngNames[cmd-30000], sizeof(lang)-1);
 		loadLang();
 		langChanged();
 		return 1;
@@ -308,8 +341,8 @@ void initLang()
 		switch(PRIMARYLANGID(GetUserDefaultLangID()))
 		{
 			case LANG_CATALAN: s="Catalan"; break;
-			case LANG_CZECH: s="Èesky"; break;
-			case LANG_SPANISH: s="Español"; break;
+			case LANG_CZECH: s="Czech"; break;
+			case LANG_SPANISH: s="Spanish"; break;
 			case LANG_FRENCH: s="French"; break;
 			case LANG_CHINESE: s="ChineseSimplified";
 				if(SUBLANGID(GetUserDefaultLangID())==SUBLANG_CHINESE_TRADITIONAL)
@@ -319,7 +352,7 @@ void initLang()
 			case LANG_RUSSIAN: s="Russian"; break;
 			default: s="English"; break;
 		}
-		strcpy(lang, s);
+		strncpy(lang, s, sizeof(lang)-1);
 	}
 	loadLang();
 }
