@@ -81,6 +81,7 @@
 536=&Maximum number of items in history:
 538=&Log all expressions and results to a file:
 539=Lo&g file length:
+2046=Sho&w tooltips
 
 19=Colors
 550=Numbers
@@ -169,3 +170,265 @@
 10=constants.cns
 12=units.unt
 21=examples.cal
+
+;tooltips
+;IDC_FRACT
+291=Calculate fractions if possible
+;IDC_FIXDIGITS
+292=Number of fixed digits
+;IDC_INV
+298=Inverse trigonometric functions
+;IDC_HYP
+299=Hyperbolic trigonometric functions
+;prefix for hyperbolic functions
+2000=hyperbolic 
+;round
+2001=Round to nearest integer
+;int, floor
+2002=Round to smaller integer
+;!
+2003=Factorial
+;ceil
+2004=Round to larger integer
+;gcd
+2005=Greatest common divisor
+;lcm
+2006=Least common multiplier
+;nCr
+2007=Number of combinations
+;nPr
+2008=Number of permutations
+;frac
+2009=Fractional part
+;trunc
+2010=Truncate to integer
+;and
+2011=Bitwise AND (bitwise multiplication)
+;not
+2012=Bitwise NOT (inversion)
+;or
+2013=Bitwise OR (inclusive OR, bitwise addition)
+;xor
+2014=Bitwise XOR (eXclusive OR, bitwise difference)
+;lsh
+2015=Shift bits left
+;rshi
+2016=Shift bits right, discard fractional part
+;sqrt
+2017=Square root
+;^2
+2018=Square of X
+;exp
+2019=Exponential function (2.718 ^ X)
+;^3
+2020=Cubic power of X
+;ln
+2021=Natural logarithm
+;log
+2022=Common logarithm
+;10^
+2023=Power of ten
+;Pi
+2024=Pi constant
+;dms
+2025=Degrees, minutes, seconds => degrees
+;sine
+2026=sine
+;asin
+2027=inverse sine
+;cos
+2028=cosine
+;acos
+2029=inverse cosine
+;tan
+2030=tangent
+;atan
+2031=inverse tangent
+;abs
+2032=Absolute value
+;sign
+2033=Sign of number
+;(
+2034=Opening parenthesis
+;real
+2035=Real part of number
+;)
+2036=Closing parenthesis
+;imag
+2037=Imaginary part of number
+;^
+2038=Power
+;#
+2039=Root
+;7
+2040=7
+;min
+2041=Minimal value
+;8
+2042=8
+;max
+2043=Maximal value
+;9
+2044=9
+;med
+2045=Median value
+;Del
+2047=Delete 1 symbol
+;C
+2048=Clear all
+;4
+2050=4
+;sum
+2051=Sum
+;5
+2052=5
+;sumq
+2053=Sum of squares
+;6
+2054=6
+;var
+2055=Variance
+;*
+2056=Multiplication
+;rand
+2057=Random fractional number, 0 =< ... < 1
+;/
+2058=Division
+;mod
+2059=Remainder after division
+;1
+2060=1
+;ave
+2061=Mean (average)
+;2
+2062=2
+;aveq
+2063=Mean of squares
+;3
+2064=3
+;stdev
+2065=Standard deviation
+;+
+2066=Addition
+;count
+2067=Count of matrix elements
+;-
+2068=Substraction
+;goto
+2069=Jump to label or to n-th semicolon
+;0
+2070=0
+;=
+2071=Equation sign, assignment
+;.
+2072=Integer and fractional parts separator
+;;
+2073=Calculations separator
+;E
+2074=Exponent, power of 10
+;,
+2075=List divider
+;ans
+2076=Result of previous calculation
+;i
+2077=Imaginary part symbol
+;exe
+2078=Start calculation
+;stdeva
+2049=Standard deviation of population
+;random
+2079=Random integer, 0 =< ... < N
+;vara
+2080=Variance of population
+;mode
+2081=Most frequent value
+;==
+2082=Equal
+;!=
+2083=Not equal
+;<
+2084=Less
+;>
+2085=Greater
+;<=
+2086=Less or equal
+;>=
+2087=Greater or equal
+;if(
+2088=Conditional selection
+;gotor
+2089=Relative jump to command
+;print
+2090=Print result to output window
+;return
+2091=Stop computation and display result
+;divisor
+2092=The least prime divisor of an operand
+;prime
+2093=1st prime number greater than operand
+;\
+2094=Matrix column divider
+;base
+2095=N-th number base
+;dec
+2096=Decimal number
+;hex
+2097=Hexadecimal number
+;bin
+2098=Binary number
+;oct
+2099=Octal number
+;sort
+2100=Sort items from lesser to greater
+;sortd
+2101=Sort items from greater to lesser
+;reverse
+2102=Reverse order of items from last to first
+;geom
+2103=Geometric mean, N-th root of product of N items
+;harmon
+2104=Harmonic meam
+;product
+2105=Product of items
+;hypot
+2106=Hypotenuse
+;polar
+2107=Convert to polar coordinates
+;complex
+2108=Make complex number
+;logn
+2109=Logarithm
+;++
+2110=Increment
+;--
+2111=Decrement
+;eqv
+2112=Both zero or both non-zero
+;biteqv
+2113=Equal bits in both numbers
+;rsh
+2114=Shift bits right
+;div
+2115=Integer division
+;degSymbol
+2116=Degrees symbol
+;conjg
+2117=Conjugate
+;isprime
+2118=Check whether the number is prime
+;fibon
+2119=Fibonacci number, 0,1,1,2,3,5,8,...
+;arg
+2120=Phase angle
+;cot
+2121=cotangent
+;sec
+2122=secant
+;csc
+2123=cosecant
+;acot
+2124=inverse cotangent
+;asec
+2125=inverse secant
+;acsc
+2126=inverse cosecant

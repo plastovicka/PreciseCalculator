@@ -254,37 +254,39 @@ BEGIN
     PUSHBUTTON      "&Close",9,242,76,50,14
 END
 
-IDD_OPTIONS DIALOG DISCARDABLE  0, 0, 223, 197
+IDD_OPTIONS DIALOG DISCARDABLE  0, 0, 263, 215
 STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
 CAPTION "Options"
 FONT 9, "MS Shell Dlg"
 BEGIN
     CONTROL         "&Save settings on exit",537,"Button",BS_AUTOCHECKBOX | 
                     WS_TABSTOP,7,7,204,10
-    GROUPBOX        "",IDC_STATIC,3,20,106,68
+    GROUPBOX        "",IDC_STATIC,3,20,126,68
     CONTROL         "separator &before point",530,"Button",BS_AUTOCHECKBOX | 
-                    WS_TABSTOP,8,31,98,10
+                    WS_TABSTOP,8,31,118,10
     LTEXT           "&Character:",532,11,49,45,8
     EDITTEXT        101,61,48,17,14
     LTEXT           "F&requency:",534,11,68,45,8
     EDITTEXT        103,61,67,24,14,ES_NUMBER
-    GROUPBOX        "",IDC_STATIC,113,20,106,68
+    GROUPBOX        "",IDC_STATIC,133,20,126,68
     CONTROL         "separator &after point",531,"Button",BS_AUTOCHECKBOX | 
-                    WS_TABSTOP,119,31,93,10
-    LTEXT           "C&haracter:",533,122,49,45,8
-    EDITTEXT        102,172,48,17,14
-    LTEXT           "Fr&equency:",535,122,68,45,8
-    EDITTEXT        104,172,67,24,14,ES_NUMBER
-    LTEXT           "&Maximum number of items in history:",536,7,101,132,8
-    EDITTEXT        105,146,98,32,14,ES_AUTOHSCROLL | ES_NUMBER
+                    WS_TABSTOP,139,31,113,10
+    LTEXT           "C&haracter:",533,142,49,45,8
+    EDITTEXT        102,192,48,17,14
+    LTEXT           "Fr&equency:",535,142,68,45,8
+    EDITTEXT        104,192,67,24,14,ES_NUMBER
+    LTEXT           "&Maximum number of items in history:",536,7,101,152,8
+    EDITTEXT        105,166,98,32,14,ES_AUTOHSCROLL | ES_NUMBER
     CONTROL         "&Log all expressions and results to a file:",538,"Button",
                     BS_AUTOCHECKBOX | WS_TABSTOP,7,121,204,10
-    EDITTEXT        106,20,135,193,14,ES_AUTOHSCROLL
+    EDITTEXT        106,20,135,213,14,ES_AUTOHSCROLL
     RTEXT           "Lo&g file length:",539,7,156,73,8
     EDITTEXT        107,89,153,40,14,ES_AUTOHSCROLL
     LTEXT           "KB",IDC_STATIC,133,155,10,8
-    DEFPUSHBUTTON   "OK",IDOK,37,175,50,14
-    PUSHBUTTON      "Cancel",IDCANCEL,114,175,50,14
+    CONTROL         "Sho&w tooltips",2046,"Button",BS_AUTOCHECKBOX | 
+                    WS_TABSTOP,7,175,204,10
+    DEFPUSHBUTTON   "OK",IDOK,57,193,50,14
+    PUSHBUTTON      "Cancel",IDCANCEL,134,193,50,14
 END
 
 IDD_DELETEMACRO DIALOG DISCARDABLE  0, 0, 186, 66

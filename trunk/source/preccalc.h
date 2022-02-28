@@ -14,6 +14,19 @@
 #include "list2.h"
 #include "matrix.h"
 
+struct Top {
+	const char *name;
+	int type;
+	void *func;
+	void *cfunc;
+	void *mfunc;
+	int descrTid;
+	const char *descr;
+};
+
+extern const Top funcTab[];
+extern const int funcTab_size;
+
 struct Tvar {
 	char *name;
 	Complex oldx, newx;

@@ -6,5 +6,6 @@
 #include <string.h>
 #include <stdarg.h>
 #include <richedit.h>
+#include <commctrl.h>
 #include <malloc.h>
 #include "assert.h"
