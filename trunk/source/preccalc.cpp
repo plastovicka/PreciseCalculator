@@ -32,7 +32,8 @@ height=435,
  sizeLock,
  autoSave=1,
  log=0,
- logSize=0;
+ logSize=0,
+ disableRounding=0;
 
 char *sepExpr="\r--------------------\r";
 char *sepResult="\r =\r";
@@ -108,6 +109,7 @@ struct Treg { char *s; int *i; } regVal[]={
 	{"autoSave", &autoSave},
 	{"log", &log},
 	{"logSize", &logSize},
+	{"disableRounding", &disableRounding},
 };
 struct Tregs { char *s; char *i; DWORD n; BYTE isPath; } regValS[]={
 	{"language", lang, sizeof(lang), 0},
