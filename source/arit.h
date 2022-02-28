@@ -211,7 +211,7 @@ extern "C"{
 	void assign(Pint &dest, const Pint src);
 
 	extern int error, base, baseIn, angleMode, numFormat, fixDigits;
-	extern int enableFractions, separator1, separator2, sepFreq1, sepFreq2, useSeparator1, useSeparator2;
+	extern int enableFractions, separator1, separator2, sepFreq1, sepFreq2, useSeparator1, useSeparator2, disableRounding;
 	extern double dwordDigits[];
 	extern char digitTab[];
 	extern Pint lnBase, ln2, ln10, pi, pi2, pi4, one, minusone, half, two, ten, seedx;

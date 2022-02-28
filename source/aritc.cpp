@@ -81,6 +81,31 @@ double dwordDigits[37]={0, 0, // 32*ln(2)/ln(base)
 #endif
 };
 
+#ifndef NDEBUG
+bool CMPDBG(Pint y, Pint z)
+{
+	if(error) return true;
+	Tint precision = y[-4];
+	if(z[-3]>precision)
+	{
+		z[-3]=precision;
+		if(z[precision]<0){ //most significant bit is 1
+			Numx Ktmp;
+			Pint t=&Ktmp.m;
+			t[-4]=t[-3]=t[0]=1;
+			t[-2]=z[-2];
+			t[-1]=z[-1]-(precision-1);
+			Pint u=ALLOCX(z[-4]);
+			PLUSX(u, z, t);
+			//logx("u", u); logx("z", z); logx("t", t);
+			COPYX(z, u);
+			FREEX(u);
+		}
+	}
+	return !CMPX(y, z);
+}
+#endif
+
 void getln2(Tint len)
 {
 	if(len>Nln2){
@@ -256,6 +281,14 @@ static void roundResult(char *buf, int digits, bool fixed)
 	i=*s-'0';
 	if(i>9) i=*s-'A'+10;
 	if(i>35) i=*s-'a'+10;
+	if(disableRounding) {
+		//round only if there are all 9
+		if (i == base - 1) {
+			for (k = s + 1; *k == *s; k++);
+			if (*k != '\0') i=0;
+		}
+		else i=0;
+	}
 	k=s;
 	if(i>=((base+1)>>1)){
 		//increment
@@ -1031,7 +1064,7 @@ void _stdcall INVERSEROOTI(Pint y, Pint x, Tuint n)
 	if(n==2)
 	{
 		r[-4]=t[-4]=precision*2;
-		SQRTX(t, x);
+		SQRTX2(t, x);
 		DIVX(r, t, x);
 	}
 	else{
@@ -1039,7 +1072,7 @@ void _stdcall INVERSEROOTI(Pint y, Pint x, Tuint n)
 		DIVI1(r, 2);
 	}
 
-	//r:=r+(r*(1-x*r^n)/n
+	//r:=r+r*(1-x*r^n)/n
 	do
 	{
 		precision *= 2;
@@ -1088,9 +1121,8 @@ void _stdcall SQRTX(Pint y, const Pint x)
 	SCALEX(y, exp);
 
 #ifndef NDEBUG
-	t[-4]=y[-4];
 	SQRTX2(t, x);
-	assert(!CMPX(t, y) || error);
+	assert(&SQRTX && CMPDBG(y, t));
 #endif
 
 	FREEX(t);
@@ -1147,9 +1179,8 @@ void _stdcall DIVX(Pint y, const Pint a, const Pint b)
 	if(b[-2]) NEGX(y);
 
 #ifndef NDEBUG
-	t[-4]=y[-4];
 	DIVX2(t, a, b);
-	assert(!CMPX(t, y) || error);
+	assert(&DIVX && CMPDBG(y, t));
 #endif
 
 	FREEX(m);
