@@ -10,12 +10,16 @@
 #include <stdarg.h>
 #endif
 
+#pragma comment(lib,"comctl32.lib")
 #pragma comment(lib,"version.lib")
 #pragma comment(lib,"htmlhelp.lib")
 
+const char *trigB[]={"sin", "cos", "tan", "tg", "cot", "cotg",
+"asin", "acos", "atan", "atg", "acot", "acotg",
+"arcsin", "arccos", "arctan", "arctg", "arccot", "arccotg", 0};
 
 int width=518,
-height=435,
+ height=435,
  left=50,
  top=60,
  right,
@@ -33,7 +37,8 @@ height=435,
  autoSave=1,
  log=0,
  logSize=0,
- disableRounding=0;
+ disableRounding=0,
+ tooltipsShow=1;
 
 char *sepExpr="\r--------------------\r";
 char *sepResult="\r =\r";
@@ -53,7 +58,7 @@ resizing,
  invByShift;
 
 TfileName fnExpr, fnMacro, fnBtn, fnLog;
-HWND hWin, hIn, hOut;
+HWND hWin, hIn, hOut, hTt;
 HINSTANCE inst;
 HACCEL haccel;
 WNDPROC btnProc, editProc;
@@ -62,6 +67,7 @@ HFONT hFont, hFontBut;
 char *title="Precise Calculator";
 char lastMacro[MAX_MACRO_LEN];
 char *btnFile;
+char ttBuf[256];
 
 struct Tmacro {
 	char *name;
@@ -75,6 +81,7 @@ TstrItem *curHistory;
 struct Tbtn {
 	char *f;
 	char *invf;
+	int ftid, invftid; // funcTab index with description (.descr) and translation (.descrTid)
 	int x, y, w, h;
 	HWND wnd;
 };
@@ -107,6 +114,7 @@ struct Treg { char *s; int *i; } regVal[]={
 	{"history", &maxHistory},
 	{"keyboard", &keyboard},
 	{"autoSave", &autoSave},
+	{"tooltipsShow", &tooltipsShow},
 	{"log", &log},
 	{"logSize", &logSize},
 	{"disableRounding", &disableRounding},
@@ -832,6 +840,7 @@ BOOL CALLBACK OptionsProc(HWND hWnd, UINT mesg, WPARAM wP, LPARAM)
 	switch(mesg){
 		case WM_INITDIALOG:
 			setDlgTexts(hWnd, 18);
+			CheckDlgButton(hWnd, 2046, tooltipsShow ? BST_CHECKED : BST_UNCHECKED);
 			CheckDlgButton(hWnd, 537, autoSave ? BST_CHECKED : BST_UNCHECKED);
 			CheckDlgButton(hWnd, 530, useSeparator1 ? BST_CHECKED : BST_UNCHECKED);
 			CheckDlgButton(hWnd, 531, useSeparator2 ? BST_CHECKED : BST_UNCHECKED);
@@ -853,6 +862,8 @@ BOOL CALLBACK OptionsProc(HWND hWnd, UINT mesg, WPARAM wP, LPARAM)
 			switch(wP){
 				case IDOK:
 					autoSave = IsDlgButtonChecked(hWnd, 537);
+					tooltipsShow = IsDlgButtonChecked(hWnd, 2046);
+					if(hTt) SendMessage(hTt, TTM_ACTIVATE, tooltipsShow, 0);
 					useSeparator1= IsDlgButtonChecked(hWnd, 530);
 					useSeparator2= IsDlgButtonChecked(hWnd, 531);
 					GetDlgItemText(hWnd, 101, (char*)&separator1, 2);
@@ -1431,10 +1442,7 @@ void getBtnTxt(int i, char *buf, bool shift)
 	if((inv || shift) && b->invf && *b->invf) s=b->invf;
 	strcpy(buf, s);
 	if(hyp){
-		char *B[]={"sin", "cos", "tan", "tg", "cot", "cotg",
-			"asin", "acos", "atan", "atg", "acot", "acotg",
-			"arcsin", "arccos", "arctan", "arctg", "arccot", "arccotg", 0};
-		for(char **u=B; *u; u++){
+		for(char **u=(char**)&trigB; *u; u++){
 			int len= strleni(*u);
 			if(!_strnicmp(s, *u, len) &&
 				(s[len]==' ' || s[len]==0 || s[len]=='(')){
@@ -1444,6 +1452,63 @@ void getBtnTxt(int i, char *buf, bool shift)
 				break;
 			}
 		}
+	}
+}
+
+void getBtnTooltip(int i, BOOL shift)
+{
+	char *s;
+	BOOL h;	// hyperbolic
+	int hl;
+	Top *t;
+
+	Tbtn *b= &buttons[i];
+	if((inv || shift) && b->invf && *b->invf) {
+		s=b->invf;
+		hl = b->invftid;	// inverse tooltip index
+	} else {
+		s=b->f;
+		hl = b->ftid;	// normal tooltip index
+	}
+	if(hl>=0) { // function names from funcTab[]
+		h = FALSE;
+		if(hyp){
+			for(char **u=(char**)&trigB; *u; u++){
+				int len= strleni(*u);
+				if(!_strnicmp(s, *u, len) &&
+					(s[len]==' ' || s[len]==0 || s[len]=='(')){
+					h = TRUE;
+					break;
+				}
+			}
+		}
+		t = (Top*)&funcTab[hl];
+		if(h) { // hyperbolic toolti]p
+			s = lng(2000, "hyperbolic "); // hyperbolic LNG id
+			hl = (int)strlen(s);
+			strncpy( ttBuf, s, sizeof(ttBuf) );
+			if( hl < sizeof(ttBuf)-1 ) { // enough space for at least 1 letter of tooltip
+				s = ttBuf + hl; // offset after Hyperbolic
+				hl = sizeof(ttBuf) - hl; // length
+				strncpy( s, lng(t->descrTid, (char*)t->descr), hl );
+			}
+		} else
+			strncpy( ttBuf, lng(t->descrTid, (char*)t->descr), sizeof(ttBuf) );
+	} else // custom buttons descriptions
+		switch(hl) {
+		case -2:  strncpy( ttBuf, lng(2078, "Start calculation"), sizeof(ttBuf) ); break;
+		case -3:  strncpy( ttBuf, lng(2020, "Cubic power of X"), sizeof(ttBuf) ); break;
+		case -4:  strncpy( ttBuf, lng(2018, "Square power of X"), sizeof(ttBuf) ); break;
+		case -5:  strncpy( ttBuf, lng(2023, "Power of 10"), sizeof(ttBuf) ); break;
+		case -6:  strncpy( ttBuf, lng(2072, "Integer and fractional parts separator"), sizeof(ttBuf) ); break;
+		case -7:  strncpy( ttBuf, lng(2073, "Calculations separator"), sizeof(ttBuf) ); break;
+		case -8:  strncpy( ttBuf, lng(2074, "Exponent, power of 10"), sizeof(ttBuf) ); break;
+		case -9:  strncpy( ttBuf, lng(2077, "Imaginary part symbol"), sizeof(ttBuf) ); break;
+		case -10:  strncpy( ttBuf, lng(2090, "Print result to output window"), sizeof(ttBuf) ); break;
+		case -11:  strncpy( ttBuf, lng(2047, "Delete 1 symbol"), sizeof(ttBuf) ); break;
+		case -12:  strncpy( ttBuf, lng(2048, "Clear all"), sizeof(ttBuf) ); break;
+			// unknown ffunctions will be without tooltips
+		default:  *ttBuf = 0; // strncpy( ttBuf, lng(0, ""), sizeof(ttBuf) );
 	}
 }
 
@@ -1471,6 +1536,39 @@ void skipEol(char *&s)
 	}
 	if(*s=='\r' && s[1]=='\n') s++;
 	s++;
+}
+
+int getDescrIndex(char *s)
+{
+	int l;
+	char *n;
+	if (strlen(s)) { // skipped inv name?
+		if(s[0]==' ') s++;
+		for(int i=0; i<funcTab_size; i++){
+			n = (char*) funcTab[i].name;
+			l = (int)strlen(n);
+			if( !_strnicmp(s, n, l) ) {
+				n=(char*)s+l;
+				if( *n==' ' || *n==0  || *n=='(' ) {
+					while(i>0 && !funcTab[i].descr) i--; // NULL description = previous description
+					return i;
+				}
+			}
+		}
+		// custom buttons names
+		if(!_stricmp(s, "EXE")) return -2;
+		if(!strcmp(s, "^3")) return -3;
+		if(!strcmp(s, "^2")) return -4;
+		if(!strcmp(s, "10^")) return -5;
+		if(!strcmp(s, ".")) return -6;
+		if(!strncmp(s, ";", 1)) return -7;
+		if(!_stricmp(s, "E")) return -8;
+		if(!_stricmp(s, "i")) return -9;
+		if(!_strnicmp(s, "print", 5)) return -10;
+		if(!_stricmp(s, "Del")) return -11;
+		if(!_stricmp(s, "C")) return -12;
+	}
+	return -1; // non-existent custom or wrong function name
 }
 
 void parseButtons()
@@ -1501,17 +1599,21 @@ void parseButtons()
 				amin(right, x+w);
 				amin(bottom, y+h);
 				b->f=s;
+				// zero terminate button text
 				skipEol(s);
-				b->invf=s;
 				t=s-1;
 				if(*t=='\n' && t[-1]=='\r') t--;
 				if(int(t-b->f)>=MBUTTONTEXT) t=b->f+MBUTTONTEXT-1;
 				*t=0;
+				b->ftid = getDescrIndex(b->f);
+				b->invf=s;
+				// zero terminate button inverse text
 				skipEol(s);
 				t=s-1;
 				if(*t=='\n' && t[-1]=='\r') t--;
 				if(int(t-b->invf)>=MBUTTONTEXT) t=b->invf+MBUTTONTEXT-1;
 				*t=0;
+				b->invftid = getDescrIndex(b->invf);
 			}
 		}
 	}
@@ -1676,6 +1778,13 @@ void loadButtons()
 	RECT rc;
 	SIZE sz;
 
+	TOOLINFO ti;
+	ti.cbSize = sizeof(ti);
+	ti.uFlags = TTF_IDISHWND; // TTF_IDISHWND | TTF_SUBCLASS;
+	ti.hwnd = hWin;
+	ti.hinst = inst;
+	ti.lpszText = LPSTR_TEXTCALLBACK;
+
 	fn=fnBtn;
 	if(!*fn){
 		fn=buf;
@@ -1692,6 +1801,11 @@ void loadButtons()
 		}
 		else{
 			LockWindowUpdate(hWin);
+			//unregister tooltips
+			if(hTt) for(i=0; i<buttons.len; i++){
+				ti.uId = (UINT)buttons[i].wnd;
+				SendMessage(hTt, TTM_DELTOOL, 0, (LPARAM)&ti);
+			}
 			//delete buttons
 			for(i=0; i<buttons.len; i++){
 				DestroyWindow(buttons[i].wnd);
@@ -1737,6 +1851,10 @@ void loadButtons()
 					rc.left+b->x*dpix/96, rc.top+b->y*dpiy/96,
 					b->w*dpix/96-xgap, b->h*dpiy/96-ygap, hWin,
 					(HMENU)(UINT_PTR)(300+i), inst, 0);
+				if(hTt) { // register tooltip
+					ti.uId = (UINT)b->wnd;
+					SendMessage(hTt, TTM_ADDTOOL, 0, (LPARAM)&ti);
+				}
 				if(!strcmp(b->f, "EXE")){
 					idEnter=300+i;
 					btnProc= (WNDPROC)SetWindowLongPtr(b->wnd, GWLP_WNDPROC, (LONG_PTR)enterProc);
@@ -1845,11 +1963,44 @@ LRESULT CALLBACK MainWndProc(HWND hWnd, UINT mesg, WPARAM wP, LPARAM lP)
 		case WM_CLOSE:
 			saveAtExit();
 			DestroyWindow(hWin);
+			if(hTt) {
+				SendMessage(hTt, TTM_ACTIVATE, FALSE, 0);
+				DestroyWindow(hTt);
+				hTt = NULL;
+			}
 			break;
 		case WM_DESTROY:
 			error=1100;
 			PostQuitMessage(0);
 			break;
+
+		case WM_NOTIFY:
+		{
+			LPNMHDR nmhdr = (LPNMHDR)lP;
+			if( nmhdr->code == TTN_NEEDTEXT ){
+				TOOLTIPTEXT *ttt = (LPTOOLTIPTEXT)lP;
+				ttt->hinst = NULL;
+				i = GetWindowLong( (HWND)ttt->hdr.idFrom, GWL_ID );
+				if(i>=300 && i<300+buttons.len){
+					getBtnTooltip(i-300, GetKeyState(VK_SHIFT)<0);
+					ttt->lpszText = (char *) &ttBuf;
+				} else switch (i) {
+				case IDC_INV:
+					ttt->lpszText = lng(i, "Inverse trigonometric functions");
+					break;
+				case IDC_HYP:
+					ttt->lpszText = lng(i, "Hyperbolic trigonometric functions");
+					break;
+				case IDC_FRACT:
+					ttt->lpszText = lng(i, "Calculate fractions if possible");
+					break;
+				case IDC_FIXDIGITS:
+					ttt->lpszText = lng(i, "Number of fixed digits");
+					break;
+				}
+			}
+		}
+		break;
 
 		case WM_INITDIALOG:
 			hWin= hWnd;
@@ -2242,6 +2393,48 @@ int pascal WinMain(HINSTANCE hInstance, HINSTANCE, LPSTR, int)
 	oldW= rc.right-rc.left;
 	oldH= rc.bottom-rc.top;
 	MoveWindow(hWin, left, top, width, height, FALSE);
+
+	// creating tooltip window
+	if(GetProcAddress(GetModuleHandle("comctl32.dll"), "DllGetVersion")){
+		INITCOMMONCONTROLSEX iccs;
+		iccs.dwSize= sizeof(INITCOMMONCONTROLSEX);
+		iccs.dwICC= ICC_TAB_CLASSES;
+		InitCommonControlsEx(&iccs);
+	}
+	else{
+		InitCommonControls();
+	}
+	DWORD wc_Data;
+	hTt = CreateWindowEx(
+		0, // dwExStyle
+		TOOLTIPS_CLASS,
+		NULL, // lpWindowName
+		WS_DISABLED, // dwStyle
+		CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, //x,y,w,h
+		hWin, // hWndParent
+		NULL, // hMenu
+		inst, // hInstance
+		&wc_Data // passed to window after creation
+	);
+	// registering tooltips for permanent controls
+	TOOLINFO ti;
+	ti.cbSize = sizeof(ti);
+	ti.uFlags = TTF_IDISHWND; // TTF_IDISHWND | TTF_SUBCLASS;
+	ti.hwnd = hWin;
+	ti.hinst = inst;
+	ti.lpszText = LPSTR_TEXTCALLBACK;
+	//ti.lpszText = "Test permanent control tooltip";
+	ti.uId = (UINT)GetDlgItem(hWin, IDC_FRACT);
+	SendMessage(hTt, TTM_ADDTOOL, 0, (LPARAM)&ti);
+	ti.uId = (UINT)GetDlgItem(hWin, IDC_INV);
+	SendMessage(hTt, TTM_ADDTOOL, 0, (LPARAM)&ti);
+	ti.uId = (UINT)GetDlgItem(hWin, IDC_HYP);
+	SendMessage(hTt, TTM_ADDTOOL, 0, (LPARAM)&ti);
+	ti.uId = (UINT)GetDlgItem(hWin, IDC_FIXDIGITS);
+	SendMessage(hTt, TTM_ADDTOOL, 0, (LPARAM)&ti);
+	// turning off tooltips if they are disabled in settings
+	if(hTt) SendMessage(hTt, TTM_ACTIVATE, tooltipsShow, 0);
+
 	loadButtons();
 	ShowWindow(hWin, SW_SHOWDEFAULT);
 
@@ -2259,6 +2452,7 @@ int pascal WinMain(HINSTANCE hInstance, HINSTANCE, LPSTR, int)
 	}
 
 	while(GetMessage(&mesg, NULL, 0, 0)>0){
+		if(hTt) SendMessage(hTt, TTM_RELAYEVENT, 0, (LPARAM)&mesg);
 		processMessage(mesg);
 	}
 	DeleteObject(hFont);

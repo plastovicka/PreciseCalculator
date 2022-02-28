@@ -15,7 +15,7 @@ implement langChanged() - reload menu, file filters, invalidate, reload not moda
 */
 
 #ifndef MAXLNGSTR
-#define MAXLNGSTR 1500
+#define MAXLNGSTR 2500
 #endif
 //---------------------------------------------------------------------------
 const int MAXLANG=60;
