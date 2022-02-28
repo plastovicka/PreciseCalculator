@@ -1,5 +1,5 @@
 /*
-	(C) 2004-2014  Petr Lastovicka
+	(C) 2004-2022  Petr Lastovicka
 
 	This program is free software; you can redistribute it and/or
 	modify it under the terms of the GNU General Public License.
@@ -589,7 +589,9 @@ void _stdcall MULTX2(Pint z, const Pint x, const Pint y)
 	FREEX(x0);
 }
 //-------------------------------------------------------------------
-#ifdef ARIT64
+#ifndef NDEBUG
+const int MULT3LIM = 30;
+#elif defined(ARIT64)
 const int MULT3LIM = 730;
 #else
 const int MULT3LIM = 450;
@@ -703,9 +705,9 @@ void _stdcall MULTX(Pint z, const Pint x, const Pint y)
 	z[-1]=ADDII(z[-1], ADDII(xexp, yexp));
 
 #ifndef NDEBUG
-	t1[-4]=z[-4];
-	MULTX2(t1, x, y);
-	assert(!CMPX(z, t1) || error);
+	Pint t=t1;
+	MULTX2(t, x, y);
+	assert(&MULTX && CMPDBG(z, t));
 #endif
 
 	FREEX(x0);
@@ -903,7 +905,7 @@ void _stdcall AGMX(Pint z, const Pint x0, const Pint y0)
 	FREEX(m);
 }
 //-------------------------------------------------------------------
-static void _stdcall LNX(Pint y, const Pint x0, bool useAGM)
+static void _stdcall _LNX(Pint y, const Pint x0, bool useAGM)
 {
 	Tint ex, p;
 	int num2;
@@ -913,7 +915,7 @@ static void _stdcall LNX(Pint y, const Pint x0, bool useAGM)
 		cerror(1009, "Logarithm of not positive number");
 		return;
 	}
-	p=y[-4]+2;
+	p=y[-4]+3;
 	ALLOCN(3, p, &x, &t, &v);
 	COPYX(x, x0);
 	ex=num2=0;
@@ -1034,14 +1036,14 @@ static void _stdcall LNX(Pint y, const Pint x0, bool useAGM)
 	FREEX(x);
 }
 
-void _stdcall LNX(Pint y, const Pint x0)
+void _stdcall LNX(Pint y, const Pint x)
 {
-	LNX(y, x0, true);
+	_LNX(y, x, true);
 
 #ifndef NDEBUG
 	Pint z=ALLOCX(y[-4]);
-	LNX(z, x0, false);
-	assert(!CMPX(z, y) || error);
+	_LNX(z, x, false);
+	//assert(&LNX && CMPDBG(y, z));
 	FREEX(z);
 #endif
 }
@@ -1101,12 +1103,17 @@ void _stdcall SQRTX(Pint y, const Pint x)
 	Pint t, u;
 	Tint exp;
 
-	if(y[-4] < 5000 || x[-3]<=0){
+#ifndef NDEBUG
+	const int SQRTLIM=50;
+#else
+	const int SQRTLIM=5000;
+#endif
+	if(y[-4] < SQRTLIM || x[-3]<=0){
 		SQRTX2(y, x);
 		return;
 	}
 
-	ALLOCN(2, y[-4]+1, &t, &u);
+	ALLOCN(2, y[-4]+2, &t, &u);
 	exp= x[-1]/2;
 	if(exp!=0)
 	{
@@ -1130,7 +1137,12 @@ void _stdcall SQRTX(Pint y, const Pint x)
 
 void _stdcall DIVX(Pint y, const Pint a, const Pint b)
 {
-	if(y[-4]<5000 || b[-3]<20 || a[-3]<=0){
+#ifndef NDEBUG
+	const int DIVLIM=50;
+#else
+	const int DIVLIM=5000;
+#endif
+	if(y[-4]<DIVLIM || b[-3]<20 || a[-3]<=0){
 		DIVX2(y, a, b);
 		return;
 	}
@@ -1139,7 +1151,7 @@ void _stdcall DIVX(Pint y, const Pint a, const Pint b)
 	Tint p, bp, precision;
 
 	bp = b[-3];
-	p=(Tint)(y[-4] + 2);
+	p=(Tint)(y[-4] + 1);
 
 	m=ALLOCN(4, p, &t, &u, &r, &b1);
 	COPYX(b1, b);
@@ -1148,7 +1160,7 @@ void _stdcall DIVX(Pint y, const Pint a, const Pint b)
 	for(precision=p; precision>10; precision>>=1) len++;
 
 	r[-4]=p>>len;
-	DIVX(r, one, b);
+	DIVX2(r, one, b);
 
 	int fin=0;
 
