@@ -272,7 +272,7 @@ void showx(Pint x)
 }
 
 
-const char *logfile="C:\\a\\preccalc.log";
+const char *logfile="preccalc.log";
 static int logLock=0;
 
 void logs(char *fmt, ...)

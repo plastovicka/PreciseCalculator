@@ -1,0 +1,83 @@
+﻿<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML><HEAD><TITLE>Uso</TITLE>
+<META http-equiv=Content-Type content="text/html; charset=utf-8">
+<META content="MSHTML 6.00.6000.21383" name=GENERATOR></HEAD>
+<BODY text=#000000 bgColor=#ffffff>
+<P><A name=usage></A><B>Utilizzo</B></P>
+<P>Ci sono due caselle di modifica. Quella superiore è usata per inserire 
+espressioni matematiche che vengono valutate ed il risultato viene scritto nella 
+casella di modifica inferiore. Il calcolo inizia quando viene premuto il 
+pulsante EXE o il tasto ENTER. Le espressioni possono essere inserite con il 
+mouse - usare i pulsanti sul lato destro della finestra. Quando qualche pulsante 
+viene cliccato&nbsp;insieme&nbsp;al tasto SHIFT,&nbsp;si ottiene la stessa 
+funzione come se la casella Inv è selezionata. Il pulsante Del corrisponde al 
+tasto Backspace. Il tasto C cancella le caselle di modifica. </P>
+<P>La prima casella di modifica dopo l'etichetta "Precisione:" mantiene il 
+numero di cifre significative. La seconda casella di modifica è visibile solo in 
+modalità Fix ed indica il numero massimo di cifre dopo la virgola. La casella di 
+controllo "a/b" abilita o disabilita le&nbsp;frazioni nel risultato. Un 
+numeratore ed un denominatore sono numeri&nbsp;interi a 32 bit (circa 9 cifre). 
+Se avete installato la versione a 64 bit di Precise Calculator, sia il 
+numeratore che il denominatore sono a 64-bit (circa 18 cifre).</P>
+<P>Tutti i calcoli sono fatti in un campo separato. Quindi non c'è bisogno di 
+aspettare fino a quando viene visualizzato il risultato. È possibile iniziare a 
+digitare un'altra espressione subito dopo aver premuto il tasto INVIO. Diverse 
+cifre principali del risultato vengono visualizzate prima dell'intero risultato 
+se&nbsp;è impostato&nbsp;grande precisione. Ogni espressione è valutata almeno 
+due volte. Ulteriori calcoli sono fatti con maggiore precisione fino 
+all'ottenimento del numero delle cifre richieste. La durata in millisecondi 
+viene visualizzata quando il calcolo è finito.</P>
+<P>Dopo aver premuto ENTER o EXE, è possibile utilizzare i tasti cursore 
+sinistra/destra per impostare il cursore alla fine o all'inizio della casella di 
+ingresso della modifica. Altri tasti cancellano automaticamente la casella di 
+modifica.</P>
+<P>Ctrl+INVIO inserisce il&nbsp;carattere di fine riga.</P>
+<P><U>Basi numeriche</U></P>
+<P>Oltre ad una base decimale, è possibile eseguire calcoli in qualsiasi base da 
+2 a 36. I caratteri dalla A alla Z sono utilizzati per rappresentare le cifre 
+superiori a 9. I pulsanti Dec, Hex, Bin cambiano rapidamente la base per 10, 16 
+o 2.</P>
+<P><U>Unità angolari</U></P>
+<P>Deg - gradi, l'angolo retto è di 90</P>
+<P>Rad - radianti, l'angolo retto è PI/2</P>
+<P>Grad - gradienti, l'angolo retto è&nbsp;100</P>
+<P>Le unità angolari sono utilizzate dalle funzioni sin, cos, tg, cosec, sec, 
+cotg, asin, acos, atg, acsc, asec, acotg, angolo. Esse hanno effetto anche sulle 
+funzioni complesse ^, #, exp, ln, log, sinh, cosh, tgh, csch, sech, cotgh, 
+asinh, acosh, atgh, acotgh, acsch, asech, arg, polare.</P>
+<P><U>Formato Risultato</U></P>
+<P>Norm - normale, il punto si trova tra un numero intero e una parte 
+frazionaria</P>
+<P>Sci - scientifico, il punto segue la prima cifra</P>
+<P>Eng - Ingegneria, simile a Sci, ma l'esponente è divisibile per 3</P>
+<P>Fix - simile a Norm, ma una parte frazionaria&nbsp;fissa la lunghezza </P>
+<P><U>Macro</U></P>
+<P>Qualsiasi testo può essere salvato come una macro. Di solito è utilizzato per 
+memorizzare formule matematiche o fisiche. Dovrebbero esserci assegnazioni alle 
+variabili all'inizio di una formula. Esempio: il volume di un cilindro può 
+essere scritto come <CODE>r=1;v=2;v*pi*r^2</CODE>. Quindi è possibile usare le 
+scorciatoie da tastiera Ctrl+1 e Ctrl+2 per modificare facilmente i valori delle 
+variabili <CODE>r</CODE>, <CODE>v</CODE>.</P>
+<P>Le macro vengono salvate automaticamente quando si chiude la calcolatrice e 
+vengono ricaricate al&nbsp;riavvio. È possibile scegliere un file per le macro 
+nel menu File / Salva come macro.</P>
+<P>L'avvio automatico della Macro viene eseguito automaticamente all'avvio della 
+calcolatrice o all'apertura di&nbsp;un file macro. L'avvio automatico della 
+Macro dovrebbe contenere solo le assegnazioni alle variabili.</P>
+<P>È possibile creare dei sottomenu nel menu Macro. Rinominare una macro ed 
+usare il carattere backslash per separare un nome del sottomenu ed un nome di 
+elemento. Il sottomenu può essere nidificato a qualsiasi profondità.</P>
+<P><U>Pulsanti personalizzati</U></P>
+<P>Potete creare i vostri pulsanti. Basta creare un file di testo con estensione 
+CBT e aprirlo dal menù pulsanti&nbsp;File /&nbsp;Apri. </P>
+<P>La prima riga del file contiene il testo PRECCALC 1. Ci sono sei numeri della 
+seconda riga che&nbsp;identificano le&nbsp;coordinate x&nbsp;e y, numero di 
+colonne,&nbsp;numero di righe, i pulsanti larghezza ed altezza. Ci sono le 
+virgole dopo il secondo ed il quarto numero. Le righe&nbsp;seguenti sono 
+didascalie per i pulsanti (numero di colonne)*(numero di righe). Ci sono due 
+righe per ogni pulsante, la seconda riga viene utilizzata quando il Inv è 
+selezionato. Ci possono essere molti gruppi di pulsanti nel file. Ogni gruppo 
+inizia con una riga contenente sei numeri. Il pulsante larghezza ed altezza non 
+è necessario se è lo stesso come nel gruppo precedente. </P>
+<P>Utilizzare Ctrl+R per ricaricare l'ultimo file pulsanti 
+aperto.</P></BODY></HTML>

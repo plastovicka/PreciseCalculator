@@ -1,0 +1,630 @@
+﻿<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML><HEAD><TITLE>Funzione di riferimento</TITLE>
+<META http-equiv=Content-Type content="text/html; charset=utf-8">
+<META content="MSHTML 6.00.6000.21383" name=GENERATOR></HEAD>
+<BODY text=#000000 bgColor=#ffffff><STRONG>Riferimento funzione</STRONG> 
+<TABLE>
+  <TBODY>
+  <TR>
+    <TD width=100><CODE>+</CODE></TD>
+    <TD>addizione</TD></TR>
+  <TR>
+    <TD><CODE>-</CODE></TD>
+    <TD>sottrazione</TD></TR>
+  <TR>
+    <TD><CODE>*</CODE></TD>
+    <TD>moltiplicazione</TD></TR>
+  <TR>
+    <TD><CODE>/</CODE></TD>
+    <TD>divisione</TD></TR>
+  <TR>
+    <TD>div</TD>
+    <TD><CODE>x div y= tronca (x/y)</CODE></TD></TR>
+  <TR>
+    <TD>mod</TD>
+    <TD>resto, <CODE>x mod y= x-y* (x div y)</CODE></TD></TR>
+  <TR>
+    <TD>hypot</TD>
+    <TD>ipotenusa, <CODE>hypot (a,b)=sqrt (a^2+b^2)</CODE></TD></TR>
+  <TR>
+    <TD>angle</TD>
+    <TD><CODE>angolo(a,b)= atan(a/b)</CODE></TD></TR>
+  <TR>
+    <TD>rand</TD>
+    <TD>numero casuale, <CODE>0&lt;=rand&lt;1</CODE></TD></TR>
+  <TR>
+    <TD>random</TD>
+    <TD><CODE>random(n)=trunc(rand*n)</CODE></TD></TR>
+  <TR>
+    <TD>ctof</TD>
+    <TD>converte °Celsius in °Fahrenheit</TD></TR>
+  <TR>
+    <TD>ftoc</TD>
+    <TD>converte °Fahrenheit&nbsp;in °Celsius</TD></TR>
+  <TR>
+    <TD>baseN</TD>
+    <TD>numero successivo è in base N, 2&lt;=N&lt;=36, se non vi è spazio 
+      prima di&nbsp;N</TD></TR>
+  <TR>
+    <TD>dec</TD>
+    <TD>base10</TD></TR>
+  <TR>
+    <TD>hex</TD>
+    <TD>base16</TD></TR>
+  <TR>
+    <TD>bin</TD>
+    <TD>base2</TD></TR>
+  <TR>
+    <TD>oct</TD>
+    <TD>base8</TD></TR></TBODY></TABLE>
+<TABLE>
+  <TBODY>
+  <TR>
+    <TD colSpan=2><U>potenze e logaritmi</U></TD></TR>
+  <TR>
+    <TD width=100>^, <CODE>**</CODE></TD>
+    <TD>potenza</TD></TR>
+  <TR>
+    <TD><CODE>#</CODE></TD>
+    <TD>radice, <CODE>y#x= x^(1/y)</CODE></TD></TR>
+  <TR>
+    <TD>sqrt</TD>
+    <TD>radice quadrata, <CODE>sqrt(x)= 2#x = x^0.5</CODE></TD></TR>
+  <TR>
+    <TD>exp</TD>
+    <TD>funzione esponenziale, <CODE>exp(x)=e^x, e=2.718...</CODE></TD></TR>
+  <TR>
+    <TD>ln</TD>
+    <TD>logaritmo naturale, funzione inversa a exp</TD></TR>
+  <TR>
+    <TD>logn</TD>
+    <TD>logaritmo, <CODE>logn(n,x)=ln(x)/ln(n)</CODE></TD></TR>
+  <TR>
+    <TD>log</TD>
+    <TD><CODE>log(x)=logn(10,x)</CODE></TD></TR></TBODY></TABLE><A name=complex></A>
+<TABLE>
+  <TBODY>
+  <TR>
+    <TD colSpan=2><U>numeri complessi</U></TD></TR>
+  <TR>
+    <TD width=100>real</TD>
+    <TD>parte reale, <CODE>real(a+bi)=a</CODE></TD></TR>
+  <TR>
+    <TD>imag</TD>
+    <TD>parte immaginaria, <CODE>imag(a+bi)=b</CODE></TD></TR>
+  <TR>
+    <TD>conjg</TD>
+    <TD>coniuga, <CODE>conjg(a+bi)=a-bi</CODE></TD></TR>
+  <TR>
+    <TD>abs</TD>
+    <TD>valore assoluto, <CODE>abs x=hypot(real x,imag x)</CODE></TD></TR>
+  <TR>
+    <TD>arg</TD>
+    <TD>angolo di fase, <CODE>arg x=angle(imag x,real x)</CODE></TD></TR>
+  <TR>
+    <TD>sign</TD>
+    <TD><CODE>sign x=x/abs x</CODE></TD></TR>
+  <TR>
+    <TD>polar</TD>
+    <TD><CODE>polar(r,a)=r*cos a + i*r*sin a</CODE></TD></TR>
+  <TR>
+    <TD>complex</TD>
+    <TD><CODE>complex(a,b)= a + b i</CODE></TD></TR></TBODY></TABLE><A 
+name=commands></A>
+<TABLE>
+  <TBODY>
+  <TR>
+    <TD colSpan=2><U>Condizioni e comandi</U></TD></TR>
+  <TR>
+    <TD width=100>==</TD>
+    <TD>1 se gli operandi sono uguali, altrimenti 0</TD></TR>
+  <TR>
+    <TD>! =, &lt;&gt;</TD>
+    <TD>non uguale</TD></TR>
+  <TR>
+    <TD>&gt;</TD>
+    <TD>maggiore</TD></TR>
+  <TR>
+    <TD>&lt;</TD>
+    <TD>minore</TD></TR>
+  <TR>
+    <TD>&gt; =</TD>
+    <TD>maggiore o uguale</TD></TR>
+  <TR>
+    <TD>&lt;=</TD>
+    <TD>minore o uguale</TD></TR>
+  <TR>
+    <TD>if(p,a,)</TD>
+    <TD>b se p è zero oppure a se p è diverso da zero</TD></TR>
+  <TR>
+    <TD>return</TD>
+    <TD>ferma il calcolo</TD></TR>
+  <TR>
+    <TD>return x</TD>
+    <TD>ferma il calcolo e visualizza il risultato x</TD></TR>
+  <TR>
+    <TD>goto n</TD>
+    <TD>salta ad un'etichetta o al punto e virgola n-th, goto0 salta 
+      all'inizio </TD></TR>
+  <TR>
+    <TD>gotor n</TD>
+    <TD>salto relativo, gotor -1 salta al comando precedente, gotor0 salta al 
+      comando successivo, gotor0 sarà bloccato dalla calcolatrice</TD></TR>
+  <TR>
+    <TD>print x,"t"</TD>
+    <TD>stampa&nbsp;numero x&nbsp;e quindi il testo t</TD></TR>
+  <TR>
+    <TD>swap (a,b)</TD>
+    <TD>variabili di scambio a,b</TD></TR></TBODY></TABLE>
+<TABLE>
+  <TBODY>
+  <TR>
+    <TD colSpan=2><U>arrotondamento</U></TD></TR>
+  <TR>
+    <TD width=100>round</TD>
+    <TD>intorno al numero intero più vicino</TD></TR>
+  <TR>
+    <TD>int, floor</TD>
+    <TD>arrotonda per difetto</TD></TR>
+  <TR>
+    <TD>ceil</TD>
+    <TD>arrotonda per eccesso</TD></TR>
+  <TR>
+    <TD>trunc</TD>
+    <TD>parte intera</TD></TR>
+  <TR>
+    <TD>frac</TD>
+    <TD>parte frazionaria, <CODE>frac x=x-trunc x</CODE></TD></TR></TBODY></TABLE><A 
+name=bitwise></A>
+<TABLE>
+  <TBODY>
+  <TR>
+    <TD colSpan=2><U>Funzioni bit&nbsp;per bit</U></TD></TR>
+  <TR>
+    <TD width=100>and, &amp;</TD>
+    <TD>bit&nbsp;per bit and</TD></TR>
+  <TR>
+    <TD>or, |</TD>
+    <TD>bit per bit or</TD></TR>
+  <TR>
+    <TD>xor</TD>
+    <TD>bit esclusivo or</TD></TR>
+  <TR>
+    <TD>not</TD>
+    <TD>complemento ad uno della parte intera</TD></TR>
+  <TR>
+    <TD>bitnand</TD>
+    <TD><CODE>x bitnand y=not (x ed y)</CODE></TD></TR>
+  <TR>
+    <TD>nand</TD>
+    <TD><CODE>x nand y=(x==0 o y==0)</CODE></TD></TR>
+  <TR>
+    <TD>bitnor</TD>
+    <TD><CODE>x bitnor y=not (x o y)</CODE></TD></TR>
+  <TR>
+    <TD>nor</TD>
+    <TD><CODE>x nor y=(x==0 e y==0)</CODE></TD></TR>
+  <TR>
+    <TD>bitimp</TD>
+    <TD><CODE>x bitimp y=y o not x</CODE></TD></TR>
+  <TR>
+    <TD>imp, -&gt;</TD>
+    <TD><CODE>x imp y=(x==0 o y&lt;0&gt;)</CODE></TD></TR>
+  <TR>
+    <TD>biteqv</TD>
+    <TD><CODE>x biteqv y= not (x xor y)</CODE></TD></TR>
+  <TR>
+    <TD>eqv</TD>
+    <TD><CODE>x eqv y=((x==0)==(y==0))</CODE></TD></TR>
+  <TR>
+    <TD>lsh, &lt;&lt;</TD>
+    <TD>shift sinistro, <CODE>x&lt;&lt;y=x*2^y</CODE></TD></TR>
+  <TR>
+    <TD>rsh, &gt;&gt;</TD>
+    <TD>shift destro, <CODE>x&gt;&gt;y=x&lt;&lt;-y</CODE></TD></TR>
+  <TR>
+    <TD>rshi, &gt;&gt;&gt;</TD>
+    <TD><CODE>x&gt;&gt;&gt;y=trunc(x&gt;&gt;y)</CODE></TD></TR></TBODY></TABLE><A 
+name=integer></A>
+<TABLE>
+  <TBODY>
+  <TR>
+    <TD colSpan=2><U>Funzioni numeri interi</U></TD></TR>
+  <TR>
+    <TD width=100>!, fact</TD>
+    <TD>fattoriale, <CODE>n!=fact(n)= productfor (i,1,n,i)</CODE></TD></TR>
+  <TR>
+    <TD>!!, ffact</TD>
+    <TD><CODE>n!!=ffact(n)= productfor (i,0,n/2-1,n-2*i)</CODE></TD></TR>
+  <TR>
+    <TD>combin, nCr</TD>
+    <TD>combinazione, <CODE>n nCr k = n!/(n-k)!/k!</CODE></TD></TR>
+  <TR>
+    <TD>permut, nPr</TD>
+    <TD>variazione, <CODE>n nPr k = n!/(n-k)!</CODE></TD></TR>
+  <TR>
+    <TD>gcd</TD>
+    <TD>massimo comun divisore di due o più numeri interi</TD></TR>
+  <TR>
+    <TD>mcm</TD>
+    <TD>minimo comune multiplo di due o più numeri interi, 
+      <CODE>lcm(a,b)=a*b/gcd(a,b)</CODE></TD></TR>
+  <TR>
+    <TD>divisor</TD>
+    <TD>divisore minimo principale di un operando</TD></TR>
+  <TR>
+    <TD>prime</TD>
+    <TD>prime che è maggiore di un operando</TD></TR>
+  <TR>
+    <TD>isprime</TD>
+    <TD><CODE>isprime(n)=(divisor(n)==n)</CODE></TD></TR>
+  <TR>
+    <TD>fibon</TD>
+    <TD>fibon, 
+<CODE>fibon(n)=fibon(n-1)+fibon(n-2)</CODE></TD></TR></TBODY></TABLE><A 
+name=angle></A>
+<TABLE>
+  <TBODY>
+  <TR>
+    <TD colSpan=2><U>conversioni angolo</U></TD></TR>
+  <TR>
+    <TD width=100>radtodeg</TD>
+    <TD>converte le radianti in gradi, <CODE>radtodeg x= x/pi*180</CODE></TD></TR>
+  <TR>
+    <TD>degtorad</TD>
+    <TD>converte i gradi in radianti</TD></TR>
+  <TR>
+    <TD>radtograd</TD>
+    <TD>converte&nbsp;le radianti in gradienti, <CODE>radtograd x= 
+      x/pi*200</CODE></TD></TR>
+  <TR>
+    <TD>gradtorad</TD>
+    <TD>converte i gradienti in radianti</TD></TR>
+  <TR>
+    <TD>degtograd</TD>
+    <TD>converte gradi a gradienti, <CODE>degtograd x = x * 09/10</CODE></TD></TR>
+  <TR>
+    <TD>gradtodeg</TD>
+    <TD>converte le pendenze in gradi</TD></TR>
+  <TR>
+    <TD>deg, °</TD>
+    <TD>converte i gradi&nbsp;in unità correnti</TD></TR>
+  <TR>
+    <TD>rad</TD>
+    <TD>converte le radianti in unità correnti</TD></TR>
+  <TR>
+    <TD>grad</TD>
+    <TD>converte i gradienti&nbsp;in unità correnti</TD></TR>
+  <TR>
+    <TD>todeg</TD>
+    <TD>converte le unità correnti in gradi</TD></TR>
+  <TR>
+    <TD>torad</TD>
+    <TD>converte le unità attuali&nbsp;in radianti</TD></TR>
+  <TR>
+    <TD>tograd</TD>
+    <TD>converte le unità attuali&nbsp;in gradienti</TD></TR>
+  <TR>
+    <TD>dms</TD>
+    <TD>converte gradi, minuti e secondi in gradi, la parte intera è gradi, le 
+      due cifre dopo il punto decimale sono minuti, le due cifre successive sono 
+      secondi, cifre successive sono un decimo di secondo, centesimo di secondo, 
+      ... </TD></TR>
+  <TR>
+    <TD>todms</TD>
+    <TD>funzione inversa a dms</TD></TR></TBODY></TABLE>
+<TABLE>
+  <TBODY>
+  <TR>
+    <TD colSpan=2><U>funzioni trigonometriche</U></TD></TR>
+  <TR>
+    <TD width=100>sin</TD>
+    <TD>sinusoidale, (lato opposto / ipotenusa)</TD></TR>
+  <TR>
+    <TD>cos</TD>
+    <TD>coseno (lato adiacente / ipotenusa)</TD></TR>
+  <TR>
+    <TD>tan, tg</TD>
+    <TD>tangente, (lato opposto / lato adiacente)</TD></TR>
+  <TR>
+    <TD>cosec, csc</TD>
+    <TD>cosecant, (ipotenusa / lato opposto)</TD></TR>
+  <TR>
+    <TD>sec</TD>
+    <TD>secante, (ipotenusa / lato adiacente)</TD></TR>
+  <TR>
+    <TD>cot, cotg</TD>
+    <TD>cotangent, (lato adiacente / lato opposto)</TD></TR></TBODY></TABLE>
+<TABLE>
+  <TBODY>
+  <TR>
+    <TD colSpan=2><U>funzioni trigonometriche inverse</U></TD></TR>
+  <TR>
+    <TD width=150>asin, arcsin</TD>
+    <TD><CODE>asin(x)=-ln(x i+sqrt(1-x^2)) i</CODE></TD></TR>
+  <TR>
+    <TD>acos, arccos</TD>
+    <TD><CODE>acos(x)=-ln(x +sqrt(1-x^2)i) i</CODE></TD></TR>
+  <TR>
+    <TD>atan, atg, arctan, arctg</TD>
+    <TD><CODE>atan(x)=(ln(1+x i)-ln(1-xi))/2i</CODE></TD></TR>
+  <TR>
+    <TD>acsc</TD>
+    <TD><CODE>acsc(x)=asin(1/x)</CODE></TD></TR>
+  <TR>
+    <TD>asec</TD>
+    <TD><CODE>ASEC(x)=acos(1/x)</CODE></TD></TR>
+  <TR>
+    <TD>acot, acotg, arccot, arccotg</TD>
+    <TD><CODE>acot(x)=atan(1/x)</CODE></TD></TR></TBODY></TABLE>
+<TABLE>
+  <TBODY>
+  <TR>
+    <TD colSpan=2><U>funzioni iperboliche</U></TD></TR>
+  <TR>
+    <TD width=100>sinh</TD>
+    <TD><CODE>sinh(x)=(exp(x)-exp(-x))/2</CODE></TD></TR>
+  <TR>
+    <TD>cosh</TD>
+    <TD><CODE>cosh(x)=(exp(x)+exp(-x))/2</CODE></TD></TR>
+  <TR>
+    <TD>tanh, tgh</TD>
+    <TD><CODE>tanh(x)=sinh(x)/cosh(x)</CODE></TD></TR>
+  <TR>
+    <TD>csch</TD>
+    <TD><CODE>csch(x)=1/sinh(x)</CODE></TD></TR>
+  <TR>
+    <TD>sech</TD>
+    <TD><CODE>sech(x)=1/cosh(x)</CODE></TD></TR>
+  <TR>
+    <TD>coth, cotgh</TD>
+    <TD><CODE>coth(x)=cosh(x)/sinh(x)</CODE></TD></TR></TBODY></TABLE>
+<TABLE>
+  <TBODY>
+  <TR>
+    <TD colSpan=2><U>funzioni iperboliche inverse</U></TD></TR>
+  <TR>
+    <TD width=150>asinh, argsinh</TD>
+    <TD><CODE>asinh(x)=ln(x+sqrt(x^2+1))</CODE></TD></TR>
+  <TR>
+    <TD>acosh, argcosh</TD>
+    <TD><CODE>acosh(x)=ln(x+sqrt(x+1)*sqrt(x-1))</CODE></TD></TR>
+  <TR>
+    <TD>atanh, atgh, argtanh, argtgh</TD>
+    <TD><CODE>atanh(x)=(ln(1+x)-ln(1-x))/2</CODE></TD></TR>
+  <TR>
+    <TD>acsch</TD>
+    <TD><CODE>acsch(x)=asinh(1/x)</CODE></TD></TR>
+  <TR>
+    <TD>asech</TD>
+    <TD><CODE>asech(x)=acosh(1/x)</CODE></TD></TR>
+  <TR>
+    <TD>acoth, acotgh, argcoth, argcotgh</TD>
+    <TD><CODE>acoth(x)=atanh(1/x)</CODE></TD></TR></TBODY></TABLE><A 
+name=matrix></A>
+<TABLE>
+  <TBODY>
+  <TR>
+    <TD colSpan=2><U>matrici</U></TD></TR>
+  <TR>
+    <TD colSpan=2>+, <CODE>-</CODE>, ==, &lt;&gt;, and, or, xor, lsh, rsh, 
+      real, imag, conjg, round, trunc, floor, ceil, frac</TD></TR>
+  <TR>
+    <TD width=100>larghezza</TD>
+    <TD>numero di colonne</TD></TR>
+  <TR>
+    <TD>altezza</TD>
+    <TD>numero di righe</TD></TR>
+  <TR>
+    <TD>matrice (r,c)</TD>
+    <TD>zero matrici che ha r righe e c colonne</TD></TR>
+  <TR>
+    <TD>conteggio</TD>
+    <TD><CODE>count A= larghezza A&nbsp;*&nbsp;altezza&nbsp;A</CODE></TD></TR>
+  <TR>
+    <TD><CODE>,</CODE></TD>
+    <TD>concatenazione a fianco, gli operandi devono avere lo stesso numero di 
+      righe</TD></TR>
+  <TR>
+    <TD><CODE>\</CODE></TD>
+    <TD>concatenazione di seguito, gli operandi devono avere lo stesso numero 
+      di colonne</TD></TR>
+  <TR>
+    <TD><CODE>*</CODE></TD>
+    <TD>moltiplicazione&nbsp;matrice o moltiplicazione scalare</TD></TR>
+  <TR>
+    <TD>vert</TD>
+    <TD>prodotto vettoriale,<CODE>&nbsp;A vert B=(A[1]*B[2]-A[2]*B[1], 
+      A[2]*B[0]-A[0]*B[2], A[0]*B[1]-A[1]*B[0])</CODE></TD></TR>
+  <TR>
+    <TD><CODE>/</CODE></TD>
+    <TD><CODE>A/B= A*invert B</CODE></TD></TR>
+  <TR>
+    <TD>^</TD>
+    <TD><CODE>A^n= productfor(i,1,n,A); A^(-n)=1/(A^n)</CODE></TD></TR>
+  <TR>
+    <TD>invert</TD>
+    <TD>Matrice invertita,<CODE>&nbsp;invert A= 1/A= A^(-1)</CODE></TD></TR>
+  <TR>
+    <TD>det</TD>
+    <TD>determinante</TD></TR>
+  <TR>
+    <TD>rank</TD>
+    <TD>conteggio delle righe linearmente indipendenti</TD></TR>
+  <TR>
+    <TD>transp, '</TD>
+    <TD>simmetria diagonale</TD></TR>
+  <TR>
+    <TD>elim</TD>
+    <TD>metodo di eliminazione che crea trasformazioni elementari con 
+  righe</TD></TR>
+  <TR>
+    <TD>solve</TD>
+    <TD>equazioni lineari simultanee, ogni riga rappresenta un'equazione, 
+      l'ultima colonna è il lato destro delle equazioni, (numero di colonne) = 1 
+      + (numero di variabili), il numero di righe non è limitato, ma di solito è 
+      uguale al numero di variabili</TD></TR>
+  <TR>
+    <TD>abs</TD>
+    <TD>lunghezza del vettore, norma matrice,<CODE>&nbsp;abs A= sqrt sumq 
+      A</CODE></TD></TR>
+  <TR>
+    <TD>angle</TD>
+    <TD>angolo tra due vettori,<CODE>&nbsp;angolo 
+      (A,B)=acos(A*B/abs(A)/abs(B))</CODE></TD></TR>
+  <TR>
+    <TD>polynom</TD>
+    <TD><CODE>polinomio (x,A)= sumfor (i,0,count A-1, A[i]*x^i)</CODE></TD></TR>
+  <TR>
+    <TD>reverse</TD>
+    <TD>cambia l'ordine degli elementi dall'ultimo al primo</TD></TR>
+  <TR>
+    <TD>sort</TD>
+    <TD>ordina gli elementi dal minore al maggiore</TD></TR>
+  <TR>
+    <TD>sortd</TD>
+    <TD>ordina gli elementi dal maggiore al minore, <CODE>SortD A= reverse 
+      sort A</CODE></TD></TR></TBODY></TABLE><A name=for></A>
+<TABLE>
+  <TBODY>
+  <TR>
+    <TD colSpan=2><U>cicli</U></TD></TR>
+  <TR>
+    <TD width=150>for(x,a,b,f(x))</TD>
+    <TD>i&nbsp;valori da&nbsp;a a&nbsp;b sono assegnati alle variabili x ed 
+      il&nbsp;comando f viene eseguito, il risultato è 0, f può modificare le 
+      variabili, f può contenere il comando if,&nbsp;return, ...</TD></TR>
+  <TR>
+    <TD>foreach(x,A,f(x))</TD>
+    <TD>questa funzione è simile a for tranne che ogni elemento della matrice 
+      A è assegnato alla variabile x</TD></TR>
+  <TR>
+    <TD>listfor(x, a,b,f(x))</TD>
+    <TD>vettore riga che contiene valori f(x) dove x&nbsp;va da a a b. Se f(x) 
+      restituisce vettori colonna, poi listfor ritorna la&nbsp;matrice. Se 
+      a&gt;b poi listfor restituisce 0.</TD></TR>
+  <TR>
+    <TD>rowsfor(x,a,b,f(x))</TD>
+    <TD>vettore colonna che contiene valori f(x) in cui x va da a a b. Se f(x) 
+      restituisce vettori riga, quindi rowsfor restituisce la&nbsp;matrice. Se 
+      a&gt;b poi rowsfor restituisce 0.</TD></TR>
+  <TR>
+    <TD>sumfor(x,a,b,f(x))</TD>
+    <TD><CODE>sum(listfor(x,a,b,f(x)))</CODE></TD></TR>
+  <TR>
+    <TD>productfor(x,a,b,f(x))</TD>
+    <TD><CODE>if(a&gt;b,1,prodotto(listfor(x,a,b,x))</CODE></TD></TR>
+  <TR>
+    <TD>minfor(x,a,b,f(x))</TD>
+    <TD><CODE>min(listfor(x,a,b,f(x)))</CODE></TD></TR>
+  <TR>
+    <TD>maxfor(x,a,b,f(x))</TD>
+    <TD><CODE>max(listfor(x,a,b,f(x)))</CODE></TD></TR>
+  <TR>
+    <TD colSpan=2>sumforeach, productforeach, listforeach, rowsforeach, 
+      minforeach, maxforeach - queste funzioni sono simili&nbsp;funzioni 
+      precedenti, ma i valori x sono presi dalla matrice A</TD></TR>
+  <TR>
+    <TD>integral(x,a,b,n,f(x))</TD>
+    <TD>integrale da&nbsp;a a&nbsp;b dalla funzione f(x), n è la precisione 
+      (numero di cifre decimali corrette, altre cifre sono errate!), se 
+      n&gt;=100 allora n è la durata in millisecondi</TD></TR></TBODY></TABLE><A 
+name=statistics></A>
+<TABLE>
+  <TBODY>
+  <TR>
+    <TD colSpan=2><U>funzioni statistiche</U></TD></TR>
+  <TR>
+    <TD width=100>min</TD>
+    <TD>valore minimo</TD></TR>
+  <TR>
+    <TD>max</TD>
+    <TD>valore massimo</TD></TR>
+  <TR>
+    <TD>med</TD>
+    <TD>media,&nbsp;valore medio</TD></TR>
+  <TR>
+    <TD>mode</TD>
+    <TD>massimo valore frequente</TD></TR>
+  <TR>
+    <TD>sum</TD>
+    <TD><CODE>somma A= A[0]+A[1]+ ... + A[count A-1]</CODE></TD></TR>
+  <TR>
+    <TD>product</TD>
+    <TD><CODE>prodotto A= A[0]*A[1]* ... * A [count A-1]</CODE></TD></TR>
+  <TR>
+    <TD>sumq</TD>
+    <TD>somma dei valori quadrati, <CODE>sumq A= 
+  sumforeach(x,A,x^2)</CODE></TD></TR>
+  <TR>
+    <TD>ave, mean</TD>
+    <TD>media, <CODE>ave A= somma A/count A</CODE></TD></TR>
+  <TR>
+    <TD>aveq, meanq</TD>
+    <TD>media dei valori quadrati, <CODE>aveq A= sumq A/count A</CODE></TD></TR>
+  <TR>
+    <TD>geom</TD>
+    <TD>media geometrica,<BR><CODE>geom A= (count A)#product A</CODE></TD></TR>
+  <TR>
+    <TD>agm</TD>
+    <TD>media aritmetico-geometrica</TD></TR>
+  <TR>
+    <TD>harmon</TD>
+    <TD><SPAN class=short_text lang=it id=result_box><SPAN class=hps>media 
+      armonica</SPAN></SPAN>, <CODE>harmon A= count A / 
+      sumforeach(x,A,1/x)</CODE></TD></TR>
+  <TR>
+    <TD>var</TD>
+    <TD>varianza, <CODE>var A= (sumq A-(somma A)^2/count A)/(count 
+    A-1)</CODE></TD></TR>
+  <TR>
+    <TD>vara</TD>
+    <TD>varianza di popolazione,<BR><CODE>vara A= aveq A-(ave 
+A)^2</CODE></TD></TR>
+  <TR>
+    <TD>stdev</TD>
+    <TD>deviazione standard,<BR><CODE>stdev A= sqrt (var A)</CODE></TD></TR>
+  <TR>
+    <TD>stdeva</TD>
+    <TD>deviazione standard di popolazione,<BR><CODE>stdeva A= sqrt (vara 
+      A)</CODE></TD></TR></TBODY></TABLE>
+<TABLE>
+  <TBODY>
+  <TR>
+    <TD colSpan=2><U>regressione lineare</U></TD></TR>
+  <TR>
+    <TD colSpan=2>I punti in un piano sono rappresentati da una matrice che ha 
+      due colonne. La prima colonna contiene le coordinate x, la seconda le 
+      coordinate y. Le funzioni lra ed lrb danno i coefficienti della riga 
+      y=a+b*x che&nbsp;attraversano i punti. Se tutti i punti sono esattamente 
+      sulla riga, la funzione lrr restituisce +1 o -1.</TD></TR>
+  <TR>
+    <TD width=100>lra</TD>
+    <TD><CODE>lra D= (Sumy D-lrb D*sumx D)/altezza D</CODE></TD></TR>
+  <TR>
+    <TD>lrb</TD>
+    <TD><CODE>lrb D= (altezza D*sumxy D-sumx D*sumy D)/(altezza D*sumxq 
+      D-(sumx D)^2)</CODE></TD></TR>
+  <TR>
+    <TD>lrr</TD>
+    <TD>coefficiente di correlazione, lrr<CODE> D= (altezza D*sumxy D-sumx 
+      D*sumy D)/sqrt((altezza D*sumxq D-(sumx D)^2)*(altezza D*sumyq D-(sumy 
+      D)^2))</CODE></TD></TR>
+  <TR>
+    <TD>lrx</TD>
+    <TD><CODE>lrx (D,y)= (y-lra D)/lrb D</CODE></TD></TR>
+  <TR>
+    <TD>lry</TD>
+    <TD><CODE>lrx (D,x)= lra D + x*lrb D</CODE></TD></TR>
+  <TR>
+    <TD>sumx</TD>
+    <TD><CODE>sumx D= somma D[][0]</CODE></TD></TR>
+  <TR>
+    <TD>sumy</TD>
+    <TD><CODE>sumy D= somma D[][1]</CODE></TD></TR>
+  <TR>
+    <TD>sumxy</TD>
+    <TD><CODE>sumxy D= D[][0]*D[][1]</CODE></TD></TR>
+  <TR>
+    <TD colSpan=2>sumxq, sumyq, avex, avey, avexq, aveyq, varx, vary, varxa, 
+      varya, stdevx, stdevy, stdevxa, stdevya</TD></TR></TBODY></TABLE></BODY></HTML>

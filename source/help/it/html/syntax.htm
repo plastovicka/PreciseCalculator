@@ -1,0 +1,173 @@
+﻿<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML><HEAD><TITLE>Sintassi</TITLE>
+<META http-equiv=Content-Type content="text/html; charset=utf-8">
+<META content="MSHTML 6.00.6000.21383" name=GENERATOR></HEAD>
+<BODY text=#000000 bgColor=#ffffff>
+<P><A name=syntax></A><B>Sintassi</B></P>
+<P><U>Numeri</U></P>
+<P>I numeri devono iniziare con una cifra. Esadecimale 0A significa dieci, ma A 
+rappresenta variabile A. Una parte intera e una parte frazionaria sono separati 
+da un punto (che è anche chiamato punto). <SPAN class=short_text lang=it 
+id=result_box><SPAN class=hps>I numeri</SPAN> <SPAN class=hps>meno di 
+uno</SPAN></SPAN> possono essere scritti senza lo zero prima del punto. Una metà 
+può essere scritta come .5. I numeri grandi sono rappresentati da un tasso ed un 
+esponente che sono separati da una lettera E. deve esserci uno spazio prima 
+della lettera E se la base è maggiore di dieci. Esempio: 1 E3 è uguale a 1000, 
+ma 1E3 esadecimale è uguale a decimale 483. L'esponente è sempre in base 
+decimale. Il binario 101E3 è pari al binario&nbsp;101000. </P>
+<P>I numeri possono essere seguiti da un simbolo di ingegneria:</P>
+<TABLE rules=rows border=1>
+  <TBODY>
+  <TR>
+    <TD>y</TD>
+    <TD>10 ^-24</TD>
+    <TD>(Yocto)</TD></TR>
+  <TR>
+    <TD>z</TD>
+    <TD>10 ^-21</TD>
+    <TD>(Zepto)</TD></TR>
+  <TR>
+    <TD>a</TD>
+    <TD>10 ^-18</TD>
+    <TD>(Atto)</TD></TR>
+  <TR>
+    <TD>f</TD>
+    <TD>10 ^-15</TD>
+    <TD>(Femto)</TD></TR>
+  <TR>
+    <TD>p</TD>
+    <TD>10 ^-12</TD>
+    <TD>(Piko)</TD></TR>
+  <TR>
+    <TD>n</TD>
+    <TD>10 ^-9</TD>
+    <TD>(Nano)</TD></TR>
+  <TR>
+    <TD>u</TD>
+    <TD>10 ^-6</TD>
+    <TD>(Mikro)</TD></TR>
+  <TR>
+    <TD>m</TD>
+    <TD>10 ^-3</TD>
+    <TD>(Mili)</TD></TR>
+  <TR>
+    <TD>k</TD>
+    <TD>10 ^+ 3</TD>
+    <TD>(Chilo)</TD></TR>
+  <TR>
+    <TD>M</TD>
+    <TD>10 ^+ 6</TD>
+    <TD>(Mega)</TD></TR>
+  <TR>
+    <TD>G</TD>
+    <TD>10 ^+ 9</TD>
+    <TD>(Giga)</TD></TR>
+  <TR>
+    <TD>T</TD>
+    <TD>10 ^+ 12</TD>
+    <TD>(Tera)</TD></TR>
+  <TR>
+    <TD>P</TD>
+    <TD>10 ^+ 15</TD>
+    <TD>(Peta)</TD></TR>
+  <TR>
+    <TD>X</TD>
+    <TD>10 ^+ 18</TD>
+    <TD>(EXA)</TD></TR>
+  <TR>
+    <TD>Z</TD>
+    <TD>10 ^+ 21</TD>
+    <TD>(Zeta)</TD></TR>
+  <TR>
+    <TD>Y</TD>
+    <TD>10 ^+ 24</TD>
+    <TD>(Yotta)</TD></TR></TBODY></TABLE>
+<P><U>Variabili</U></P>
+<P>Ciascuna variabile è una memoria per un numero o una matrice. Un nome di una 
+variabile è costituito da lettere, sottolineatura, cifre o caratteri con codice 
+ASCII superiore a 127. Il primo carattere non deve essere una cifra. Tutti i 
+nomi sono MAIUSCOLO/minuscolo. Operatore = viene usato per creare una nuova 
+variabile o modificare un valore della variabile già esistente. Esempio: 
+abc=123&nbsp;numero salvato 123 nella variabile abc. È possibile creare un 
+numero qualsiasi di variabili se si dispone di memoria sufficiente.&nbsp;Gli 
+operatori ++ e -- vengono utilizzati per aggiungere o sottrarre uno ad una 
+variabile.</P>
+<P>La variabile ans contiene sempre il risultato di una precedente 
+espressione.</P>
+<P><U>Numeri complessi</U></P>
+<P>I numeri complessi di solito sono costituiti da due parti - reale ed 
+immaginaria. C'è un operatore + oppure - tra essi. La parte 
+immaginaria&nbsp;finisce con una&nbsp;lettera minuscola&nbsp;i o j. Non ci può 
+essere lo spazio prima della lettera. Poiché gli identificatori i o j 
+significano variabili, un'unità immaginaria deve essere scritta come 1i o 1j. 
+L'unità immaginaria è definita come sqrt(-<CODE>1</CODE>).</P>
+<P>Nota: 2/3*1i può essere scritta come (2/3)i o 2i/3, ma non come 2/3i</P>
+<P><U>Matrice</U></P>
+<P>Matrix è una matrice bidimensionale di numeri complessi. E 'scritta tra 
+parentesi, i numeri sono separati da virgole e le righe sono separate da 
+backslashes. Ad esempio (5,2,-3 \ 7, -5,1) è una matrice che ha tre colonne e 
+due righe. Il vettore è una matrice che ha una sola riga o una sola colonna. 
+</P>
+<P>L'espressione A[r][c] ottiene il numero che si trova sulla riga&nbsp;r e la 
+colonna c. Le righe e le colonne sono indicizzate da zero. A[r1, r2][c1, c2] 
+significa una sottomatrice che è costituita dalla riga r1 ad r2 e colonne da c1 
+a c2. A[r] rappresenta la riga r, A[][c] è la colonna c. Altre espressioni 
+consentite sono A[r1,r2], A[][c1,c2], A[r][c1, c2], A[r1,r2][c].</P>
+<P><U>Commento</U></P>
+<P>Un commento inizia con <CODE>/*</CODE>&nbsp;e termina con <CODE>*/</CODE>. E 
+'utilizzato soprattutto nelle macro. Esso viene ignorato durante il calcolo. I 
+commenti non possono essere nidificati.</P>
+<P><U>Comandi</U></P>
+<P>È possibile scrivere più espressioni nella casella di ingresso della 
+modifica. Sono separati da ;. Un ; alla fine provoca il risultato dell'ultima 
+espressione da ignorare e da&nbsp;non mostrare. </P>
+<P>Il comando <CODE>stampa</CODE>&nbsp;viene utilizzato per visualizzare numeri 
+o stringhe di testo. La stringa è racchiusa tra virgolette. Le citazioni 
+all'interno della stringa devono essere raddoppiate. Ci possono essere molte 
+espressioni dopo la parola chiave di stampa. Sono separate dalla virgola. Ogni 
+comando di stampa di solito produce una riga di uscita. Ma è possibile 
+aggiungere una virgola alla fine del comando per disabilitare il ritorno a capo. 
+La stampa non deve avvenire all'interno di un'espressione. Esempio: 
+<CODE>se(x&gt;0,stampa x, stampa -x)</CODE>&nbsp;è un errore.</P>
+<P>Non ci può essere un'etichetta prima di ogni comando. L'etichetta è una 
+parola&nbsp;conclusa da due punti. Può contenere caratteri che sono ammessi 
+nelle variabili, ma un nome di etichetta può anche iniziare da una cifra. Il 
+comando <CODE>goto&nbsp;</CODE>salta all'etichetta. Il parametro dopo goto può 
+essere un'etichetta o un numero di sequenza di un comando o di un'espressione. 
+Esempio: <CODE>goto abc-2 </CODE>salta due comandi prima dell'etichetta abc. Il 
+comando<CODE>&nbsp;goto (abc-2)</CODE>&nbsp;salta al comando col numero abc-2 
+dove abc è una variabile e non un'etichetta. Il 
+comando<CODE>&nbsp;goto0</CODE>&nbsp;salta all'inizio. Il comando <CODE>Gotor N 
+</CODE>salta in avanti o indietro in base al segno&nbsp;N che può essere 
+qualsiasi espressione intera. </P>
+<P><U>Operatori</U></P>
+<P>Gli operatori di prefisso sono posti prima di un numero o di un'espressione. 
+Gli operatori in forma suffissa vengono dopo un'espressione. Gli operatori 
+binari sono posti tra due espressioni. Le funzioni con più argomenti sono 
+seguite da parentesi che racchiudono argomenti separati da virgola. Ci possono 
+essere spazi prima o dopo gli operatori, ma di solito non sono obbligatori. 
+Esempio: ci deve essere uno spazio&nbsp;nell'espressione sqrt x, ma non c'è 
+bisogno dello spazio nell'espressione sqrt2.</P>
+<P><U>operatori binari:</U>&nbsp;+, -, *, /, div, mod, ^, **, #, and, &amp;, or, 
+|, xor, nand, nor, imp, -&gt;, eqv, bitnand, bitnor, bitimp, biteqv, lsh, 
+&lt;&lt;, rsh, &gt;&gt;, rshi, &gt;&gt;&gt;, combin, nCr, permut, nPr, ==,! =, 
+&lt;&gt;,&gt;, &lt;,&gt; =, &lt;=, =, vert</P>
+<P><U>operatori prefisso</U>: +, -, sqrt, exp, ln, log, abs, sign, round, int, 
+floor, ceil, trunc, frac, not, fact, fibon, divisor, prime, isprime, gcd, lcm, 
+random, radtodeg, degtorad, radtograd, gradtorad, degtograd, gradtodeg, deg, 
+rad, grad, todeg, torad, tograd, dms, todms, ftoc, ctof, sin, cos, tan, cosec, 
+sec, cotg, asin, acos, atan, asec, acsc, acotg, sinh, cosh, tanh, sech, csch, 
+cotgh, asinh, acosh, atanh, asech, acsch, acotgh, conjg, real, imag, arg, min, 
+max, count, sum, sumq, ave, mean, aveq, meanq, var, vara, stdev, stdeva, med, 
+mode, sort, geom, harmon, product, invert, transp, det, elim, rank, solve, 
+width, height, lra, lrb, lrr, sumxy, sumx, sumy, sumxq, sumyq, avex, avey, 
+avexq, aveyq, varx, vary, varxa, varya, stdevx, stdevy, stdevxa, stdevya</P>
+<P><U>operatori in forma suffissa:</U>&nbsp;!, !!, ++, -, °, ', i, j</P>
+<P><U>funzioni senza argomenti:</U>&nbsp;pi, ans, rand</P>
+<P><U>funzioni con due argomenti:</U>&nbsp;hypot, angle, polar, complex, logn, agm, 
+polynom, lrx, lry, matrix</P>
+<P><U>funzioni con tre argomenti:</U>&nbsp;if, foreach, sumforeach, 
+productforeach, listforeach, rowsforeach</P>
+<P><U>funzioni con quattro argomenti:</U>&nbsp;per, sumfor, productfor, listfor, 
+rowsfor</P>
+<P><U>funzioni con cinque argomenti:</U>&nbsp;integrale</P></BODY></HTML>
