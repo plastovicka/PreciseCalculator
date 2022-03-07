@@ -1,0 +1,82 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<HTML>
+<HEAD>
+<meta name="GENERATOR" content="CHM Editor">
+</HEAD><BODY>
+<OBJECT type="text/site properties">
+<param name="Window Styles" value="0x800027">
+<param name="ImageType" value="Folder">
+</OBJECT>
+<UL>
+  <LI> <OBJECT type="text/sitemap">
+    <param name="Name" value="Installazione">
+    <param name="Local" value="html/instal.htm">
+    </OBJECT>
+  <LI> <OBJECT type="text/sitemap">
+    <param name="Name" value="Utilizzo">
+    <param name="Local" value="html/usage.htm">
+    </OBJECT>
+  <LI> <OBJECT type="text/sitemap">
+    <param name="Name" value="Sintassi">
+    <param name="Local" value="html/syntax.htm">
+    </OBJECT>
+  <LI> <OBJECT type="text/sitemap">
+    <param name="Name" value="Precedenza operatori">
+    <param name="Local" value="html/precedence.htm">
+    </OBJECT>
+  <LI> <OBJECT type="text/sitemap">
+    <param name="Name" value="Riferimento funzione">
+    <param name="Local" value="html/reference.htm">
+    </OBJECT>
+  <UL>
+    <LI> <OBJECT type="text/sitemap">
+      <param name="Name" value="+, -, *, /, ^">
+      <param name="Local" value="html/reference.htm">
+      </OBJECT>
+    <LI> <OBJECT type="text/sitemap">
+      <param name="Name" value="numeri complessi">
+      <param name="Local" value="html/reference.htm#complex">
+      </OBJECT>
+    <LI> <OBJECT type="text/sitemap">
+      <param name="Name" value="if, goto">
+      <param name="Local" value="html/reference.htm#commands">
+      </OBJECT>
+    <LI> <OBJECT type="text/sitemap">
+      <param name="Name" value="and, or">
+      <param name="Local" value="html/reference.htm#bitwise">
+      </OBJECT>
+    <LI> <OBJECT type="text/sitemap">
+      <param name="Name" value="sin, cos, tan">
+      <param name="Local" value="html/reference.htm#angle">
+      </OBJECT>
+    <LI> <OBJECT type="text/sitemap">
+      <param name="Name" value="matrice">
+      <param name="Local" value="html/reference.htm#matrix">
+      </OBJECT>
+    <LI> <OBJECT type="text/sitemap">
+      <param name="Name" value="for, foreach">
+      <param name="Local" value="html/reference.htm#for">
+      </OBJECT>
+    <LI> <OBJECT type="text/sitemap">
+      <param name="Name" value="statistiche">
+      <param name="Local" value="html/reference.htm#statistics">
+      </OBJECT>
+  </UL>
+  <LI> <OBJECT type="text/sitemap">
+    <param name="Name" value="Tempo di calcolo">
+    <param name="Local" value="html/times.htm">
+    </OBJECT>
+  <LI> <OBJECT type="text/sitemap">
+    <param name="Name" value="Esempi">
+    <param name="Local" value="html/examples.htm">
+    </OBJECT>
+  <LI> <OBJECT type="text/sitemap">
+    <param name="Name" value="Licenza">
+    <param name="Local" value="html/licence.htm">
+    </OBJECT>
+  <LI> <OBJECT type="text/sitemap">
+    <param name="Name" value="Cosa c'è di nuovo">
+    <param name="Local" value="html/history.htm">
+    </OBJECT>
+</UL>
+</BODY></HTML>

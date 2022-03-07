@@ -1,0 +1,166 @@
+﻿<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML><HEAD><TITLE>Storico delle versioni</TITLE>
+<META http-equiv=Content-Type content="text/html; charset=utf-8">
+<META content="MSHTML 6.00.6000.21383" name=GENERATOR></HEAD>
+<BODY text=#000000 bgColor=#ffffff>
+<P><A name=history></A><B>Storico delle versioni</B></P><BR><CODE>2.6 (4 maggio 
+2013)</CODE> 
+<UL>
+  <LI>la funzione mod mostra un errore se il primo operando è più lungo della 
+  precisione </LI></UL><CODE>2.5.4 (9 novembre 2012)</CODE> 
+<UL>
+  <LI>il parametro funzione gcd ed lcm&nbsp;può essere una matrice 
+  <LI><CODE>bug fissi:</CODE> 
+  <LI>la modalità ENG tronca gli zeri finali </LI></UL><CODE>2.5.3 (24 settembre 
+2011)</CODE> 
+<UL>
+  <LI>Traduzione Russo&nbsp;</LI></UL><CODE>2.5.2 (18 marzo 2011)</CODE> 
+<UL>
+  <LI><CODE>bug fissi:</CODE> 
+  <LI>Il tasto Esc causava&nbsp;il crash&nbsp;se i risultati sul file di 
+  registrazione era stato abilitato 
+  <LI>sin(90 °) a volte era congelato </LI></UL><CODE>2.5 (27 febbraio 
+2011)</CODE> 
+<UL>
+  <LI>funzioni sortd, swap, reverse 
+  <LI>assegnazione di un elemento di matrice o di sottomatrice, per esempio una 
+  [2,4][1]=(5 \ 1 \ 3) 
+  <LI>incremento o decremento di un elemento della matrice, ad esempio a 
+  [2][3]++ 
+  <LI>Inv veniva selezionato se il mouse veniva spostato sopra i tasti e si 
+  premeva il tasto Shift 
+  <LI>opzione per impostare le dimensioni del file log 
+  <LI>il messaggio di errore 'funzione trigonometrica operando è troppo grande', 
+  per esempio, sin (1E10000) 
+  <LI>tra virgolette il testo stampato, per esempio print "Ciao""mondo" " !" 
+  <LI>conversione risultato da binario a stringa decimale poteva essere 
+  interrotta dalla Pausa o dal tasto Esc 
+  <LI>precisione non è limitato da 963.250, il nuovo massimo è 9999999 
+  <LI>le finestre cronologia e variabili sono ridimensionabili 
+  <LI>listfor e rowsfor sono più veloci 
+  <LI>ctrl+1, ctrl+2 ecc non poteva selezionare le&nbsp;parentesi esterne delle 
+  matrici 
+  <LI><CODE>bug fissi:</CODE> 
+  <LI>gli operatori dec,hex,bin,oct,baseN non sono stati applicati alla base 
+  esponente, ad esempio, bin(1E3) ha restituito 1000 invece di 8 
+  <LI>l'intervallo matrice causava errore di sintassi nella funzione con più 
+  argomenti, ad esempio, se (i&gt;1,x[1,i],0) 
+  <LI>i numeri grandi&nbsp;nella matrice potevano causare errore "risultato 
+  infinito", ad esempio, listfor (i,1,5000,2 ^ i) 
+  <LI>ctrl+1, ctrl+2 ecc. selezionava espressioni nelle stringhe dopo la stampa 
+  <LI>il ciclo per (i,2^32-1,2^32,0) poteva bloccarsi </LI></UL><CODE>2.4 (9 
+febbraio 2011)</CODE> 
+<UL>
+  <LI>Versione a 64 bit 
+  <LI>aiuto convertiti dal formato HLP a CHM 
+  <LI><CODE>bug fissi:</CODE> 
+  <LI>i numeri interi piccoli&nbsp;non venivano visualizzati con esponente in 
+  modalità SCI 
+  <LI>i numeri divisi da potenza di 2 venivano visualizzati con meno cifre 
+  <LI>int e round restituivano zero per i parametri tra -1 e +1 
+  <LI>lcm era impreciso se un parametro era molto grande e l'altro parametro era 
+  piccolo 
+  <LI>exp(2*ln(2^32)) non&nbsp;produceva alcun risultato 
+  <LI>ln(2^31) non produceva alcun risultato 
+  <LI>il divisore da numero negativo&nbsp;mostrava lo stesso errore come sqrt 
+  <LI>dec, hex, oct, bin potevano non essere in maiuscolo </LI></UL><CODE>2,3 (5 
+luglio 2008)</CODE> 
+<UL>
+  <LI>Traduzione&nbsp;spagnolo 
+  <LI><CODE>bug fissi:</CODE> 
+  <LI>5!^2 dava errore di sintassi 
+  <LI>errore controllo posizioni se le finestre sulla barra delle 
+  applicazioni&nbsp;erano nella parte superiore dello schermo</LI></UL><CODE>2.2 
+(16 marzo 2007)</CODE> 
+<UL>
+  <LI>funzioni asec, acsc, sech, csch, asech, acsch, nand, nor, imp, eqv, 
+  <LI>bitnand, bitnor, bitimp, biteqv, sign, complex, rshi, isprime, matrix, °, 
+  ' 
+  <LI>operatori prefisso con parametro tra parentesi hanno la massima priorità 
+  <LI>l'unità immaginaria può essere sia i che j, è usata come un'operazione di 
+  postfix 
+  <LI>simboli ingegneria postfix (k, M, G, ...) 
+  <LI>precisione del tempo di calcolo è 1 ms 
+  <LI>opzione per salvare automaticamente le impostazioni all'uscita 
+  <LI>possibilità di accedere a tutti i calcoli in un file 
+  <LI>le costanti di menu e le unità vengono letti dal file 
+  <LI><CODE>bug fissi:</CODE> 
+  <LI>le funzioni asin, acos, atan, acot, acosh, atanh, acoth&nbsp;restituivano 
+  risultati non corretti per alcuni parametri immaginari 
+  <LI>1E-15 è stata mostrata come 10 E-16 
+  <LI>todms asin(0,5) ha restituito 29,596 invece di 30 </LI></UL><CODE>2.1 (14 
+settembre 2006)</CODE> 
+<UL>
+  <LI>funzioni minfor, maxfor 
+  <LI>commenti /* */ 
+  <LI>se si verifica un errore&nbsp;aritmetico, il cursore si sposta alla 
+  funzione che ha causato gli errori 
+  <LI>il colore del testo pulsanti può essere modificato </LI></UL><CODE>2.0 (30 
+agosto 2005)</CODE> 
+<UL>
+  <LI>matrici 
+  <LI>funzioni polynom, sort, geom, harmon, product, invert, transp, det, elim, 
+  rank, solve, vert, width, height, integral, for, foreach, sumfor, sumforeach, 
+  productfor, productforeach, listfor, listforeach, rowsfor, rowsforeach, lra, 
+  lrb, lrr, lrx, lry, sumxy, sumx, sumy, sumxq, sumyq, avex, avey, avexq, aveyq, 
+  varx, vary, varxa, varya, stdevx, stdevy, stdevxa, stdevya 
+  <LI><CODE>bug fissi:</CODE> 
+  <LI>sqrt a volte non era esatto 
+  <LI>0/0 non era errore 
+  <LI>x/x non era 1, ma 0,9999 ... 
+  <LI>la funzione rand non poteva essere in un'espressione più di una volta 
+  <LI>frac si interrompeva se l'operando era intero 
+  <LI>le funzioni dec, hex, oct non funzionavano nella versione 1.5 
+  <LI>la commutazione NORM, FIX, SCI, ENG cambiava risultato se c'era Ans or ‘=’ 
+  </LI></UL><CODE>1.5 (20 agosto 2005)</CODE> 
+<UL>
+  <LI>la conversione risultato da binario a base decimale è 9 volte più veloce 
+  <LI>i numeri a virgola mobile venivano convertiti in brevi frazioni; ad 
+  esempio 1.5 è 3/2 
+  <LI>l'opzione per visualizzare le frazioni si spostava dalla finestra Opzioni 
+  alla finestra principale 
+  <LI>etichette goto 
+  <LI>cronologia 
+  <LI>sottomenu nel menu Macro </LI></UL><CODE>1.4 (15 mar 2005)</CODE> 
+<UL>
+  <LI>pulsanti personalizzati nei file CBT </LI></UL><CODE>1.3 (17 Feg 
+2005)</CODE> 
+<UL>
+  <LI>calcoli con le frazioni 
+  <LI>possibilità di inserire un separatore dopo ogni tre cifre etc. 
+  <LI>funzione exp è più veloce se l'operando è un numero intero 
+  <LI>costanti fisiche aggiornate secondo CODATA 2002 </LI></UL><CODE>1.2 (12 Feb 
+2005)</CODE> 
+<UL>
+  <LI>funzioni ffact, logn, div, ftoc, ctof, ++, -- 
+  <LI>funzioni complesse tan, cot, tanh, coth, asin, acos, atan, acot, asinh, 
+  acosh, atanh, acoth 
+  <LI>ci possono essere stringhe di testo tra virgolette dopo print 
+  <LI>return non richiede un argomento 
+  <LI>i nomi delle variabili possono contenere cifre 
+  <LI>l'assegnazione della variabile può essere all'interno di un'espressione 
+  <LI><CODE>bug fissi:</CODE> 
+  <LI>funzioni &lt;&lt;, &gt;&gt;, arccot 
+  <LI>macro aperte 
+  <LI>le funzioni iperboliche erano troppo lente </LI></UL><CODE>1.1 (6 Feb 
+2005)</CODE> 
+<UL>
+  <LI>numeri complessi 
+  <LI>funzioni real, imag, conjg, arg, polar 
+  <LI>comando gotor 
+  <LI>avvio macro automatica veniva eseguita all'avvio 
+  <LI>elenco delle variabili 
+  <LI>formato del numero Fix 
+  <LI><CODE>bug fissi:</CODE> 
+  <LI>il programma&nbsp;impediva lo spegnimento&nbsp;di Windows 
+  <LI>perdita di memoria nel comando se 
+  <LI>il&nbsp;comando goto0 a volte non&nbsp;funzionava 
+  <LI>pressione veloce Invio poteva bloccarsi </LI></UL><CODE>1.0 (10 Gennaio 
+2005)</CODE> 
+<UL>
+  <LI>costanti, unità, macro 
+  <LI>la maggior parte delle funzioni matematiche </LI></UL><CODE>0.1 (21 maggio 
+2002)</CODE> 
+<UL>
+  <LI>numero pi 
+  <LI>Funzioni +, -, *, /, sqrt, exp </LI></UL></BODY></HTML>
