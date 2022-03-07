@@ -181,7 +181,7 @@
 ;IDC_HYP
 299=Hyperbolic trigonometric functions
 ;prefix for hyperbolic functions
-2000=hyperbolic 
+2000=hyperbolic
 ;round
 2001=Round to nearest integer
 ;int, floor
@@ -260,32 +260,32 @@
 2038=Power
 ;#
 2039=Root
-;7
-2040=7
+;agm
+2040=Arithmetic–geometric mean
 ;min
 2041=Minimal value
-;8
-2042=8
+;!!
+2042=Double factorial
 ;max
 2043=Maximal value
-;9
-2044=9
+;elim
+2044=Gaussian elimination
 ;med
 2045=Median value
 ;Del
 2047=Delete 1 symbol
 ;C
 2048=Clear all
-;4
-2050=4
+;stdeva
+2049=Standard deviation of population
+;solve
+2050=Solve system of linear equations
 ;sum
 2051=Sum
-;5
-2052=5
+;polynom
+2052=Polynom value
 ;sumq
 2053=Sum of squares
-;6
-2054=6
 ;var
 2055=Variance
 ;*
@@ -296,16 +296,10 @@
 2058=Division
 ;mod
 2059=Remainder after division
-;1
-2060=1
 ;ave
 2061=Mean (average)
-;2
-2062=2
 ;aveq
 2063=Mean of squares
-;3
-2064=3
 ;stdev
 2065=Standard deviation
 ;+
@@ -316,8 +310,6 @@
 2068=Substraction
 ;goto
 2069=Jump to label or to n-th semicolon
-;0
-2070=0
 ;=
 2071=Equation sign, assignment
 ;.
@@ -334,8 +326,6 @@
 2077=Imaginary part symbol
 ;exe
 2078=Start calculation
-;stdeva
-2049=Standard deviation of population
 ;random
 2079=Random integer, 0 =< ... < N
 ;vara
@@ -387,7 +377,7 @@
 ;geom
 2103=Geometric mean, N-th root of product of N items
 ;harmon
-2104=Harmonic meam
+2104=Harmonic mean
 ;product
 2105=Product of items
 ;hypot
@@ -432,3 +422,166 @@
 2125=inverse secant
 ;acsc
 2126=inverse cosecant
+;sumx
+2127=Sum of column X of 2-column matrix
+;sumy
+2128=Sum of column Y of 2-column matrix
+;avex
+2129=Mean of column X of 2-column matrix
+;avey
+2130=Mean of column Y of 2-column matrix
+;sumxq
+2131=Sum of squared column X of 2-column matrix
+;sumyq
+2132=Sum of squared column Y of 2-column matrix
+;sumxy
+2133=Sum of X*Y columns of 2-column matrix
+;avexq
+2134=Mean of squared column X of 2-column matrix
+;aveyq
+2135=Mean of squared column Y of 2-column matrix
+;varx
+2136=Variance of column X of 2-column matrix
+;vary
+2137=Variance of column Y of 2-column matrix
+;varxa
+2138=Variance of column X population of 2-column matrix
+;varya
+2139=Variance of column Y population of 2-column matrix
+;stdevxa
+2140=Standard deviation of column X population of 2-column matrix
+;stdevya
+2141=Standard deviation of column Y population of 2-column matrix
+;stdevx
+2142=Standard deviation of column X of 2-column matrix
+;stdevy
+2143=Standard deviation of column Y of 2-column matrix
+;sinh
+2144=hyperbolic sine
+;cosh
+2145=hyperbolic cosine
+;tanh
+2146=hyperbolic tangent
+;coth
+2147=hyperbolic cotangent
+;lra
+2148=Linear regression coeficient A of y=A+B*x
+;lrb
+2149=Linear regression coeficient B of y=A+B*x
+;lrr
+2150=Linear regression correlation coeficient
+;lrx
+2151=X corresponding to Y for y=A+B*x
+;lry
+2152=Y corresponding to X for y=A+B*x
+;integral
+2153=(x,a,b,n,f()); Integral from f() for x = a...b; n = precision
+;for
+2154=(x,a,b,f()); Executes f() for x = a...b, returns 0
+;foreach
+2155=(x,A,f()); Executes f() for x = every element of matrix A, returns 0
+;sumfor
+2156=(x,a,b,f()); Sum of f() for x = a...b
+;sumforeach
+2157=(x,A,f()); Sum of f() for x = every element of matrix A
+;productfor
+2158=(x,a,b,f()); Product of f() for x = a...b
+;productforeach
+2159=(x,A,f()); Product of f() for x = every element of matrix A
+;listfor
+2160=(x,a,b,f()); Row vector of f() for x = a...b
+;listforeach
+2161=(x,A,f()); Row vector of f() for x = every element of matrix A
+;rowsfor
+2162=(x,a,b,f()); Column vector of f() for x = a...b
+;rowsforeach
+2163=(x,A,f()); Column vector of f() for x = every element of matrix A
+;minfor
+2164=(x,a,b,f()); Minimal result of f() for x = a...b
+;minforeach
+2165=(x,A,f()); Minimal result of of f() for x = every element of matrix A
+;maxfor
+2166=(x,a,b,f()); Maximal result of f() for x = a...b
+;maxforeach
+2167=(x,A,f()); Maximal result of f() for x = every element of matrix A
+;nor
+2168=NOT OR   =   0==(x!=0 | y!=0)   =   x==0 & y==0
+;bitnor
+2169=Bitwise NOT OR   =   not(x | y)   =   not x & not y
+;nand
+2170=NOT AND   =   0==(x!=0 & y!=0)   =   x==0 | y==0
+;bitnand
+2171=Bitwise NOT AND   =   not(x & y)   =   not x | not y
+;imp
+2172=x==0 | y!=0
+;bitimp
+2173=Bitwise (y or not x)
+;[
+2174=Index of matrix element
+;sech
+2175=hyperbolic secant
+;csch
+2176=hyperbolic cosecant
+;asinh
+2177=hyperbolic inverse sine
+;acosh
+2178=hyperbolic inverse cosine
+;atanh
+2179=hyperbolic inverse tangent
+;acoth
+2180=hyperbolic inverse cotangent
+;asech
+2181=hyperbolic inverse secant
+;acsch
+2182=hyperbolic inverse cosecant
+;radtodeg
+2183=Radians => degrees (pi == 180 deg)
+;degtorad
+2184=Degrees => radians (180 deg == pi)
+;radtograd
+2185=Radians => gradients (pi == 200 grad)
+;gradtorad
+2186=Gradients => radians (200 grad == pi)
+;degtograd
+2187=Degrees => gradients (90 deg == 100 grad)
+;gradtodeg
+2188=Gradients => degrees (100 grad == 90 deg)
+;deg
+2189=Next value is in degrees
+;rad
+2190=Next value is in radians
+;grad
+2191=Next value is in gradients
+;todeg
+2192=Current angle units => degrees
+;torad
+2193=Current angle units => radians
+;tograd
+2194=Current angle units => gradients
+;todms
+2195=Degrees => degrees, minutes, seconds
+;ftoc
+2196=Fahrenheit => Celcius degrees
+;ctof
+2197=Celcius => Fahrenheit degrees
+;transp
+2198=Transpose (swap columms and rows, diagonal symmetry)
+;invert
+2199=Inverted matrix, 1/A
+;angle
+2200=Angle between 2 vectors
+;vert
+2201=Vectors product
+;width
+2202=Number of matrix columns
+;height
+2203=Number of matrix rows
+;det
+2204=Determinant
+;rank
+2205=Count of linearly independent rows
+;matrix
+2206=(r,c); Make zero matrix with R rows and C columns
+;swap
+2207=Exchange variables a and b
+; unused numbers 2054, 2060, 2062, 2064, 2070

@@ -18,6 +18,21 @@ const char *trigB[]={"sin", "cos", "tan", "tg", "cot", "cotg",
 "asin", "acos", "atan", "atg", "acot", "acotg",
 "arcsin", "arccos", "arctan", "arctg", "arccot", "arccotg", 0};
 
+// custom buttons
+const struct TcustTT { const char *name; int trid; const char *tooltip; } custT[]={
+	{"EXE", 2078, "Start calculation"},
+	{"^2",  2018, "Square power of X"},
+	{"^3",  2020, "Cubic power of X"},
+	{"10^", 2023, "Power of 10"},
+	{".",   2072, "Integer and fractional parts separator"},
+	{";",   2073, "Calculations separator"},
+	{"E",   2074, "Exponent, power of 10"},
+	{"i",   2077, "Imaginary part symbol"},
+	{"print", 2090, "Print result to output window"},
+	{"Del", 2047, "Delete 1 symbol"},
+	{"C",   2048, "Clear all"},
+};
+
 int width=518,
  height=435,
  left=50,
@@ -1484,31 +1499,21 @@ void getBtnTooltip(int i, BOOL shift)
 		}
 		t = (Top*)&funcTab[hl];
 		if(h) { // hyperbolic toolti]p
-			s = lng(2000, "hyperbolic "); // hyperbolic LNG id
+			s = lng(2000, "hyperbolic"); // hyperbolic LNG id
 			hl = (int)strlen(s);
-			strncpy( ttBuf, s, sizeof(ttBuf) );
-			if( hl < sizeof(ttBuf)-1 ) { // enough space for at least 1 letter of tooltip
-				s = ttBuf + hl; // offset after Hyperbolic
-				hl = sizeof(ttBuf) - hl; // length
-				strncpy( s, lng(t->descrTid, (char*)t->descr), hl );
+			strncpy( ttBuf, s, sizeof(ttBuf)-1 );
+			if( hl < sizeof(ttBuf)-2 ) { // enough space for at least 1 letter of tooltip
+				ttBuf[hl++] = ' ';
+				strncpy( ttBuf + hl, lng(t->descrTid, (char*)t->descr), sizeof(ttBuf)-1 - hl );
 			}
 		} else
-			strncpy( ttBuf, lng(t->descrTid, (char*)t->descr), sizeof(ttBuf) );
-	} else // custom buttons descriptions
-		switch(hl) {
-		case -2:  strncpy( ttBuf, lng(2078, "Start calculation"), sizeof(ttBuf) ); break;
-		case -3:  strncpy( ttBuf, lng(2020, "Cubic power of X"), sizeof(ttBuf) ); break;
-		case -4:  strncpy( ttBuf, lng(2018, "Square power of X"), sizeof(ttBuf) ); break;
-		case -5:  strncpy( ttBuf, lng(2023, "Power of 10"), sizeof(ttBuf) ); break;
-		case -6:  strncpy( ttBuf, lng(2072, "Integer and fractional parts separator"), sizeof(ttBuf) ); break;
-		case -7:  strncpy( ttBuf, lng(2073, "Calculations separator"), sizeof(ttBuf) ); break;
-		case -8:  strncpy( ttBuf, lng(2074, "Exponent, power of 10"), sizeof(ttBuf) ); break;
-		case -9:  strncpy( ttBuf, lng(2077, "Imaginary part symbol"), sizeof(ttBuf) ); break;
-		case -10:  strncpy( ttBuf, lng(2090, "Print result to output window"), sizeof(ttBuf) ); break;
-		case -11:  strncpy( ttBuf, lng(2047, "Delete 1 symbol"), sizeof(ttBuf) ); break;
-		case -12:  strncpy( ttBuf, lng(2048, "Clear all"), sizeof(ttBuf) ); break;
-			// unknown ffunctions will be without tooltips
-		default:  *ttBuf = 0; // strncpy( ttBuf, lng(0, ""), sizeof(ttBuf) );
+			strncpy( ttBuf, lng(t->descrTid, (char*)t->descr), sizeof(ttBuf)-1 );
+	} else { // funcTab index<0, custom buttons descriptions
+		if( hl > -(int)sizeA(custT)-1 ) {
+			hl = -(++hl);
+			strncpy( ttBuf, lng(custT[hl].trid, (char*) custT[hl].tooltip), sizeof(ttBuf)-1 );
+		} else // unknown (not present in custT[]), don't show tooltip
+			*ttBuf = 0;
 	}
 }
 
@@ -1540,11 +1545,14 @@ void skipEol(char *&s)
 
 int getDescrIndex(char *s)
 {
-	int l;
+	int i, l;
 	char *n;
 	if (strlen(s)) { // skipped inv name?
-		if(s[0]==' ') s++;
-		for(int i=0; i<funcTab_size; i++){
+		n = s;
+		while( *s==' ' || *s == 9 ) s++; // skip spaces and tabs
+		if(!*s) s = n;	// only spaces - "blank" button?
+						// leave as is to allow descriptions for '   '-alike buttons
+		for(i=0; i<funcTab_size; i++){
 			n = (char*) funcTab[i].name;
 			l = (int)strlen(n);
 			if( !_strnicmp(s, n, l) ) {
@@ -1556,19 +1564,16 @@ int getDescrIndex(char *s)
 			}
 		}
 		// custom buttons names
-		if(!_stricmp(s, "EXE")) return -2;
-		if(!strcmp(s, "^3")) return -3;
-		if(!strcmp(s, "^2")) return -4;
-		if(!strcmp(s, "10^")) return -5;
-		if(!strcmp(s, ".")) return -6;
-		if(!strncmp(s, ";", 1)) return -7;
-		if(!_stricmp(s, "E")) return -8;
-		if(!_stricmp(s, "i")) return -9;
-		if(!_strnicmp(s, "print", 5)) return -10;
-		if(!_stricmp(s, "Del")) return -11;
-		if(!_stricmp(s, "C")) return -12;
+		for(i=0; i<sizeA(custT); i++){
+			n = (char*) custT[i].name;
+			l = (int)strlen(n);
+			if( !_strnicmp(s, n, l) ) {
+				n=(char*)s+l;
+				if( *n==' ' || *n==0  || *n=='(' ) return -(++i);
+			}
+		}
 	}
-	return -1; // non-existent custom or wrong function name
+	return - (int)sizeA(custT) - 1; // non-existent custom or wrong function name
 }
 
 void parseButtons()
