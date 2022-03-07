@@ -162,3 +162,199 @@
 1061=Parametry musejí být promìnné
 1062=Výsledek je pøíliš dlouhý
 1063=První operand funkce MOD je vìtší než pøesnost výpoètu
+
+;tooltips
+291=Poèítat se zlomky, pokud je to možné
+292=Poèet èíslic za desetinnou èárkou
+298=Inverzní funkce
+299=Hyperbolické funkce
+2000=hyperbolický
+2001=Zaokrouhlit na nejbližší celé èíslo
+2002=Zaokrouhlit na menší celé èíslo
+2003=Faktoriál
+2004=Zaokrouhlit na vìtší celé èíslo
+2005=Nejvìtší spoleèný dìlitel
+2006=Nejmenší spoleèný násobek
+2007=Poèet kombinací
+2008=Poèet permutací
+2009=Èást za desetinnou èárkou
+2010=Zaokrouhlit na celé èíslo smìrem k nule
+2011=bitové násobení, logická operace “a”
+2012=bitová negace, logická operace “ne”
+2013=bitové sèítání, logická operace “nebo”
+2014=bitový rozdíl, logická operace “výluèné nebo”
+2015=Posun bitù doleva
+2016=Posun bitù doprava, oøíznout zlomkovou èást
+2017=Druhá odmocnina
+2018=Druhá mocnina
+2019=Exponenciální funkce (2,718 ^ X)
+2020=Tøetí mocnina
+2021=Pøirozený logaritmus
+2022=Dekadický logaritmus
+2023=Mocnina deseti
+2024=Konstanta pí
+2025=Stupnì, minuty, sekundy => stupnì
+2026=sinus
+2027=inverzní sinus
+2028=kosinus
+2029=inverzní kosinus
+2030=tangens
+2031=inverzní tangens
+2032=Absolutní hodnota
+2033=Znaménko
+2034=Levá závorka
+2035=Reálná èást èísla
+2036=Pravá závorka
+2037=Imaginární èást èísla
+2038=Mocnina
+2039=Odmocnina
+2040=Aritmeticko-geometrický prùmìr
+2041=Minimální hodnota
+2042=Dvojitý faktoriál
+2043=Maximální hodnota
+2044=Gaussova eliminaèní metoda
+2045=Medián
+2047=Smazat pøedchozí symbol
+2048=Vymazat vše
+2049=Standardní odchylka populace
+2050=Øešení soustavy lineárních rovnic
+2051=Souèet
+2052=Hodnota polynomu
+2053=Souèet ètvercù
+2055=Rozptyl
+2056=Násobení
+2057=Náhodné reálné èíslo, 0 =< ... < 1
+2058=Dìlení
+2059=Zbytek po dìlení
+2061=Aritmetický prùmìr
+2063=Prùmìr ètvercù
+2065=Standardní odchylka
+2066=Sèítání
+2067=Poèet prvkù matice
+2068=Odeèítání
+2069=Skok na návìští nebo na n-tý støedník
+2071=Pøiøazení do promìnné
+2072=Desetinná èárka
+2073=Oddìlovaè pøíkazù
+2074=Exponent, mocnina 10
+2075=Oddìlovaè prvkù seznamu
+2076=Výsledek pøedchozího výpoètu
+2077=Imaginární jednotka
+2078=Spustit výpoèet
+2079=Náhodné celé èíslo, 0 =< ... < N
+2080=Rozptyl populace
+2081=Nejèastìjší hodnota
+2082=Rovná se
+2083=Nerovná se
+2084=Menší
+2085=Vìtší
+2086=Menší nebo rovno
+2087=Vìtší nebo rovno
+2088=Podmínka
+2089=Relativní skok na pøíkaz
+2090=Vypsat výsledek do výstupního okna
+2091=Zastavit výpoèet a zobrazit výsledek
+2092=Nejmenší prvoèíselný dìlitel
+2093=První prvoèíslo vìtší než operand
+2094=Oddìlovaè sloupcù v matici
+2095=N-tá èíselná soustava
+2096=Èíslo v desítkové soustavì
+2097=Hexadecimální èíslo
+2098=Binární èíslo
+2099=Èíslo v osmièkové soustavì
+2100=Seøadit položky od menšího k vìtšímu
+2101=Seøadit položky od vìtšího k menšímu
+2102=Obrácené poøadí položek od poslední k první
+2103=Geometrický prùmìr, N-tá odmocnina souèinu N položek
+2104=Harmonický prùmìr
+2105=Souèin položek
+2106=Pøepona
+2107=Pøevést na polární souøadnice
+2108=Vytvoøit komplexní èíslo
+2109=Logaritmus
+2110=Zvìtšit o 1
+2111=Snížit o 1
+2112=Oba nulové nebo oba nenulové
+2113=Stejné bity v obou èíslech
+2114=Posunout bity doprava
+2115=Celoèíselné dìlení
+2116=Symbol stupòù
+2117=Sdružené èíslo komplexního èísla
+2118=Zkontroluje, zda je èíslo prvoèíslo
+2119=Fibonacciho èíslo, 0,1,1,2,3,5,8,...
+2120=Úhel komplexního èísla
+2121=kotangens
+2122=sekans
+2123=kosekans
+2124=inverzní kotangens
+2125=inverzní sekans
+2126=inverzní kosekans
+2127=Souèet sloupce X matice se 2 sloupci
+2128=Souèet sloupce Y matice se 2 sloupci
+2129=Prùmìr sloupce X matice se 2 sloupci
+2130=Prùmìr sloupce Y matice se 2 sloupci
+2131=Souèet ètvercù sloupce X matice se 2 sloupci
+2132=Souèet ètvercù sloupce Y matice se 2 sloupci
+2133=Souèet X*Y sloupcù matice se 2 sloupci
+2134=Prùmìr ètvercù sloupce X matice se 2 sloupci
+2135=Prùmìr ètvercù sloupce Y matice se 2 sloupci
+2136=Rozptyl sloupce X matice se 2 sloupci
+2137=Rozptyl sloupce Y matice se 2 sloupci
+2138=Rozptyl populace sloupce X matice se 2 sloupci
+2139=Rozptyl populace sloupce Y matice se 2 sloupci
+2140=Standardní odchylka populace sloupce X matice se 2 sloupci
+2141=Standardní odchylka populace sloupce Y matice se 2 sloupci
+2142=Standardní odchylka sloupce X matice se 2 sloupci
+2143=Standardní odchylka sloupce Y matice se 2 sloupci
+2148=Lineární regresní koeficient A z y=A+B*x
+2149=Lineární regresní koeficient B z y=A+B*x
+2150=Lineární regresní korelaèní koeficient
+2151=X odpovídající Y pro y=A+B*x
+2152=Y odpovídající X pro y=A+B*x
+2153=(x,a,b,n,f()); Integrál z f() pro x=a...b; n=pøesnost
+2154=(x,a,b,f()); Provede f() pro x=a...b, vrátí 0
+2155=(x,A,f()); Provede f() pro x=každý prvek matice A, vrátí 0
+2156=(x,a,b,f()); Souèet f() pro x=a...b
+2157=(x,A,f()); Souèet f() pro x=každý prvek matice A
+2158=(x,a,b,f()); Souèin f() pro x=a...b
+2159=(x,A,f()); Souèin f() pro x=každý prvek matice A
+2160=(x,a,b,f()); Øádkový vektor f() pro x=a...b
+2161=(x,A,f()); Øádkový vektor f() pro x=každý prvek matice A
+2162=(x,a,b,f()); Sloupcový vektor f() pro x=a...b
+2163=(x,A,f()); Sloupcový vektor f() pro x=každý prvek matice A
+2164=(x,a,b,f()); Minimum f() pro x=a...b
+2165=(x,A,f()); Minimum f() pro x=každý prvek matice A
+2166=(x,a,b,f()); Maximum f() pro x=a...b
+2167=(x,A,f()); Maximum f() pro x=každý prvek matice A
+2168=NOT OR
+2169=Bitové NOT OR
+2170=NOT AND
+2171=Bitové NOT AND
+2172=Implikace
+2173=Bitová implikace
+2174=Index prvku matice
+2183=radiány => stupnì
+2184=stupnì => radiány
+2185=radiány => gradienty
+2186=gradienty => radiány
+2187=stupnì => gradienty
+2188=gradienty => stupnì
+2189=Následující hodnota je ve stupních
+2190=Následující hodnota je v radiánech
+2191=Následující hodnota je v gradientech
+2192=Aktuální jednotky úhlu => stupnì
+2193=Aktuální jednotky úhlu => radiány
+2194=Aktuální jednotky úhlu => gradienty
+2195=Stupnì => stupnì, minuty, sekundy
+2196=Stupnì Fahrenheita => stupnì Celsia
+2197=Stupnì Celsia => stupnì Fahrenheita
+2198=Transpozice (prohodit sloupce a øádky, diagonální symetrie)
+2199=Inverzní matice
+2200=Úhel mezi dvìma vektory
+2201=Vektorový souèin
+2202=Poèet sloupcù matice
+2203=Poèet øádkù matice
+2204=Determinant
+2205=Poèet lineárnì nezávislých øádkù
+2206=(r,c); Vytvoøí nulovou matici s R øádky a C sloupci
+2207=Výmìna dvou promìnných
