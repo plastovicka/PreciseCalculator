@@ -1,5 +1,5 @@
 /*
- (C) 2004-2011  Petr Lastovicka
+ (C) Petr Lastovicka
 
  This program is free software; you can redistribute it and/or
  modify it under the terms of the GNU General Public License.
@@ -97,6 +97,8 @@ int skipString(const char *&s);
 bool skipComment(const char *&s);
 void skipArg(const char *s, const char **e);
 
+extern bool isWin9X;
+extern UINT codePage;
 extern const bool dual;
 extern char *title;
 extern int digits, numFormat, base, maxHistory, historyLen, matrixFormat, log;

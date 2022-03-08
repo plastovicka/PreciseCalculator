@@ -25,6 +25,7 @@ char *lngstr[MAXLNGSTR];    //pointers to lines in langFile
 char *lngNames[MAXLANG+1];  //all found languages names
 bool isWin9X;
 UINT codePage;
+WCHAR dtBuf[2048];
 //-------------------------------------------------------------------------
 // 1) File name.
 // 2) Unicode name to display on Windows NT+.
@@ -69,7 +70,7 @@ static BOOL CALLBACK enumControls(HWND hwnd, LPARAM)
 {
 	int i=GetDlgCtrlID(hwnd);
 	if((i>=300 && i<sizeA(lngstr) || i<11 && i>0) && lngstr[i]){
-		SetWindowText(hwnd, lngstr[i]);
+		SetWindowTextT(hwnd, lngstr[i]);
 	}
 	return TRUE;
 }
@@ -82,8 +83,24 @@ void setDlgTexts(HWND hDlg)
 void setDlgTexts(HWND hDlg, int id)
 {
 	char *s=lng(id, 0);
-	if(s) SetWindowText(hDlg, s);
+	if(s) SetWindowTextT(hDlg, s);
 	setDlgTexts(hDlg);
+}
+
+void CodePageToWideChar(char* s)
+{
+	MultiByteToWideChar(codePage, 0, s, -1, dtBuf, sizeA(dtBuf)-1);
+}
+
+void SetWindowTextT(HWND hWnd, char *s)
+{
+	if(s) {
+		if (codePage) {
+			CodePageToWideChar(s);
+			SetWindowTextW(hWnd, dtBuf);
+		} else
+			SetWindowTextA(hWnd, s);
+	}
 }
 
 //reload not modal dialog or create new dialog at position x,y
@@ -118,8 +135,6 @@ static void fillPopup(HMENU h)
 	UINT f;
 	HMENU sub;
 	MENUITEMINFO mii;
-	WCHAR buf[64];
-	buf[sizeA(buf) - 1] = 0;
 
 	for(i=GetMenuItemCount(h)-1; i>=0; i--){
 		id=GetMenuItemID(h, i);
@@ -131,8 +146,8 @@ static void fillPopup(HMENU h)
 				if(!isWin9X)
 					for(int k=0; k<sizeA(lngInter); k++)
 						if(!_stricmp(a, lngInter[k].a)) {
-							_snwprintf(buf, sizeA(buf)-1, L"%S (%s)", a, lngInter[k].u);
-							InsertMenuW(h, 0xFFFFFFFF, f, 30000+j, buf);
+							_snwprintf(dtBuf, sizeA(dtBuf)-1, L"%S (%s)", a, lngInter[k].u);
+							InsertMenuW(h, 0xFFFFFFFF, f, 30000+j, dtBuf);
 							u = TRUE;
 							break;
 						}
@@ -155,8 +170,8 @@ static void fillPopup(HMENU h)
 				mii.fType=MFT_STRING;
 				mii.fState=MFS_ENABLED;
 				if (codePage) {
-					mii.dwTypeData = reinterpret_cast<LPSTR>(buf);
-					MultiByteToWideChar(codePage, 0, s, -1, buf, sizeA(buf)-1);
+					mii.dwTypeData = reinterpret_cast<LPSTR>(dtBuf);
+					CodePageToWideChar(s);
 					SetMenuItemInfoW(h, i, TRUE, reinterpret_cast<MENUITEMINFOW*>(&mii));
 				}
 				else {
@@ -263,7 +278,7 @@ void scanLangDir()
 		n=1;
 		do{
 			if(!(fd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY)){
-				int len= (int)strlen(fd.cFileName)-4;
+				int len= strleni(fd.cFileName)-4;
 				if(len>0){
 					char *s= new char[len+1];
 					memcpy(s, fd.cFileName, len);

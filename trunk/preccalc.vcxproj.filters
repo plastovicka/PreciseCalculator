@@ -77,9 +77,6 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <Object Include="source\aritm.OBJ" />
-  </ItemGroup>
-  <ItemGroup>
     <CustomBuild Include="source\aritm64.asm">
       <Filter>Source Files</Filter>
     </CustomBuild>
