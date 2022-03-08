@@ -8,6 +8,7 @@
 #define langH
 
 extern char lang[64];
+extern WCHAR dtBuf[2048];
 
 char *lng(int i, char *s);
 int strleni(char *s);
@@ -18,6 +19,8 @@ void loadMenu(HWND hwnd, char *name, int *subId);
 void changeDialog(HWND &wnd, int x, int y, LPCTSTR dlgTempl, DLGPROC dlgProc);
 void setDlgTexts(HWND hDlg);
 void setDlgTexts(HWND hDlg, int id);
+void CodePageToWideChar(char* s);
+void SetWindowTextT(HWND hWnd, char* s);
 void getExeDir(char *fn, char *e);
 char *cutPath(char *s);
 

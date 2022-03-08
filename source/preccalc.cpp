@@ -1,5 +1,5 @@
 /*
-	(C) 2004-2012  Petr Lastovicka
+	(C) 2004-2022  Petr Lastovicka
 
 	This program is free software; you can redistribute it and/or
 	modify it under the terms of the GNU General Public License.
@@ -173,11 +173,24 @@ extern "C" void Free(void *s)
 
 int vmsg(HWND w, char *caption, char *text, int btn, va_list v)
 {
-	char buf[1024];
 	if(!text) return IDCANCEL;
-	_vsnprintf(buf, sizeof(buf), text, v);
-	buf[sizeof(buf)-1]=0;
-	return MessageBox(w, buf, caption, btn);
+	if (codePage) {
+		WCHAR buf[1024];
+		CodePageToWideChar(text);
+		for (WCHAR* s = dtBuf; *s; s++) {
+			if (*s == 's') *s = 'S';
+		}		
+		_vsnwprintf(buf, sizeof(buf), dtBuf, v);
+		buf[sizeA(buf) - 1] = 0;
+		CodePageToWideChar(caption);
+		return MessageBoxW(w, buf, dtBuf, btn);
+	}
+	else {
+		char buf[1024];
+		_vsnprintf(buf, sizeof(buf), text, v);
+		buf[sizeof(buf) - 1] = 0;
+		return MessageBox(w, buf, caption, btn);
+	}
 }
 
 void msg(char *text, ...)
@@ -627,16 +640,28 @@ int findMacro(char *s)
 HMENU insertSubmenu(HMENU menu, char *name)
 {
 	HMENU p;
+	if (codePage) CodePageToWideChar(name);
+
 	for(int i=GetMenuItemCount(menu)-1; i>=0; i--){
 		p=GetSubMenu(menu, i);
 		if(p){
-			char buf[64];
-			GetMenuString(menu, i, buf, sizeA(buf), MF_BYPOSITION);
-			if(!strcmp(name, buf)) return p;
+			if(codePage) {
+				WCHAR wbuf[64];
+				GetMenuStringW(menu, i, wbuf, sizeA(wbuf), MF_BYPOSITION);
+				if(!wcscmp(dtBuf, wbuf)) return p;
+			}
+			else {
+				char buf[64];
+				GetMenuString(menu, i, buf, sizeA(buf), MF_BYPOSITION);
+				if(!strcmp(name, buf)) return p;
+			}
 		}
 	}
 	p=CreatePopupMenu();
-	AppendMenu(menu, MF_POPUP, (UINT_PTR)p, name);
+	if (codePage)
+		AppendMenuW(menu, MF_POPUP, (UINT_PTR)p, dtBuf);
+	else
+		AppendMenu(menu, MF_POPUP, (UINT_PTR)p, name);
 	return p;
 }
 
@@ -655,7 +680,12 @@ void addMacro(HMENU menu, char *name, int id)
 			}
 		}
 	}
-	AppendMenu(menu, MF_STRING, id, name);
+	if (codePage) {
+		CodePageToWideChar(name);
+		AppendMenuW(menu, MF_STRING, id, dtBuf);
+	} 
+	else
+		AppendMenu(menu, MF_STRING, id, name);
 }
 
 void initMenu()
@@ -1065,7 +1095,7 @@ BOOL CALLBACK HistoryProc(HWND hWnd, UINT mesg, WPARAM wP, LPARAM lP)
 		case WM_INITDIALOG:
 			oldWidth=oldHeight=0;
 			setDlgTexts(hWnd);
-			SetWindowText(hWnd, lng(20, "History"));
+			SetWindowTextT(hWnd, lng(20, "History"));
 			initHistoryList(listBox);
 			SendMessage(listBox, LB_SETCURSEL, vHlen-1, 0);
 			return 1;
@@ -1414,11 +1444,11 @@ void langChanged()
 	rdConstants();
 	rdUnits();
 	initMenu();
-	SetWindowText(hWin, title= lng(504, "Precise Calculator"));
+	SetWindowTextT(hWin, title= lng(504, "Precise Calculator"));
 #if defined(ARIT64) && !defined(NDEBUG)
-	SetWindowText(hWin, title= "Precise Calculator 64-bit");
+	SetWindowTextT(hWin, title= "Precise Calculator 64-bit");
 #endif
-	SetDlgItemText(hWin, IDC_SPRECISION, lng(IDC_SPRECISION, "Precision:"));
+	SetWindowTextT(GetDlgItem(hWin, IDC_SPRECISION), lng(IDC_SPRECISION, "Precision:"));
 	exprOfn.lpstrFilter= lng(508, "Text files (*.txt)\0*.txt\0All files\0*.*\0");
 	macroOfn.lpstrFilter= lng(509, "Macros (*.cal)\0*.cal\0All files\0*.*\0");
 	btnOfn.lpstrFilter= lng(510, "Buttons (*.cbt)\0*.cbt\0All files\0*.*\0");
@@ -1500,7 +1530,7 @@ void getBtnTooltip(int i, BOOL shift)
 		t = (Top*)&funcTab[hl];
 		if(h) { // hyperbolic toolti]p
 			s = lng(2000, "hyperbolic"); // hyperbolic LNG id
-			hl = (int)strlen(s);
+			hl = strleni(s);
 			strncpy( ttBuf, s, sizeof(ttBuf)-1 );
 			if( hl < sizeof(ttBuf)-2 ) { // enough space for at least 1 letter of tooltip
 				ttBuf[hl++] = ' ';
@@ -1554,7 +1584,7 @@ int getDescrIndex(char *s)
 						// leave as is to allow descriptions for '   '-alike buttons
 		for(i=0; i<funcTab_size; i++){
 			n = (char*) funcTab[i].name;
-			l = (int)strlen(n);
+			l = strleni(n);
 			if( !_strnicmp(s, n, l) ) {
 				n=(char*)s+l;
 				if( *n==' ' || *n==0  || *n=='(' ) {
@@ -1566,7 +1596,7 @@ int getDescrIndex(char *s)
 		// custom buttons names
 		for(i=0; i<sizeA(custT); i++){
 			n = (char*) custT[i].name;
-			l = (int)strlen(n);
+			l = strleni(n);
 			if( !_strnicmp(s, n, l) ) {
 				n=(char*)s+l;
 				if( *n==' ' || *n==0  || *n=='(' ) return -(++i);
@@ -1907,6 +1937,12 @@ void showHelp(char *topic)
 	DeleteFile(buf2); //delete only alternate data stream
 	if(HtmlHelp(hWin, buf, 0, (DWORD_PTR)topic)) helpVisible=true;
 }
+
+void dialogBox(int id, DLGPROC proc)
+{
+	if(codePage) DialogBoxW(inst, MAKEINTRESOURCEW(id), hWin, (DLGPROC)proc);
+	else DialogBoxA(inst, MAKEINTRESOURCEA(id), hWin, (DLGPROC)proc);
+}
 //-----------------------------------------------------------------
 LRESULT CALLBACK MainWndProc(HWND hWnd, UINT mesg, WPARAM wP, LPARAM lP)
 {
@@ -1982,7 +2018,7 @@ LRESULT CALLBACK MainWndProc(HWND hWnd, UINT mesg, WPARAM wP, LPARAM lP)
 		case WM_NOTIFY:
 		{
 			LPNMHDR nmhdr = (LPNMHDR)lP;
-			if( nmhdr->code == TTN_NEEDTEXT ){
+			if( nmhdr->code == TTN_NEEDTEXTA || nmhdr->code == TTN_NEEDTEXTW ){
 				TOOLTIPTEXT *ttt = (LPTOOLTIPTEXT)lP;
 				ttt->hinst = NULL;
 				i = GetWindowLong( (HWND)ttt->hdr.idFrom, GWL_ID );
@@ -2002,6 +2038,10 @@ LRESULT CALLBACK MainWndProc(HWND hWnd, UINT mesg, WPARAM wP, LPARAM lP)
 				case IDC_FIXDIGITS:
 					ttt->lpszText = lng(i, "Number of fixed digits");
 					break;
+				}
+				if (nmhdr->code == TTN_NEEDTEXTW) {
+					CodePageToWideChar(ttt->lpszText);
+					ttt->lpszText = reinterpret_cast<LPSTR>(dtBuf);
 				}
 			}
 		}
@@ -2191,13 +2231,13 @@ LRESULT CALLBACK MainWndProc(HWND hWnd, UINT mesg, WPARAM wP, LPARAM lP)
 					selVar(cmd-ID_VAR1+1);
 					break;
 				case ID_VARLIST:
-					DialogBox(inst, MAKEINTRESOURCE(IDD_VARS), hWnd, (DLGPROC)VarListProc);
+					dialogBox(IDD_VARS, (DLGPROC)VarListProc);
 					break;
 				case ID_HISTORY:
-					DialogBox(inst, MAKEINTRESOURCE(IDD_VARS), hWnd, (DLGPROC)HistoryProc);
+					dialogBox(IDD_VARS, (DLGPROC)HistoryProc);
 					break;
 				case ID_OPTIONS:
-					DialogBox(inst, MAKEINTRESOURCE(IDD_OPTIONS), hWnd, (DLGPROC)OptionsProc);
+					dialogBox(IDD_OPTIONS, (DLGPROC)OptionsProc);
 					break;
 				case ID_CUT:
 					SendMessage(hIn, WM_CUT, 0, 0);
@@ -2254,14 +2294,14 @@ LRESULT CALLBACK MainWndProc(HWND hWnd, UINT mesg, WPARAM wP, LPARAM lP)
 						msg(lng(802, "At first, type some expression to the input edit box"));
 					}
 					else{
-						DialogBox(inst, MAKEINTRESOURCE(IDD_NEWMACRO), hWnd, (DLGPROC)NewMacroProc);
+						dialogBox(IDD_NEWMACRO, (DLGPROC)NewMacroProc);
 					}
 					break;
 				case ID_MACRO_DEL:
-					DialogBox(inst, MAKEINTRESOURCE(IDD_DELETEMACRO), hWnd, (DLGPROC)DeleteMacroProc);
+					dialogBox(IDD_DELETEMACRO, (DLGPROC)DeleteMacroProc);
 					break;
 				case ID_MACRO_RENAME:
-					DialogBox(inst, MAKEINTRESOURCE(IDD_RENAMEMACRO), hWnd, (DLGPROC)RenameMacroProc);
+					dialogBox(IDD_RENAMEMACRO, (DLGPROC)RenameMacroProc);
 					break;
 
 				case ID_HELP:
@@ -2271,7 +2311,7 @@ LRESULT CALLBACK MainWndProc(HWND hWnd, UINT mesg, WPARAM wP, LPARAM lP)
 					showHelp(0);
 					break;
 				case ID_ABOUT:
-					DialogBox(inst, MAKEINTRESOURCE(IDD_ABOUT), hWnd, (DLGPROC)AboutProc);
+					dialogBox(IDD_ABOUT, (DLGPROC)AboutProc);
 					break;
 				case ID_EXIT:
 					SendMessage(hWin, WM_CLOSE, 0, 0);
@@ -2299,7 +2339,7 @@ LRESULT CALLBACK MainWndProc(HWND hWnd, UINT mesg, WPARAM wP, LPARAM lP)
 				}
 					break;
 				case ID_COLORS:
-					DialogBox(inst, MAKEINTRESOURCE(IDD_COLORS), hWin, (DLGPROC)ColorProc);
+					dialogBox(IDD_COLORS, (DLGPROC)ColorProc);
 					break;
 				case ID_HIST_PREV:
 					if(!history.isEmpty()){
@@ -2339,9 +2379,6 @@ void processMessage(MSG &mesg)
 
 int pascal WinMain(HINSTANCE hInstance, HINSTANCE, LPSTR, int)
 {
-	MSG mesg;
-	WNDCLASS wc;
-
 	inst=hInstance;
 
 	//DPIAware
@@ -2370,6 +2407,7 @@ int pascal WinMain(HINSTANCE hInstance, HINSTANCE, LPSTR, int)
 	aminmax(width, 300, w);
 	aminmax(height, 200, h-16);
 
+	WNDCLASS wc;
 	wc.style=0;
 	wc.lpfnWndProc=(WNDPROC)DefDlgProc;
 	wc.cbClsExtra=0;
@@ -2390,7 +2428,8 @@ int pascal WinMain(HINSTANCE hInstance, HINSTANCE, LPSTR, int)
 		richEditClass="RichEdit";
 	}
 	if(!richLib){ msg("Cannot find RICHED20.DLL or RICHED32.DLL"); return 4; }
-	CreateDialog(hInstance, MAKEINTRESOURCE(IDD_MAIN), 0, (DLGPROC)MainWndProc);
+	if(isWin9X) CreateDialogA(hInstance, MAKEINTRESOURCEA(IDD_MAIN), 0, (DLGPROC)MainWndProc);
+	else CreateDialogW(hInstance, MAKEINTRESOURCEW(IDD_MAIN), 0, (DLGPROC)MainWndProc);
 	if(!hWin){ msg("CreateDialog error"); return 3; }
 
 	RECT rc;
@@ -2456,6 +2495,7 @@ int pascal WinMain(HINSTANCE hInstance, HINSTANCE, LPSTR, int)
 		LoadKeyboardLayout(buf, KLF_ACTIVATE|KLF_SUBSTITUTE_OK);
 	}
 
+	MSG mesg;
 	while(GetMessage(&mesg, NULL, 0, 0)>0){
 		if(hTt) SendMessage(hTt, TTM_RELAYEVENT, 0, (LPARAM)&mesg);
 		processMessage(mesg);
