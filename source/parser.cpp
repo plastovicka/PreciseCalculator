@@ -1337,7 +1337,7 @@ void ClearError(int err)
 	InterlockedCompareExchange((Tinterlock*)&error, 0, (Tinterlock)err);
 #else
 	typedef LONG(WINAPI *TInterlockedCompareExchange)(LONG volatile *, LONG, LONG);
-	static TInterlockedCompareExchange pInterlockedCompareExchange;
+	static TInterlockedCompareExchange pInterlockedCompareExchange = NULL;
 	if(!pInterlockedCompareExchange){
 		pInterlockedCompareExchange = (TInterlockedCompareExchange)GetProcAddress(GetModuleHandle("kernel32"), "InterlockedCompareExchange");
 		if(!pInterlockedCompareExchange){

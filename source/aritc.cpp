@@ -85,16 +85,16 @@ double dwordDigits[37]={0, 0, // 32*ln(2)/ln(base)
 bool CMPDBG(Pint y, Pint z)
 {
 	if(error) return true;
-	Tint precision = y[-4];
-	if(z[-3]>precision)
+	Tint _precision = y[-4];
+	if(z[-3]>_precision)
 	{
-		z[-3]=precision;
-		if(z[precision]<0){ //most significant bit is 1
+		z[-3]=_precision;
+		if(z[_precision]<0){ //most significant bit is 1
 			Numx Ktmp;
 			Pint t=&Ktmp.m;
 			t[-4]=t[-3]=t[0]=1;
 			t[-2]=z[-2];
-			t[-1]=z[-1]-(precision-1);
+			t[-1]=z[-1]-(_precision-1);
 			Pint u=ALLOCX(z[-4]);
 			PLUSX(u, z, t);
 			//logx("u", u); logx("z", z); logx("t", t);
@@ -192,14 +192,14 @@ __int64 strtoi64(const char *str, char **end)
 
 //-------------------------------------------------------------------
 //x*=base^e
-void _stdcall EEX(Pint x, __int64 e, int base)
+void _stdcall EEX(Pint x, __int64 e, int _base)
 {
 	Pint y, t;
 	ALLOCN(2, x[-4], &y, &t);
 	Numx Ktmp;
 	Pint tmp=&Ktmp.m;
 	tmp[-4]=1;
-	SETX(tmp, base);
+	SETX(tmp, _base);
 	if(e<0){
 		POWI(t, tmp, -e);
 		DIVX(y, x, t);
@@ -242,7 +242,7 @@ char* _stdcall READX(Pint x, const char *buf)
 	return s;
 }
 
-static void roundResult(char *buf, int digits, bool fixed)
+static void roundResult(char *buf, int _digits, bool fixed)
 {
 	char *s, *k, *dot;
 	int i, n;
@@ -262,7 +262,7 @@ static void roundResult(char *buf, int digits, bool fixed)
 	if(dot && fixed){
 		n= fixDigits+1-int(s-dot);
 		if(n<=0) n=1;
-		if(digits>n) digits=n;
+		if(_digits>n) _digits=n;
 	}
 	//find the last digit
 	for(;; s++){
@@ -273,10 +273,10 @@ static void roundResult(char *buf, int digits, bool fixed)
 		}
 		if(*s=='.'){
 			dot=s;
-			if(fixed && digits>fixDigits) digits=fixDigits;
+			if(fixed && _digits>fixDigits) _digits=fixDigits;
 			continue;
 		}
-		if(digits--<=0 && dot) break;
+		if(_digits--<=0 && dot) break;
 	}
 	i=*s-'0';
 	if(i>9) i=*s-'A'+10;
@@ -381,7 +381,7 @@ void TuintToStr(Tuint x, char *buf)
 #endif
 }
 
-void _stdcall WRITEX(char *buf, const Pint x0, int digits)
+void _stdcall WRITEX(char *buf, const Pint x0, int _digits)
 {
 	__int64 e=0;
 	Pint y, t, w, x, a;
@@ -396,7 +396,7 @@ void _stdcall WRITEX(char *buf, const Pint x0, int digits)
 		if(numFormat==MODE_SCI) strcpy(buf, " E+0");
 		return;
 	}
-	prec = int(digits/dwordDigits[base])+2;
+	prec = int(_digits/dwordDigits[base])+2;
 
 	if(isFraction(x)){
 		if(enableFractions && numFormat!=MODE_FIX){
@@ -475,11 +475,11 @@ void _stdcall WRITEX(char *buf, const Pint x0, int digits)
 		}
 	}
 	if(x!=x0) FREEX(x);
-	roundResult(buf, digits, numFormat==MODE_FIX && !e);
+	roundResult(buf, _digits, numFormat==MODE_FIX && !e);
 
 	//write exponent
 	if(e || numFormat==MODE_SCI){
-		char *s= strchr(buf, 0);
+		s= strchr(buf, 0);
 		if(s[-1]=='0' && !strchr(buf, '.')){
 			//trim trailing zeros
 			if(numFormat==MODE_ENG){
@@ -508,16 +508,16 @@ void _stdcall WRITEX(char *buf, const Pint x0, int digits)
 	prettyResult(buf);
 }
 
-int _stdcall LENX(const Pint x, int digits)
+int _stdcall LENX(const Pint x, int _digits)
 {
-	if(isFraction(x)) return 2*digits+90;
+	if(isFraction(x)) return 2*_digits+90;
 	return 24+2*int(dwordDigits[base]*(x[-4]+1));
 }
 
-char * _stdcall AWRITEX(const Pint x, int digits)
+char * _stdcall AWRITEX(const Pint x, int _digits)
 {
-	char *buf= new char[LENX(x, digits)];
-	WRITEX(buf, x, digits);
+	char *buf= new char[LENX(x, _digits)];
+	WRITEX(buf, x, _digits);
 	return buf;
 }
 //-------------------------------------------------------------------
@@ -1048,16 +1048,16 @@ void _stdcall LNX(Pint y, const Pint x)
 #endif
 }
 //-------------------------------------------------------------------
-void _stdcall SetPrec(Pint x, Tint precision)
+void _stdcall SetPrec(Pint x, Tint _precision)
 {
-	x[-4] = precision;
-	if(x[-3] > precision) x[-3]=precision;
+	x[-4] = _precision;
+	if(x[-3] > _precision) x[-3]=_precision;
 }
 
 void _stdcall INVERSEROOTI(Pint y, Pint x, Tuint n)
 {
 	Pint t, u, r, a, w;
-	Tint p, precision = 14;
+	Tint p, _precision = 14;
 
 	p=y[-4] + 1;
 
@@ -1065,7 +1065,7 @@ void _stdcall INVERSEROOTI(Pint y, Pint x, Tuint n)
 
 	if(n==2)
 	{
-		r[-4]=t[-4]=precision*2;
+		r[-4]=t[-4]=_precision*2;
 		SQRTX2(t, x);
 		DIVX(r, t, x);
 	}
@@ -1077,11 +1077,11 @@ void _stdcall INVERSEROOTI(Pint y, Pint x, Tuint n)
 	//r:=r+r*(1-x*r^n)/n
 	do
 	{
-		precision *= 2;
-		if(precision>p) precision=p;
-		SetPrec(r, precision);
-		SetPrec(t, precision);
-		SetPrec(u, precision);
+		_precision *= 2;
+		if(_precision>p) _precision=p;
+		SetPrec(r, _precision);
+		SetPrec(t, _precision);
+		SetPrec(u, _precision);
 
 		if(n==2) SQRX(t, r);
 		else if(n!=1) POWI(t, r, n);
@@ -1093,7 +1093,7 @@ void _stdcall INVERSEROOTI(Pint y, Pint x, Tuint n)
 		DIVI1(u, n);
 		PLUSX(t, r, u);
 		w=t; t=r; r=w;
-	} while((precision<p || (u[-1]>r[-1]-r[-3]) && !isZero(u)) && !error);
+	} while((_precision<p || (u[-1]>r[-1]-r[-3]) && !isZero(u)) && !error);
 	COPYX(y, r);
 	FREEX(a);
 }
@@ -1148,7 +1148,7 @@ void _stdcall DIVX(Pint y, const Pint a, const Pint b)
 	}
 
 	Pint t, u, r, w, m, b1;
-	Tint p, bp, precision;
+	Tint p, bp, _precision;
 
 	bp = b[-3];
 	p=(Tint)(y[-4] + 1);
@@ -1157,7 +1157,7 @@ void _stdcall DIVX(Pint y, const Pint a, const Pint b)
 	COPYX(b1, b);
 
 	Tint len=0;
-	for(precision=p; precision>10; precision>>=1) len++;
+	for(_precision=p; _precision>10; _precision>>=1) len++;
 
 	r[-4]=p>>len;
 	DIVX2(r, one, b);
@@ -1167,19 +1167,19 @@ void _stdcall DIVX(Pint y, const Pint a, const Pint b)
 	//r:=r*(2-b*r)
 	do
 	{
-		precision = p>>len;
+		_precision = p>>len;
 		if(len>0){
 			len--;
 		}
 		else{
 			fin++;
 		}
-		//if(precision>p){ precision=p; fin++; }
-		SetPrec(r, precision);
-		SetPrec(t, precision);
-		SetPrec(u, precision);
-		SetPrec(b1, precision);
-		b1[-3]=min(precision, bp);
+		//if(_precision>p){ _precision=p; fin++; }
+		SetPrec(r, _precision);
+		SetPrec(t, _precision);
+		SetPrec(u, _precision);
+		SetPrec(b1, _precision);
+		b1[-3]=min(_precision, bp);
 
 		MULTX(u, b1, r);
 		if(b[-2]) NEGX(u);
@@ -1823,16 +1823,16 @@ void _stdcall MODX(Pint y, const Pint a, const Pint b)
 		ZEROX(y);
 		return;
 	}
-	Tint precision = a[-1]-b[-1];
-	if(precision>=a[-4]){
+	Tint _precision = a[-1]-b[-1];
+	if(_precision>=a[-4]){
 		cerror(1063, "The first operand of MOD function is longer than precision");
 		return;
 	}
-	if(precision<0){
+	if(_precision<0){
 		COPYX(y, a);
 		return;
 	}
-	Pint t= ALLOCX(precision+2);
+	Pint t= ALLOCX(_precision+2);
 	IDIVX(t, a, b);
 	Pint u= ALLOCX(y[-4]);
 	MULTX(u, t, b);
