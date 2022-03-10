@@ -1838,7 +1838,7 @@ void loadButtons()
 			LockWindowUpdate(hWin);
 			//unregister tooltips
 			if(hTt) for(i=0; i<buttons.len; i++){
-				ti.uId = (UINT)buttons[i].wnd;
+				ti.uId = (UINT_PTR)buttons[i].wnd;
 				SendMessage(hTt, TTM_DELTOOL, 0, (LPARAM)&ti);
 			}
 			//delete buttons
@@ -1887,7 +1887,7 @@ void loadButtons()
 					b->w*dpix/96-xgap, b->h*dpiy/96-ygap, hWin,
 					(HMENU)(UINT_PTR)(300+i), inst, 0);
 				if(hTt) { // register tooltip
-					ti.uId = (UINT)b->wnd;
+					ti.uId = (UINT_PTR)b->wnd;
 					SendMessage(hTt, TTM_ADDTOOL, 0, (LPARAM)&ti);
 				}
 				if(!strcmp(b->f, "EXE")){
@@ -2448,7 +2448,6 @@ int pascal WinMain(HINSTANCE hInstance, HINSTANCE, LPSTR, int)
 	else{
 		InitCommonControls();
 	}
-	DWORD wc_Data;
 	hTt = CreateWindowEx(
 		0, // dwExStyle
 		TOOLTIPS_CLASS,
@@ -2458,7 +2457,7 @@ int pascal WinMain(HINSTANCE hInstance, HINSTANCE, LPSTR, int)
 		hWin, // hWndParent
 		NULL, // hMenu
 		inst, // hInstance
-		&wc_Data // passed to window after creation
+		0 // passed to window after creation
 	);
 	// registering tooltips for permanent controls
 	TOOLINFO ti;
@@ -2467,15 +2466,11 @@ int pascal WinMain(HINSTANCE hInstance, HINSTANCE, LPSTR, int)
 	ti.hwnd = hWin;
 	ti.hinst = inst;
 	ti.lpszText = LPSTR_TEXTCALLBACK;
-	//ti.lpszText = "Test permanent control tooltip";
-	ti.uId = (UINT)GetDlgItem(hWin, IDC_FRACT);
-	SendMessage(hTt, TTM_ADDTOOL, 0, (LPARAM)&ti);
-	ti.uId = (UINT)GetDlgItem(hWin, IDC_INV);
-	SendMessage(hTt, TTM_ADDTOOL, 0, (LPARAM)&ti);
-	ti.uId = (UINT)GetDlgItem(hWin, IDC_HYP);
-	SendMessage(hTt, TTM_ADDTOOL, 0, (LPARAM)&ti);
-	ti.uId = (UINT)GetDlgItem(hWin, IDC_FIXDIGITS);
-	SendMessage(hTt, TTM_ADDTOOL, 0, (LPARAM)&ti);
+	static int toolId[]={IDC_FRACT, IDC_INV, IDC_HYP, IDC_FIXDIGITS, 0};
+	for (int* i=toolId; *i; i++) {
+		ti.uId = (UINT_PTR)GetDlgItem(hWin, *i);
+		SendMessage(hTt, TTM_ADDTOOL, 0, (LPARAM)&ti);
+	}
 	// turning off tooltips if they are disabled in settings
 	if(hTt) SendMessage(hTt, TTM_ACTIVATE, tooltipsShow, 0);
 
