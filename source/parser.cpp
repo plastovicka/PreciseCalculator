@@ -1510,6 +1510,7 @@ DWORD WINAPI threadLoop(char *param)
 						a[0]=0;
 						goto lcmd;
 					}
+					e=input++;
 				}
 				else{
 					//new line
