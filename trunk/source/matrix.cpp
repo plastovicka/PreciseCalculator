@@ -1,5 +1,5 @@
 /*
-	(C) 2005-2012  Petr Lastovicka
+	(C) 2005-2022  Petr Lastovicka
 
 	This program is free software; you can redistribute it and/or
 	modify it under the terms of the GNU General Public License.
@@ -14,6 +14,11 @@ int matrixFormat=1;
 void errMatrix()
 {
 	cerror(1043, "The function does not support matrices");
+}
+
+void errEmptyMatrix()
+{
+	cerror(1064, "Matrix is empty");
 }
 
 bool isVector(const Complex &cx)
@@ -48,12 +53,12 @@ void matrixToComplex(Complex &cx)
 }
 
 //create a new matrix or resize matrix to a->cols, a->rows
-void prepareM(Complex cy, Pmatrix a)
+void prepareM(Complex cy, int cols, int rows)
 {
 	int i, len;
 	Tint prec;
 
-	len= a->cols * a->rows;
+	len= cols * rows;
 	prec= getPrecision(cy);
 	Pmatrix y= toMatrix(cy);
 	if(isMatrix(cy)){
@@ -73,16 +78,22 @@ void prepareM(Complex cy, Pmatrix a)
 	else{
 		y->tag= -12;
 		y->alen= 0;
+		y->A= NULL;
 	}
-	if(!y->alen){
+	if(!y->alen && len){
 		y->A= new Complex[y->alen= len];
 		for(i=0; i<len; i++){
 			y->A[i]= ALLOCC(prec);
 		}
 	}
-	y->rows= a->rows;
-	y->cols= a->cols;
+	y->rows= rows;
+	y->cols= cols;
 	y->len= len;
+}
+
+void prepareM(Complex& cy, Pmatrix a)
+{
+	prepareM(cy, a->cols, a->rows);
 }
 
 bool noMatrix(Complex &y, TunaryC0 f)
@@ -111,6 +122,13 @@ bool noMatrix(Complex &y, const Complex &a, const Complex &b, TbinaryC f)
 		f(y, a, b);
 		return true;
 	}
+	return false;
+}
+
+bool noMatrixOrEmpty(Complex &y, const Complex &a, TunaryC2 f)
+{
+	if(noMatrix(y, a, f)) return true;
+	if(toMatrix(a)->len==0) { errEmptyMatrix(); return true; }
 	return false;
 }
 
@@ -146,9 +164,15 @@ Complex _fastcall NEWCOPYM(const Complex ca)
 	y->rows= a->rows;
 	y->cols= a->cols;
 	y->len= a->len;
-	y->A= new Complex[y->alen= a->alen];
-	for(int i=0; i<a->len; i++){
-		y->A[i]= NEWCOPYC(a->A[i]);
+	if(a->len) {
+		y->A= new Complex[y->alen= a->alen];
+		for(int i=0; i<a->len; i++) {
+			y->A[i]= NEWCOPYC(a->A[i]);
+		}
+	}
+	else {
+		y->A= NULL;
+		y->alen= 0;
 	}
 	return result;
 }
@@ -223,6 +247,11 @@ char*_stdcall AWRITEM(const Complex x, int digits, int cr)
 }
 
 //-------------------------------------------------------------------
+void _fastcall EMPTYM(Complex x)
+{
+	prepareM(x, 0, 0);
+}
+
 void _fastcall SETM(Complex x, Tuint n)
 {
 	matrixToComplex(x);
@@ -264,6 +293,7 @@ void _fastcall TRANSPM(Complex cx)
 	rows= x->cols;
 	cols= x->rows;
 	if(cols!=1 && rows!=1){
+		if(x->len==0) return;
 		A= new Complex[x->alen];
 		for(i=0; i<rows; i++){
 			for(j=0; j<cols; j++){
@@ -297,8 +327,11 @@ void _stdcall CONCATROWM(Complex y, Complex a, Complex b)
 	if(mb){ colb=mb->cols; rows+=mb->rows; }
 	else{ colb=1; rows++; }
 	if(cola!=colb){
-		cerror(1041, "Matrices have incorrect size");
-		return;
+		if(cola==0) cola=colb;
+		else if(colb!=0) {
+			cerror(1041, "Matrices have incorrect size");
+			return;
+		} 
 	}
 	my= toMatrix(y);
 	if(isMatrix(y)){
@@ -313,6 +346,7 @@ void _stdcall CONCATROWM(Complex y, Complex a, Complex b)
 	if(ma && ma->alen>=my->len){
 		my->alen= ma->alen;
 		my->A= ma->A;
+		ma->alen=0;
 		ma->A=0;
 	}
 	else{
@@ -461,18 +495,17 @@ void _stdcall INDEXM(Complex cy, const Complex cx, int *D)
 	if(!checkRange(cx, D)) return;
 	if(!isMatrix(cx)){ COPYM(cy, cx); return; }
 	Pmatrix x= toMatrix(cx);
-	Matrix a;
-	a.cols=D[3]-D[2]+1;
-	a.rows=D[1]-D[0]+1;
-	if(a.cols==1 && a.rows==1){
+	int cols=D[3]-D[2]+1;
+	int rows=D[1]-D[0]+1;
+	if(cols==1 && rows==1){
 		COPYM(cy, x->A[x->cols*D[0] + D[2]]);
 	}
 	else{
-		prepareM(cy, &a);
+		prepareM(cy, cols, rows);
 		Complex *A= toMatrix(cy)->A;
 		for(i=D[0]; i<=D[1]; i++){
 			Complex *B= x->A + x->cols*i + D[2];
-			for(j=0; j<a.cols; j++){
+			for(j=0; j<cols; j++){
 				COPYC(*A++, *B++);
 			}
 		}
@@ -670,13 +703,11 @@ void _stdcall MULTM(Complex cy, const Complex ca, const Complex cb)
 	else{
 		n= a->cols;
 		if(n!=b->rows){
-			cerror(1045, "Number of columns of the first matrix is not equal to number of columns of the second matrix");
+			cerror(1045, "Number of columns of the first matrix is not equal to number of rows of the second matrix");
 			return;
 		}
-		Matrix m;
-		m.rows=rowsa;
-		m.cols=colsb;
-		prepareM(cy, &m);
+		prepareM(cy, colsb, rowsa);
+		if(!y->len) return;
 		S= y->A;
 	}
 	MULTMRecurse(rowsa, colsb, n, a->A, a->cols, b->A, colsb, S, colsb);
@@ -906,7 +937,7 @@ void _stdcall INVERTM(Complex y, Complex cx)
 	ELIMM(y);
 	TRANSPM(y);
 	x= toMatrix(y);
-	if(isZero(x->A[n-1])){
+	if(!x->len || isZero(x->A[n-1])){
 		cerror(1050, "Matrix is not regular");
 	}
 	x->rows -= x->cols;
@@ -992,14 +1023,11 @@ void _fastcall ABSM(Complex x)
 void _stdcall MATRIXM(Complex y, const Complex ca, const Complex cb)
 {
 	if(isInt(ca) && isInt(cb)){
-		Matrix m;
 		Tint r = toInt(ca.r);
 		Tint c = toInt(cb.r);
-		if(r>0 && c>0 && r<100000 && c<100000){
-			m.rows= (int)r;
-			m.cols= (int)c;
-			if(Int32x32To64(m.rows, m.cols)<=100000){
-				prepareM(y, &m);
+		if(r>0 && c>0 && r<100000 && c<100000 || r==0 && c==0){
+			if(Int32x32To64(r, c)<=100000){
+				prepareM(y, (int)c, (int)r);
 				return;
 			}
 		}
@@ -1082,6 +1110,7 @@ void _stdcall POLYNOMM(Complex y, const Complex cx, const Complex cp)
 	if(isMatrix(cx)){
 		if(!isSquareM(x)) return;
 		n=x->rows;
+		if(n==0) { errEmptyMatrix(); return; }
 	}
 	Pmatrix p= toMatrix(cp);
 	SETM(y, 0);
@@ -1306,7 +1335,7 @@ void _stdcall LSHM(Complex y, const Complex a, const Complex b)
 
 void _stdcall MINMAXM(Complex y, const Complex cx, int desc)
 {
-	if(noMatrix(y, cx, COPYC)) return;
+	if(noMatrixOrEmpty(y, cx, COPYC)) return;
 	Pmatrix x= toMatrix(cx);
 	Complex *A= x->A;
 	int num= x->len;
@@ -1359,7 +1388,7 @@ int _stdcall SUMM(Complex y0, const Complex cx, int start, int step)
 	Complex t, y, w;
 
 	if(step==2) checkLR(cx);
-	if(noMatrix(y0, cx, COPYC)) return 1;
+	if(noMatrixOrEmpty(y0, cx, COPYC)) return 1;
 	Pmatrix x= toMatrix(cx);
 	Complex *A= x->A;
 	int num= x->len;
@@ -1398,7 +1427,7 @@ int _stdcall SUMMULM(Complex y0, const Complex cx, int start, int step, int diff
 	Complex t, y, u, w;
 
 	if(step==2) checkLR(cx);
-	if(noMatrix(y0, cx, SQRC)) return 1;
+	if(noMatrixOrEmpty(y0, cx, SQRC)) return 1;
 	Pmatrix x= toMatrix(cx);
 	Complex *A= x->A;
 	int num= x->len;
@@ -1692,7 +1721,7 @@ void _stdcall HARMONM(Complex y0, const Complex cx)
 	int i;
 	Complex t, u, y, w;
 
-	if(noMatrix(y0, cx, COPYC)) return;
+	if(noMatrixOrEmpty(y0, cx, COPYC)) return;
 	Pmatrix x= toMatrix(cx);
 	Complex *A= x->A;
 	int num= x->len;
@@ -1724,7 +1753,7 @@ int _stdcall PRODUCTM(Complex y0, const Complex cx)
 	int i, count=2;
 	Complex t, y, w;
 
-	if(noMatrix(y0, cx, COPYC)) return 1;
+	if(noMatrixOrEmpty(y0, cx, COPYC)) return 1;
 	Pmatrix x= toMatrix(cx);
 	Complex *A= x->A;
 	int num= x->len;
@@ -1761,7 +1790,7 @@ void _stdcall REPEATOPX(Tbinary f, Complex y, const Complex cx, int errId, char 
 	int i;
 	Pint t, w, y0;
 
-	if(noMatrix(y, cx, COPYC)) return;
+	if(noMatrixOrEmpty(y, cx, COPYC)) return;
 	Pmatrix x= toMatrix(cx);
 	Complex *A= x->A;
 	int num= x->len;
@@ -1825,15 +1854,16 @@ void _fastcall REVERSEM(Complex cx)
 	if(!isMatrix(cx)) return;
 	Pmatrix x= toMatrix(cx);
 	Complex w, *b, *e;
-	for(b=x->A, e=&x->A[x->len-1]; b<e; b++, e--){
-		w=*b; *b=*e; *e=w;
-	}
+	if(x->len)
+		for(b=x->A, e=&x->A[x->len-1]; b<e; b++, e--){
+			w=*b; *b=*e; *e=w;
+		}
 }
 
 //warning: cx will be sorted
 void _stdcall MEDIANM(Complex y, Complex cx)
 {
-	if(noMatrix(y, cx, COPYC)) return;
+	if(noMatrixOrEmpty(y, cx, COPYC)) return;
 	Pmatrix x= toMatrix(cx);
 	int num= x->len;
 	Complex *A= x->A;
@@ -1853,7 +1883,7 @@ void _stdcall MODEM(Complex y, Complex cx)
 {
 	int i, j, m, im=0;
 
-	if(noMatrix(y, cx, COPYC)) return;
+	if(noMatrixOrEmpty(y, cx, COPYC)) return;
 	Pmatrix x= toMatrix(cx);
 	Complex *A= x->A;
 	Complex first= A[0];

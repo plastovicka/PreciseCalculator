@@ -217,13 +217,13 @@ name=bitwise></A>
     <TD>eqv</TD>
     <TD><CODE>x eqv y=((x==0)==(y==0))</CODE></TD></TR>
   <TR>
-    <TD>lsh, &lt;&lt;</TD>
+    <TD>lsh, shl, &lt;&lt;</TD>
     <TD>shift sinistro, <CODE>x&lt;&lt;y=x*2^y</CODE></TD></TR>
   <TR>
-    <TD>rsh, &gt;&gt;</TD>
+    <TD>rsh, shr, &gt;&gt;</TD>
     <TD>shift destro, <CODE>x&gt;&gt;y=x&lt;&lt;-y</CODE></TD></TR>
   <TR>
-    <TD>rshi, &gt;&gt;&gt;</TD>
+    <TD>rshi, shri, &gt;&gt;&gt;</TD>
     <TD><CODE>x&gt;&gt;&gt;y=trunc(x&gt;&gt;y)</CODE></TD></TR></TBODY></TABLE><A 
 name=integer></A>
 <TABLE>
@@ -521,8 +521,11 @@ name=matrix></A>
     <TD>maxfor(x,a,b,f(x))</TD>
     <TD><CODE>max(listfor(x,a,b,f(x)))</CODE></TD></TR>
   <TR>
+    <TD>filterfor(x,a,b,f(x))</TD>
+    <TD>un vettore riga di x valori da a a b per cui f(x) è diverso da zero</TD></TR>
+  <TR>
     <TD colSpan=2>sumforeach, productforeach, listforeach, rowsforeach, 
-      minforeach, maxforeach - queste funzioni sono simili&nbsp;funzioni 
+      minforeach, maxforeach, filterforeach - queste funzioni sono simili&nbsp;funzioni 
       precedenti, ma i valori x sono presi dalla matrice A</TD></TR>
   <TR>
     <TD>integral(x,a,b,n,f(x))</TD>

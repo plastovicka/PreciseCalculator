@@ -143,7 +143,7 @@
 1042=Aumento o diminuzione della matrice
 1043=La funzione non è compatibile con le matrici
 1044=Le matrici hanno lo stesso formato
-1045=Il numero di colonne della prima matrice non è uguale a quello nella seconda matrice
+1045=Il numero di colonne della prima matrice non è uguale al numero di righe della seconda matrice
 1046=I vettori hanno lunghezze differenti
 1047=Non è una potenza della matrice
 1048=La matrice non è quadrata
