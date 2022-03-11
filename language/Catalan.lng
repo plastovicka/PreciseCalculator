@@ -111,7 +111,7 @@
 1042=Increment o decrement d'una matriu
 1043=La funció no suporta matrius
 1044=Les matrius no tenen el mateix tamany
-1045=El número de columnes de la primera matriu no és igual al numero de columnes de la segona
+1045=El número de columnes de la primera matriu no és igual al numero de files de la segona
 1046=Els vectors tenen longituds diferents
 1047=Potència de la matriu no sencera
 1048=La matriu no és quadrada

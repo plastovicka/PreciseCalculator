@@ -162,11 +162,11 @@
 
 <TR><TD>eqv</TD><TD><CODE>x eqv y=((x==0)==(y==0))</CODE></TD></TR>
 
-<TR><TD>lsh, &lt;&lt;</TD><TD>shift left,   <CODE>x&lt;&lt;y=x*2^y</CODE></TD></TR>
+<TR><TD>lsh, shl, &lt;&lt;</TD><TD>shift left,   <CODE>x&lt;&lt;y=x*2^y</CODE></TD></TR>
 
-<TR><TD>rsh, &gt;&gt;</TD><TD>shift right,   <CODE>x&gt;&gt;y=x&lt;&lt;-y</CODE></TD></TR>
+<TR><TD>rsh, shr, &gt;&gt;</TD><TD>shift right,   <CODE>x&gt;&gt;y=x&lt;&lt;-y</CODE></TD></TR>
 
-<TR><TD>rshi, &gt;&gt;&gt;</TD><TD><CODE>x&gt;&gt;&gt;y=trunc(x&gt;&gt;y)</CODE></TD></TR>
+<TR><TD>rshi, shri, &gt;&gt;&gt;</TD><TD><CODE>x&gt;&gt;&gt;y=trunc(x&gt;&gt;y)</CODE></TD></TR>
 
 </TABLE>
 <A NAME="integer"></A>
@@ -362,7 +362,9 @@
 
 <TR><TD>maxfor(x,a,b,f(x))</TD><TD><CODE>max(listfor(x,a,b,f(x)))</CODE></TD></TR>
 
-<TR><TD colspan="2">sumforeach, productforeach, listforeach, rowsforeach, minforeach, maxforeach - these functions are similar to the foregoing functions, but the x values are taken from matrix A</TD></TR>
+<TR><TD>filterfor(x,a,b,f(x))</TD><TD>row vector of x values from a to b for which f(x) is nonzero</TD></TR>
+
+<TR><TD colspan="2">sumforeach, productforeach, listforeach, rowsforeach, minforeach, maxforeach, filterforeach - these functions are similar to the foregoing functions, but the x values are taken from matrix A</TD></TR>
 
 <TR><TD>integral(x,a,b,n,f(x))</TD><TD>integral from a to b from function f(x), n is precision (number of correct decimal digits, other digits are wrong !), if n&gt;=100 then n is duration in milliseconds</TD></TR>
 

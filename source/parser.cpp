@@ -225,6 +225,8 @@ void _fastcall GOTORELX(Pint y)
 	if(gotoPos<0) errGoto();
 }
 
+void FILTERM() {};
+
 //-------------------------------------------------------------------
 
 const int CMDBASE=3, CMDPLUS=144, CMDMINUS=143, CMDASSIGN=397,
@@ -332,6 +334,8 @@ const Top funcTab[]={
 	{"minforeach", CMDFOR+3, 0, 0, F MIN3M, 2165, "(x,A,f()); Minimal result of of f() for x = every element of matrix A"},
 	{"maxfor", CMDFOR+4, 0, 0, F MAX3M, 2166, "(x,a,b,f()); Maximal result of f() for x = a...b"},
 	{"maxforeach", CMDFOR+3, 0, 0, F MAX3M, 2167, "(x,A,f()); Maximal result of f() for x = every element of matrix A"},
+	{"filterfor", CMDFOR+4, 0, F EMPTYM, F FILTERM, 2054, "Values that meet the condition"},
+	{"filterforeach", CMDFOR+3, 0, F EMPTYM, F FILTERM, 2060, "Filter matrix by condition"},
 
 	{"hypot", CMDVARARG+2, F HYPOTX, 0, 0, 2106, "Hypotenuse"},
 	{"polar", CMDVARARG+2, 0, F POLARC, 0, 2107, "Convert to polar coordinates"},
@@ -384,6 +388,7 @@ const Top funcTab[]={
 	{"pi", 1, F PIX, 0, 0, 2024, "Pi constant"},
 	{"ans", 1, 0, 0, F ANS, 2076, "Result of previous calculation"},
 	{"rand", 1, F RANDX, 0, 0, 2057, "Random fractional number, 0 =< ... < 1"},
+	{"()", 1, 0, 0, EMPTYM, 2062, "Empty matrix"},
 
 	//prefix operators
 	{"abs", 9, F ABSX, F ABSC, F ABSM, 2032, "Absolute value"},
@@ -602,7 +607,7 @@ void doOp()
 			//unary _stdcall operator
 			y=ALLOCC(precision);
 			if(isMatrix(a1) || !fc && !fr){
-				if(!fm) errMatrix();
+				if(!fm) cerror(1065, "The function requires one parameter");
 				else ((TunaryC2)fm)(y, a1);
 			}
 			else if(isImag(a1) || !fr){
@@ -841,11 +846,11 @@ int token(const char *&s, bool isFor=false, bool isPostfix=false)
 		*numStack++=x;
 		return 0;
 	}
-	if(c=='(') inParenthesis++;
+	if(c=='(' && s[1]!=')') inParenthesis++;
 	if(c==')') inParenthesis--;
 
 	//store the first character to c1 for faster comparisons
-	si.c1 = (char)tolower(*s);
+	si.c1 = (char)tolower(c);
 	if(!isLetter(*s) || isLetter(s[1])){  //function name cannot be a single letter
 		//find a function or an operator
 		si.s = s;
@@ -1072,7 +1077,7 @@ int args(const char *input, const char **end)
 			if(fc) ((TunaryC0)fc)(y);
 			t=ALLOCC(precision);
 			u=ALLOCC(precision);
-			for(j=0;; j++){
+			for(j=0; !error; j++){
 				if(isEach){
 					if(j>=len) break;
 					//assign matrix item to variable
@@ -1085,14 +1090,20 @@ int args(const char *input, const char **end)
 				//evaluate expression
 				parse(formula, &e);
 				if(error) break;
+				stackEnd=&numStack[numStack.len-1];
 				deref(*stackEnd);
 				//add item to result
-				if(fm){
-					if(j){
-						((TbinaryC)fm)(u, y, *stackEnd);
+				if(fm==FILTERM) {
+					if(!isZero(*stackEnd)) {
+						CONCATM(u, y, toVariable(stackEnd[isEach ? -2 : -3])->newx);
 						w=y; y=u; u=w;
 					}
-					else{
+				}
+				else if(fm) {
+					if(j) {
+						((TbinaryC)fm)(u, y, *stackEnd);
+						w=y; y=u; u=w;
+					} else {
 						w=y; y=*stackEnd; *stackEnd=w;
 					}
 				}
@@ -1436,6 +1447,7 @@ DWORD WINAPI threadLoop(char *param)
 					if(*e==',' && !isPrint) cerror(956, "Unmatched comma");
 					if(*e==']') cerror(963, "Unmatched right bracket");
 					if(*e==')') cerror(955, "Unmatched parenthesis");
+					if(error) errPos=e;
 				}
 				if(gotoPos>=0){
 					cleanup();

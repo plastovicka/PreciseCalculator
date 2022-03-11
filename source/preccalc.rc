@@ -354,7 +354,7 @@ END
 //
 
 VS_VERSION_INFO VERSIONINFO
- FILEVERSION 2,6,4,2
+ FILEVERSION 2,7,0,0
  PRODUCTVERSION 0,0,0,0
  FILEFLAGSMASK 0x3fL
 #ifdef _DEBUG
@@ -372,7 +372,7 @@ BEGIN
         BEGIN
             VALUE "CompanyName", "Petr Laštovièka\0"
             VALUE "FileDescription", "Precise Calculator\0"
-            VALUE "FileVersion", "2, 6, 4, 2\0"
+            VALUE "FileVersion", "2, 7, 0, 0\0"
             VALUE "LegalCopyright", "© 2004-2022  Petr Laštovièka\0"
             VALUE "OriginalFilename", "preccalc.exe\0"
         END

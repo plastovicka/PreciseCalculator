@@ -113,7 +113,7 @@
 1042=Incremento o decremento de matriz
 1043=Función no aplicable a matrices
 1044=Matrices de tamaños desiguales
-1045=Cifra de columnas de primera matriz desigual a cifra de columnas de segunda matriz
+1045=Cifra de columnas de primera matriz desigual a cifra de filas de segunda matriz
 1046=Vectores de longitudes desiguales
 1047=Potencia no entera de matriz
 1048=Matriz no cuadrada

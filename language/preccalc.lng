@@ -111,7 +111,7 @@
 1042=Increment or decrement of a matrix
 1043=The function does not support matrices
 1044=Matrices don't have the same size
-1045=Number of columns of the first matrix is not equal to number of columns of the second matrix
+1045=Number of columns of the first matrix is not equal to number of rows of the second matrix
 1046=Vectors have different lengths
 1047=Not integer power of matrix
 1048=Matrix is not square
@@ -130,6 +130,8 @@
 1061=Parameters must be variables
 1062=Result is too long
 1063=The first operand of MOD function is longer than precision
+1064=Matrix is empty
+1065=The function requires one parameter
 
 960=There is a numeric expression at the left side of an assignment
 961=Increment or decrement of an expression
@@ -286,6 +288,8 @@
 2052=Polynom value
 ;sumq
 2053=Sum of squares
+;filterfor
+2054=Values that meet the condition
 ;var
 2055=Variance
 ;*
@@ -296,8 +300,12 @@
 2058=Division
 ;mod
 2059=Remainder after division
+;filterforeach
+2060=Filter matrix by condition
 ;ave
 2061=Mean (average)
+;()
+2062=Empty matrix
 ;aveq
 2063=Mean of squares
 ;stdev
@@ -584,4 +592,4 @@
 2206=(r,c); Make zero matrix with R rows and C columns
 ;swap
 2207=Exchange variables a and b
-; unused numbers 2054, 2060, 2062, 2064, 2070
+; unused numbers 2064, 2070

@@ -33,8 +33,8 @@ const struct TcustTT { const char *name; int trid; const char *tooltip; } custT[
 	{"C",   2048, "Clear all"},
 };
 
-int width=518,
- height=435,
+int width=522,
+ height=499,
  left=50,
  top=60,
  right,
@@ -2448,17 +2448,8 @@ int pascal WinMain(HINSTANCE hInstance, HINSTANCE, LPSTR, int)
 	else{
 		InitCommonControls();
 	}
-	hTt = CreateWindowEx(
-		0, // dwExStyle
-		TOOLTIPS_CLASS,
-		NULL, // lpWindowName
-		WS_DISABLED, // dwStyle
-		CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, //x,y,w,h
-		hWin, // hWndParent
-		NULL, // hMenu
-		inst, // hInstance
-		0 // passed to window after creation
-	);
+	hTt = isWin9X ? CreateWindowExA(0, TOOLTIPS_CLASSA, NULL, WS_DISABLED, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, hWin, NULL, inst, 0)
+		: CreateWindowExW(0, TOOLTIPS_CLASSW, NULL, WS_DISABLED, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, hWin, NULL, inst, 0);
 	// registering tooltips for permanent controls
 	TOOLINFO ti;
 	ti.cbSize = sizeof(ti);

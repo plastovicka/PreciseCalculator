@@ -40,6 +40,7 @@ extern "C"{
 	void _fastcall EQUSOLVEM(Complex cx);
 	void _fastcall DETM(Complex D, Complex cx);
 	void _fastcall RANKM(Complex D, Complex cx);
+	void _fastcall EMPTYM(Complex x);
 	void _fastcall SETM(Complex x, Tuint n);
 	void _fastcall SETDIAGM(Complex x, Tuint n);
 	void _fastcall WIDTHM(Complex x);

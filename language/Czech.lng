@@ -162,6 +162,8 @@
 1061=Parametry musejí být promìnné
 1062=Výsledek je pøíliš dlouhý
 1063=První operand funkce MOD je vìtší než pøesnost výpoètu
+1064=Matice je prázdná
+1065=Funkce vyžaduje jeden parametr
 
 ;tooltips
 291=Poèítat se zlomky, pokud je to možné
@@ -221,12 +223,15 @@
 2051=Souèet
 2052=Hodnota polynomu
 2053=Souèet ètvercù
+2054=Hodnoty splòující podmínku
 2055=Rozptyl
 2056=Násobení
 2057=Náhodné reálné èíslo, 0 =< ... < 1
 2058=Dìlení
 2059=Zbytek po dìlení
+2060=Filtrování matice podle podmínky
 2061=Aritmetický prùmìr
+2062=Prázdná matice
 2063=Prùmìr ètvercù
 2065=Standardní odchylka
 2066=Sèítání
