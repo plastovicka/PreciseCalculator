@@ -23,6 +23,7 @@ struct Tlabel {
 	int ind;
 };
 
+int digits=40;
 Tint precision, prec2;
 Complex ans, oldAns, retValue;
 Pint oldSeedx;
@@ -38,6 +39,22 @@ Darray<Tlabel> labels;
 Darray<const char*> gotoPositions;
 Darray<Tfunc> funcs;
 const Top **funcTabSorted;
+
+extern "C" void *Alloc(int size)
+{
+	return operator new(size);
+}
+extern "C" void Free(void *s)
+{
+	operator delete(s);
+}
+
+int strleni(char *s)
+{
+	size_t len = strlen(s);
+	if(len>0x7fffff00){ exit(99); }
+	return (int)len;
+}
 
 void _stdcall SETBASEX(Complex y, const Complex b, const Complex x)
 {
@@ -488,7 +505,11 @@ void cerror(int id, char *txt)
 	if(error) return;
 	if((id==1060 || id==1063) && precision<prec2) return; //Trigonometric or MOD function operand is too big
 	error=id;
+#ifdef CONSOLE
+	puts(lng(id, txt));
+#else
 	SetWindowText(hOut, lng(id, txt));
+#endif
 }
 
 void cleanup()
@@ -937,6 +958,9 @@ int token(const char *&s, bool isFor=false, bool isPostfix=false)
 		cerror(950, "Unknown function or variable");
 	}
 	else{
+#ifdef CONSOLE
+		if(c=='"' && (!s[1] || s[1]==' ' && !s[2])) { s++; return CMDEND; }
+#endif
 		cerror(951, "Unknown operator");
 	}
 	return -2;
@@ -1282,14 +1306,6 @@ void parse(const char *input, const char **e)
 	inParenthesis=inPar;
 }
 //---------------------------------------------------------------
-void wrAns()
-{
-	if(error) return;
-	char *buf= AWRITEM(ans, digits, matrixFormat);
-	SetWindowText(hOut, buf);
-	delete[] buf;
-}
-//---------------------------------------------------------------
 void initLabels(const char *s)
 {
 	char c;
@@ -1360,12 +1376,10 @@ void ClearError(int err)
 #endif
 }
 //---------------------------------------------------------------
-DWORD WINAPI threadLoop(char *param)
+DWORD WINAPI calcThread(char *param)
 {
-	DWORD time= getTickCount();
 	char *output, *a;
 	const char *e, *input, *s;
-	char t[16];
 	bool b, isPrint;
 	Tvar *v;
 	Complex y;
@@ -1374,8 +1388,11 @@ DWORD WINAPI threadLoop(char *param)
 	int n;
 	Darray<char> buf;
 
+#ifndef CONSOLE
+	DWORD time= getTickCount();
 	SetDlgItemText(hWin, IDC_TIME, "");
 	SetWindowText(hOut, "");
+#endif
 	output=0;
 	cleanup();
 	initLabels(param);
@@ -1384,7 +1401,7 @@ DWORD WINAPI threadLoop(char *param)
 	prec2= int(digits/dwordDigits[base])+2;
 	amin(prec2, 8*32/TintBits);
 	Nseed=prec2;
-	baseOld=baseIn;
+	baseOld=base;
 
 	for(precision= (prec2>60) ? (8*32/TintBits+1) : prec2; ; ){
 		baseIn=baseOld;
@@ -1472,7 +1489,9 @@ DWORD WINAPI threadLoop(char *param)
 				}
 				else{
 					if(error){
+#ifndef CONSOLE
 						PostMessage(hWin, WM_INPUTCUR, 0, int(errPos-param));
+#endif
 						break;
 					}
 					y= *numStack--;
@@ -1542,7 +1561,9 @@ DWORD WINAPI threadLoop(char *param)
 		output=buf.array;
 		buf.array= new char[buf.capacity];
 		if(b) break;
+#ifndef CONSOLE
 		SetWindowText(hOut, output);
+#endif
 		if(precision>=prec2){
 			precision++;
 		}
@@ -1551,7 +1572,11 @@ DWORD WINAPI threadLoop(char *param)
 		}
 	}
 	if(!error || error==1100){
+#ifdef CONSOLE
+		puts(output);
+#else
 		//display calculation time
+		char t[16];
 		sprintf(t, "%u ms", getTickCount()-time);
 		SetDlgItemText(hWin, IDC_TIME, t);
 		//save to log file
@@ -1561,6 +1586,7 @@ DWORD WINAPI threadLoop(char *param)
 			saveResult(f, "%1\r\n =\r\n%2\r\n--------------------\r\n", /* format string is in saveResult, too */
 				param, output, true);
 		}
+#endif
 	}
 	else{
 		for(i=vars.len-1; i>=0; i--){
@@ -1568,10 +1594,14 @@ DWORD WINAPI threadLoop(char *param)
 		}
 	}
 	delete[] output;
+#ifndef CONSOLE
 	delete[] param;
+#endif
 	return 0;
 }
 //---------------------------------------------------------------
+#ifndef CONSOLE
+
 int stop()
 {
 	static int lock=0;
@@ -1608,13 +1638,12 @@ void calc(char *input)
 		base= base<2 ? 10 : 36;
 		SetDlgItemInt(hWin, IDC_BASE, base, FALSE);
 	}
-	baseIn= base;
 	digits= GetDlgItemInt(hWin, IDC_PRECISION, 0, FALSE);
 	fixDigits= GetDlgItemInt(hWin, IDC_FIXDIGITS, 0, FALSE);
 	error=0;
 	//start a working thread
 	DWORD threadId;
-	thread= CreateThread(0, 0, (LPTHREAD_START_ROUTINE)threadLoop, input, 0, &threadId);
+	thread= CreateThread(0, 0, (LPTHREAD_START_ROUTINE)calcThread, input, 0, &threadId);
 }
 
 void calc()
@@ -1651,6 +1680,16 @@ void nextAns()
 		}
 	}
 }
+
+void wrAns()
+{
+	if(error) return;
+	char *buf= AWRITEM(ans, digits, matrixFormat);
+	SetWindowText(hOut, buf);
+	delete[] buf;
+}
+
+#endif
 
 static int __cdecl cmpOp(const void *a, const void *b)
 {

@@ -5,6 +5,7 @@
 	modify it under the terms of the GNU General Public License.
 	*/
 #include "hdr.h"
+#ifndef CONSOLE
 #include "lang.h"
 /*
 Usage:
@@ -372,4 +373,4 @@ void initLang()
 	loadLang();
 }
 //---------------------------------------------------------------------------
-
+#endif

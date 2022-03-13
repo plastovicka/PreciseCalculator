@@ -36,6 +36,9 @@
     <ClCompile Include="source\preccalc.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="source\console.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="source\preccalc.rc">

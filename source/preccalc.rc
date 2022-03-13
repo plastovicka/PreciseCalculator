@@ -30,6 +30,8 @@ LANGUAGE LANG_CZECH, SUBLANG_DEFAULT
 // remains consistent on all systems.
 1                       ICON    DISCARDABLE     "preccalc.ico"
 
+#ifndef CONSOLE
+
 /////////////////////////////////////////////////////////////////////////////
 //
 // Menu
@@ -320,6 +322,7 @@ BEGIN
     PUSHBUTTON      "Cancel",2,72,114,50,14
 END
 
+#endif
 
 #ifdef APSTUDIO_INVOKED
 /////////////////////////////////////////////////////////////////////////////

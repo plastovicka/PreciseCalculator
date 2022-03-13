@@ -1,3 +1,4 @@
+#CP1252
 ;menu
 450=&File
 451=&Language
@@ -592,4 +593,6 @@
 2206=(r,c); Make zero matrix with R rows and C columns
 ;swap
 2207=Exchange variables a and b
+;:
+2208=Label mark
 ; unused numbers 2064, 2070

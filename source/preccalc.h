@@ -80,6 +80,7 @@ int vmsg(char *caption, char *text, int btn, va_list v);
 void processMessage(MSG &mesg);
 void calc();
 void calc(char *input);
+DWORD WINAPI calcThread(char *param);
 void nextAns();
 int stop();
 void wrAns();

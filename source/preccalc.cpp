@@ -5,6 +5,7 @@
 	modify it under the terms of the GNU General Public License.
 	*/
 #include "hdr.h"
+#ifndef CONSOLE
 #include "preccalc.h"
 #ifndef NDEBUG
 #include <stdarg.h>
@@ -31,6 +32,7 @@ const struct TcustTT { const char *name; int trid; const char *tooltip; } custT[
 	{"print", 2090, "Print result to output window"},
 	{"Del", 2047, "Delete 1 symbol"},
 	{"C",   2048, "Clear all"},
+	{":",   2208, "Label mark"},
 };
 
 int width=522,
@@ -41,7 +43,6 @@ int width=522,
  bottom,
  xgap=5,
  ygap=5,
- digits=40,
  split=350,
  maxHistory=200,
  keyboard=0,
@@ -52,7 +53,6 @@ int width=522,
  autoSave=1,
  log=0,
  logSize=0,
- disableRounding=0,
  tooltipsShow=1;
 
 char *sepExpr="\r--------------------\r";
@@ -162,15 +162,6 @@ OPENFILENAME btnOfn={
 	0, 0, 0, 0, 0, 0, 0, "CBT", 0, 0, 0
 };
 //-----------------------------------------------------------------
-extern "C" void *Alloc(int size)
-{
-	return operator new(size);
-}
-extern "C" void Free(void *s)
-{
-	operator delete(s);
-}
-
 int vmsg(HWND w, char *caption, char *text, int btn, va_list v)
 {
 	if(!text) return IDCANCEL;
@@ -207,13 +198,6 @@ void msg(HWND w, char *text, ...)
 	va_start(ap, text);
 	vmsg(w, title, text, MB_OK|MB_ICONERROR, ap);
 	va_end(ap);
-}
-
-int strleni(char *s)
-{
-	size_t len = strlen(s);
-	if(len>0x7fffff00){ msg("String overflow"); exit(99); }
-	return (int)len;
 }
 
 DWORD getTickCount()
@@ -2494,3 +2478,4 @@ int pascal WinMain(HINSTANCE hInstance, HINSTANCE, LPSTR, int)
 	return 0;
 }
 //-----------------------------------------------------------------
+#endif
