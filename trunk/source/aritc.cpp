@@ -21,6 +21,7 @@ angleMode=ANGLE_DEG,
  separator2=' ',
  base=10,
  baseIn,
+ disableRounding=0,
  error=0;
 Tint Nln2, Nln10, Npi, Nseed;
 
