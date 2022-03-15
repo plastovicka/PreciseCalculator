@@ -110,6 +110,7 @@ bool CMPDBG(Pint y, Pint z)
 void getln2(Tint len)
 {
 	if(len>Nln2){
+		len++;
 		FREEX(ln2);
 		FREEX(lnBase);
 		lnBase= ALLOCX(len);
@@ -126,6 +127,7 @@ void getln2(Tint len)
 void getln10(Tint len)
 {
 	if(len>Nln10){
+		len++;
 		FREEX(ln10);
 		ln10= ALLOCX(len);
 		LNX(ln10, ten);
@@ -997,7 +999,7 @@ static void _stdcall _LNX(Pint y, const Pint x0, bool useAGM)
 		SETX(t, 1);
 		COPYX(z, x);
 		if(!isZero(x)){
-			Pint u=ALLOCX(p);
+			Pint u0=ALLOCX(p), u=u0;
 			COPYX(u, x);
 			SQRX(x, u);
 			int n=3;
@@ -1010,7 +1012,7 @@ static void _stdcall _LNX(Pint y, const Pint x0, bool useAGM)
 				n+=2;
 			} while((t[-1]>=z[-1]-z[-3] || t[-1]>=0) && !isZero(t) && !error);
 			MULTI1(z, 2);
-			FREEX(u);
+			FREEX(u0);
 		}
 	}
 #endif
@@ -2779,6 +2781,7 @@ int _stdcall PI(Pint a0)
 void getpi(Tint len)
 {
 	if(len>Npi){
+		len++;
 		FREEX(pi);
 		FREEX(pi2);
 		FREEX(pi4);
