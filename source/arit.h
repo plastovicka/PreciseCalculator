@@ -39,6 +39,7 @@ struct Numx {
 };
 
 //fractions: alen,-2,sgn,0 or 1,numerator,denominator
+//zero can have any sgn, any exp, alen>0
 
 struct Complex {
 	Pint r; //real part

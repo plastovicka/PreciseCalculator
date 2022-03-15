@@ -1,4 +1,4 @@
-; (C) 2005-2014  Petr Lastovicka
+; (C) 2005-2022  Petr Lastovicka
  
 ; This program is free software; you can redistribute it and/or
 ; modify it under the terms of the GNU General Public License.
@@ -229,7 +229,7 @@ decra:	sub	[esi],eax
 @@:	sub	esi,4
 decr:	sub	dword ptr [esi],1
 	jc	@b
-;uøíznutí koncových nul [edi]
+;uøíznutí koncových nul [edi]; nemìní edi,ebx
 trim:	mov	ecx,[edi-12]
 	lea	esi,[edi+4*ecx-4]
 trims:	mov	eax,[esi]
@@ -1550,9 +1550,67 @@ ANDU:	lea	eax,[ANDU0]
 @@ret:	ret
 @scalex	endp
 ;-------------------------------------
+;round up 0.99999...
+;preserve eax,esi,edi,ebx
+@fix999	proc
+	mov	ecx,[eax-12]
+	cmp	ecx,[eax-16]
+	jnz	@@ret
+	mov	edx,[eax-4]
+	dec	ecx
+	cmp	edx,ecx
+	jge	@@ret
+	test	edx,edx
+	js	@@ret
+	cmp	dword ptr [eax+4*ecx],-100
+	jb	@@ret
+@@1:	cmp	dword ptr [eax+4*edx],-1
+	jnz	@@ret
+	inc	edx
+	cmp	edx,ecx
+	jnz	@@1
+	mov	edx,[eax-4]
+	mov	[eax-12],edx
+	push	esi
+	push	edi
+	push	ebx
+	mov	edi,eax
+	call	incre
+	mov	eax,edi
+	pop	ebx
+	pop	edi
+	pop	esi
+@@ret:	ret
+@fix999	endp
+
+;round down 0.0000001
+;preserve eax,esi,edi,ebx
+@fix001	proc
+	mov	ecx,[eax-12]
+	cmp	ecx,[eax-16]
+	jnz	@@ret
+	mov	edx,[eax-4]
+	dec	ecx
+	cmp	edx,ecx
+	jge	@@ret
+	test	edx,edx
+	js	@@ret
+	cmp	dword ptr [eax+4*ecx],100
+	ja	@@ret
+@@1:	cmp	dword ptr [eax+4*edx],0
+	jnz	@@ret
+	inc	edx
+	cmp	edx,ecx
+	jnz	@@1
+	mov	edx,[eax-4]
+	mov	[eax-12],edx
+@@ret:	ret
+@fix001	endp
+
 ;oøíznutí desetinné èásti
 @TRUNCX@4:	mov	eax,ecx
 @truncx	proc
+	call	@fix999
 	mov	edx,[eax-4]
 	test	edx,edx
 	js	@zerox
@@ -1560,7 +1618,7 @@ ANDU:	lea	eax,[ANDU0]
 	jae	@@ret
 	cmp	dword ptr [eax-12],-2
 	jz	truncf
-	mov	[eax-12],edx
+	mov	[eax-12],edx  ;oøíznutí
 @@ret:	ret
 @truncx	endp
 ;zlomek
@@ -1579,6 +1637,8 @@ truncf:	mov	ecx,eax
 ;oøíznutí celé èásti
 @FRACX@4:	mov	eax,ecx
 @fracx	proc
+	call	@fix001
+	call	@fix999
 	cmp	dword ptr [eax-12],-2
 	jnz	@@1
 ;zlomek
@@ -1619,7 +1679,28 @@ truncf:	mov	ecx,eax
 	mov	edx,[eax-4]
 	test	edx,edx
 	js	@zerox  ;záporný exponent -> výsledek nula
-	cmp	edx,[eax-12]
+	mov	ecx,[eax-12]
+	cmp	ecx,[eax-16]
+	jnz	@@r
+	dec	ecx
+	cmp	edx,ecx
+	jge	@@r
+	cmp	dword ptr [eax+4*edx],7fffffffh
+	jnz	@@1
+	cmp	byte ptr [eax+4*ecx+3],80h
+	jb	@@1
+	jmp	@@3
+@@2:	cmp	dword ptr [eax+4*edx],-1
+	jnz	@@4
+@@3:	inc	edx
+	cmp	edx,ecx
+	jnz	@@2
+;round up 0.499999...
+	mov	edx,[eax-4]
+	mov	byte ptr [eax+4*edx+3],80h
+	jmp	@@1
+@@4:	mov	edx,[eax-4]
+@@r:	cmp	edx,[eax-12]
 	jl	@@1
 ;integer or fraction
 	cmp	dword ptr [eax-12],-2
@@ -1644,8 +1725,9 @@ truncf:	mov	ecx,eax
 	test	eax,eax
 	jns	@@e
 ;zaokrouhli
-	lea	esi,[edi+4*edx-4]
-	call	incr
+	push	ebx
+	call	incre
+	pop	ebx
 @@e:	pop	edi
 	pop	esi
 	ret
@@ -1679,7 +1761,8 @@ truncf:	mov	ecx,eax
 	jnz	@@ret
 	mov	dword ptr [ecx-12],-2
 @@ret:	ret
-@@1:	mov	edx,[eax-4]
+@@1:	call	@fix001
+	mov	edx,[eax-4]
 	test	edx,edx
 	js	@minus1
 	jz	@minus1
@@ -1692,7 +1775,9 @@ truncf:	mov	ecx,eax
 	jge	@@e
 	mov	[edi-12],edx
 	lea	esi,[edi+4*edx-4]
+	push	ebx
 	call	incr
+	pop	ebx
 @@e:	pop	esi
 	pop	edi
 	ret

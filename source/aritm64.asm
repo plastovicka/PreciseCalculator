@@ -1,9 +1,10 @@
-; (C) 2005-2016  Petr Lastovicka
+; (C) 2005-2022  Petr Lastovicka
  
 ; This program is free software; you can redistribute it and/or
 ; modify it under the terms of the GNU General Public License.
 
-;compilation:  JWASM.EXE -win64 aritm64.asm
+;compilation: uasm.exe -win64 aritm64.asm
+;http://www.terraspace.co.uk/uasm.html
 ;http://www.japheth.de/JWasm.html
 
 ;the caller must allocate memory for a result
@@ -16,6 +17,9 @@
 
 option casemap:none
 option procalign:16
+option nokeyword:<k0>
+option nokeyword:<k1>
+option nokeyword:<k2>
 
 extrn	Alloc:proc, Free:proc, cerror:proc, MULTX:proc, DIVX:proc, SQRTX:proc
 extrn	base:dword, baseIn:dword, error:dword, dwordDigits:qword
@@ -1688,8 +1692,66 @@ SCALEX	proc
 @@ret:	ret
 SCALEX	endp
 ;-------------------------------------
+;round up 0.99999...
+;preserve rcx,rsi,rdi,rbx
+@fix999	proc
+	mov	rax,[rcx-24]
+	cmp	rax,[rcx-32]
+	jnz	@@ret
+	mov	rdx,[rcx-8]
+	dec	rax
+	cmp	rdx,rax
+	jge	@@ret
+	test	rdx,rdx
+	js	@@ret
+	cmp	qword ptr [rcx+8*rax],-100
+	jb	@@ret
+@@1:	cmp	qword ptr [rcx+8*rdx],-1
+	jnz	@@ret
+	inc	rdx
+	cmp	rdx,rax
+	jnz	@@1
+	mov	rdx,[rcx-8]
+	mov	[rcx-24],rdx
+	push	rsi
+	push	rdi
+	push	rbx
+	mov	rdi,rcx
+	call	incre
+	mov	rcx,rdi
+	pop	rbx
+	pop	rdi
+	pop	rsi
+@@ret:	ret
+@fix999	endp
+
+;round down 0.0000001
+;preserve rax,rsi,rdi,rbx
+@fix001	proc
+	mov	rax,[rcx-24]
+	cmp	rax,[rcx-32]
+	jnz	@@ret
+	mov	rdx,[rcx-8]
+	dec	rax
+	cmp	rdx,rax
+	jge	@@ret
+	test	rdx,rdx
+	js	@@ret
+	cmp	qword ptr [rcx+8*rax],100
+	ja	@@ret
+@@1:	cmp	qword ptr [rcx+8*rdx],0
+	jnz	@@ret
+	inc	rdx
+	cmp	rdx,rax
+	jnz	@@1
+	mov	rdx,[rcx-8]
+	mov	[rcx-24],rdx
+@@ret:	ret
+@fix001	endp
+
 ;oøíznutí desetinné èásti
 TRUNCX	proc
+	call	@fix999
 	mov	rdx,[rcx-8]
 	test	rdx,rdx
 	js	ZEROX
@@ -1715,6 +1777,8 @@ truncf:	mov	rax,[rcx]
 
 ;oøíznutí celé èásti
 FRACX	proc
+	call	@fix001
+	call	@fix999
 	cmp	qword ptr [rcx-24],-2
 	jnz	@@1
 ;zlomek
@@ -1752,7 +1816,29 @@ ROUNDX	proc
 	mov	rdx,[rcx-8]
 	test	rdx,rdx
 	js	ZEROX  ;záporný exponent -> výsledek nula
-	cmp	rdx,[rcx-24]
+	mov	rax,[rcx-24]
+	cmp	rax,[rcx-32]
+	jnz	@@r
+	dec	rax
+	cmp	rdx,rax
+	jge	@@r
+	mov	r8,7fffffffffffffffh
+	cmp	qword ptr [rcx+8*rdx],r8
+	jnz	@@1
+	cmp	byte ptr [rcx+8*rax+7],80h
+	jb	@@1
+	jmp	@@3
+@@2:	cmp	qword ptr [rcx+8*rdx],-1
+	jnz	@@4
+@@3:	inc	rdx
+	cmp	rdx,rax
+	jnz	@@2
+;round up 0.499999...
+	mov	rdx,[rcx-8]
+	mov	byte ptr [rcx+8*rdx+7],80h
+	jmp	@@1
+@@4:	mov	rdx,[rcx-8]
+@@r:	cmp	rdx,[rcx-24]
 	jl	@@1
 ;integer or fraction
 	cmp	qword ptr [rcx-24],-2
@@ -1777,8 +1863,9 @@ ROUNDX	proc
 	test	rax,rax
 	jns	@@e
 ;zaokrouhli
-	lea	rsi,[rdi+8*rdx-8]
-	call	incr
+	push	rbx
+	call	incre
+	pop	rbx
 @@e:	pop	rdi
 	pop	rsi
 	ret
@@ -1811,7 +1898,8 @@ INTX	proc
 	jnz	@@ret
 	mov	qword ptr [rcx-24],-2
 @@ret:	ret
-@@1:	mov	rdx,[rcx-8]
+@@1:	call	@fix001
+	mov	rdx,[rcx-8]
 	test	rdx,rdx
 	js	MINUS1
 	jz	MINUS1
@@ -1824,7 +1912,9 @@ INTX	proc
 	jge	@@e
 	mov	[rdi-24],rdx
 	lea	rsi,[rdi+8*rdx-8]
+	push	rbx
 	call	incr
+	pop	rbx
 @@e:	pop	rsi
 	pop	rdi
 	ret
