@@ -1,4 +1,3 @@
-
 [Speed of light [m/s]]
 299792458 
 [g [m/s^2]]
@@ -11,7 +10,7 @@
 8.314472 
 [Molar volume of gas [m^3/mol]]
 0.022413996 
-[Permitivity of vacuum [F/m]]
+[Permittivity of vacuum [F/m]]
 (1/(299792458^2*4e-7*pi))
 [Permeability of vacuum [H/m]]
 (4e-7*pi)
