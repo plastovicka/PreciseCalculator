@@ -403,26 +403,28 @@ void _stdcall WRITEX(char *buf, const Pint x0, int _digits)
 
 	if(isFraction(x)){
 		if(enableFractions && numFormat!=MODE_FIX){
-			if(x[-2]) *buf++='-';
 			bool isInt = x[1]==1;
-			//numerator
-			TuintToStr(x[0], buf);
-			if(isInt){
-				prettyResult(buf);
+			if(numFormat==MODE_NORM || !isInt) {
+				if(x[-2]) *buf++='-';
+				//numerator
+				TuintToStr(x[0], buf);
+				if(isInt) {
+					prettyResult(buf);
+				}
+				else {
+					//denominator
+					s=strchr(buf, 0);
+					*s++=' ';
+					*s++='/';
+					*s++=' ';
+					TuintToStr(x[1], s);
+				}
+				if(base>10 && digitTab[10]=='A') {
+					//to upper case
+					for(s=buf; *s; s++) if(*s>='a' && *s<='z') *s-=('a'-'A');
+				}
+				return;
 			}
-			else{
-				//denominator
-				s=strchr(buf, 0);
-				*s++=' ';
-				*s++='/';
-				*s++=' ';
-				TuintToStr(x[1], s);
-			}
-			if(digitTab[10]=='A'){
-				//to upper case
-				for(s=buf; *s; s++) if(*s>='a' && *s<='z') *s-=('a'-'A');
-			}
-			return;
 		}
 		x=ALLOCX(prec+1);
 		COPYX(x, x0);
@@ -1078,10 +1080,11 @@ void _stdcall INVERSEROOTI(Pint y, Pint x, Tuint n)
 	}
 
 	//r:=r+r*(1-x*r^n)/n
+	int i=0;
 	do
 	{
 		_precision *= 2;
-		if(_precision>p) _precision=p;
+		if(_precision>p) { _precision=p; i++; }
 		SetPrec(r, _precision);
 		SetPrec(t, _precision);
 		SetPrec(u, _precision);
@@ -1096,7 +1099,7 @@ void _stdcall INVERSEROOTI(Pint y, Pint x, Tuint n)
 		DIVI1(u, n);
 		PLUSX(t, r, u);
 		w=t; t=r; r=w;
-	} while((_precision<p || (u[-1]>r[-1]-r[-3]) && !isZero(u)) && !error);
+	} while((_precision<p || (u[-1]>r[-1]-r[-3]) && !isZero(u) && i<50) && !error);
 	COPYX(y, r);
 	FREEX(a);
 }
