@@ -82,7 +82,7 @@ double dwordDigits[37]={0, 0, // 32*ln(2)/ln(base)
 #endif
 };
 
-#ifndef NDEBUG
+#ifdef DEBUG_CMP
 bool CMPDBG(Pint y, Pint z)
 {
 	if(error) return true;
@@ -709,7 +709,7 @@ void _stdcall MULTX(Pint z, const Pint x, const Pint y)
 	x[-1]=xexp; y[-1]=yexp;
 	z[-1]=ADDII(z[-1], ADDII(xexp, yexp));
 
-#ifndef NDEBUG
+#ifdef DEBUG_CMP
 	Pint t=t1;
 	MULTX2(t, x, y);
 	assert(&MULTX && CMPDBG(z, t));
@@ -914,14 +914,26 @@ static void _stdcall _LNX(Pint y, const Pint x0, bool useAGM)
 {
 	Tint ex, p;
 	int num2;
-	Pint z, t, v, w, x;
+	Pint z, t, v, w, x, u=0;
 
 	if(x0[-2] || isZero(x0)){
 		cerror(1009, "Logarithm of not positive number");
 		return;
 	}
-	p=y[-4]+3;
-	ALLOCN(3, p, &x, &t, &v);
+#ifdef ARIT64
+	const int LNLIM = 17;
+#else
+	const int LNLIM = 50;
+#endif
+	p=y[-4];
+	if(p<LNLIM) useAGM = false;
+	if(useAGM) {
+		p+=3;
+		ALLOCN(3, p, &x, &t, &v);
+	}
+	else {
+		ALLOCN(4, p, &x, &t, &v, &u);
+	}
 	COPYX(x, x0);
 	ex=num2=0;
 	if(isFraction(x)){
@@ -989,7 +1001,6 @@ static void _stdcall _LNX(Pint y, const Pint x0, bool useAGM)
 			DIVX(z, pi2, t);
 		}
 	}
-#ifndef NDEBUG
 	else
 	{
 		//x:=(x-1)/(x+1)
@@ -1001,7 +1012,6 @@ static void _stdcall _LNX(Pint y, const Pint x0, bool useAGM)
 		SETX(t, 1);
 		COPYX(z, x);
 		if(!isZero(x)){
-			Pint u0=ALLOCX(p), u=u0;
 			COPYX(u, x);
 			SQRX(x, u);
 			int n=3;
@@ -1014,10 +1024,8 @@ static void _stdcall _LNX(Pint y, const Pint x0, bool useAGM)
 				n+=2;
 			} while((t[-1]>=z[-1]-z[-3] || t[-1]>=0) && !isZero(t) && !error);
 			MULTI1(z, 2);
-			FREEX(u0);
 		}
 	}
-#endif
 
 	if(ex && !error){
 		getln2(y[-4]);
@@ -1045,10 +1053,10 @@ void _stdcall LNX(Pint y, const Pint x)
 {
 	_LNX(y, x, true);
 
-#ifndef NDEBUG
+#ifdef DEBUG_CMP
 	Pint z=ALLOCX(y[-4]);
 	_LNX(z, x, false);
-	//assert(&LNX && CMPDBG(y, z));
+	assert(&LNX && CMPDBG(y, z));
 	FREEX(z);
 #endif
 }
@@ -1133,7 +1141,7 @@ void _stdcall SQRTX(Pint y, const Pint x)
 	MULTX(y, t, u);
 	SCALEX(y, exp);
 
-#ifndef NDEBUG
+#ifdef DEBUG_CMP
 	SQRTX2(t, x);
 	assert(&SQRTX && CMPDBG(y, t));
 #endif
@@ -1161,12 +1169,14 @@ void _stdcall DIVX(Pint y, const Pint a, const Pint b)
 
 	m=ALLOCN(4, p, &t, &u, &r, &b1);
 	COPYX(b1, b);
+	ABSX(b1);
 
 	Tint len=0;
 	for(_precision=p; _precision>10; _precision>>=1) len++;
 
 	r[-4]=p>>len;
-	DIVX2(r, one, b);
+	Numx Kone1 = { 1,1,0,1,1 };
+	DIVX2(r, &Kone1.m, b1);
 
 	int fin=0;
 
@@ -1188,7 +1198,6 @@ void _stdcall DIVX(Pint y, const Pint a, const Pint b)
 		b1[-3]=min(_precision, bp);
 
 		MULTX(u, b1, r);
-		if(b[-2]) NEGX(u);
 		MINUSX(t, two, u);
 		MULTX(u, r, t);
 		w=u; u=r; r=w;
@@ -1196,7 +1205,7 @@ void _stdcall DIVX(Pint y, const Pint a, const Pint b)
 	MULTX(y, r, a);
 	if(b[-2]) NEGX(y);
 
-#ifndef NDEBUG
+#ifdef DEBUG_CMP
 	DIVX2(t, a, b);
 	assert(&DIVX && CMPDBG(y, t));
 #endif

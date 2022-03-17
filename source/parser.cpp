@@ -405,7 +405,7 @@ const Top funcTab[]={
 	{"pi", 1, F PIX, 0, 0, 2024, "Pi constant"},
 	{"ans", 1, 0, 0, F ANS, 2076, "Result of previous calculation"},
 	{"rand", 1, F RANDX, 0, 0, 2057, "Random fractional number, 0 =< ... < 1"},
-	{"()", 1, 0, 0, EMPTYM, 2062, "Empty matrix"},
+	{"()", 1, 0, 0, F EMPTYM, 2062, "Empty matrix"},
 
 	//prefix operators
 	{"abs", 9, F ABSX, F ABSC, F ABSM, 2032, "Absolute value"},
@@ -1393,6 +1393,13 @@ DWORD WINAPI calcThread(char *param)
 	SetDlgItemText(hWin, IDC_TIME, "");
 	SetWindowText(hOut, "");
 #endif
+#ifndef NDEBUG
+	if(*param==0){
+		delete[] param;
+		param= new char[1000];
+		strcpy(param, "pi");
+	}
+#endif
 	output=0;
 	cleanup();
 	initLabels(param);
@@ -1515,13 +1522,14 @@ DWORD WINAPI calcThread(char *param)
 				if(*e!=';' || isPrint){
 					//convert the result to a string
 					n=buf.len;
-					a= (buf+=LENM(y, digits))-1;
+					int digits2= (precision>=prec2) ? digits : int((precision-2)*dwordDigits[base]+1);
+					a= (buf+=LENM(y, digits2))-1;
 					if((unsigned)buf.len>MAX_OUTPUT_SIZE){
 						buf.len=n;
 						cerror(1062, "Result is too long");
 					}
 					else{
-						WRITEM(a, y, digits, matrixFormat);
+						WRITEM(a, y, digits2, matrixFormat);
 						buf.setLen(n+strleni(a));
 					}
 				}

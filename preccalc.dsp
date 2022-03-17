@@ -99,15 +99,6 @@ PreLink_Cmds=c:\_petr\cw\hotkeyp\hotkeyp -close window PreciseCalculator
 # Begin Source File
 
 SOURCE=.\source\alloc.cpp
-
-!IF  "$(CFG)" == "preccalc - Win32 Release"
-
-# ADD CPP /Yc"hdr.h"
-
-!ELSEIF  "$(CFG)" == "preccalc - Win32 Debug"
-
-!ENDIF 
-
 # End Source File
 # Begin Source File
 
@@ -124,6 +115,15 @@ SOURCE=.\source\lang.cpp
 # Begin Source File
 
 SOURCE=.\source\list2.cpp
+
+!IF  "$(CFG)" == "preccalc - Win32 Release"
+
+# ADD CPP /Yc"hdr.h"
+
+!ELSEIF  "$(CFG)" == "preccalc - Win32 Debug"
+
+!ENDIF 
+
 # End Source File
 # Begin Source File
 
