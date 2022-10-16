@@ -102,7 +102,7 @@ extern bool isWin9X;
 extern UINT codePage;
 extern const bool dual;
 extern char *title;
-extern int digits, numFormat, base, maxHistory, historyLen, matrixFormat, log;
+extern int digits, numFormat, base, maxHistory, historyLen, matrixFormat, logging;
 extern Complex ans;
 extern Darray<Tvar> vars;
 extern List2 history;

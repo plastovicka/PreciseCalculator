@@ -174,7 +174,7 @@ CAPTION "About"
 FONT 10, "MS Shell Dlg"
 BEGIN
     PUSHBUTTON      "http://preccalc.sourceforge.net",124,5,65,104,13
-    PUSHBUTTON      "http://petr.lastovicka.sweb.cz",123,5,83,104,13
+    PUSHBUTTON      "https://plastovicka.github.io",123,5,83,104,13
     PUSHBUTTON      "OK",IDOK,40,102,32,14
     CTEXT           "(C) 2004-2022  Petr Lastovicka",501,4,50,104,10
     CTEXT           "Version",503,32,27,28,9

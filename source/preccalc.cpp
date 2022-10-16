@@ -51,7 +51,7 @@ int width=522,
  idEnter,
  sizeLock,
  autoSave=1,
- log=0,
+ logging=0,
  logSize=0,
  tooltipsShow=1;
 
@@ -130,7 +130,7 @@ struct Treg { char *s; int *i; } regVal[]={
 	{"keyboard", &keyboard},
 	{"autoSave", &autoSave},
 	{"tooltipsShow", &tooltipsShow},
-	{"log", &log},
+	{"log", &logging},
 	{"logSize", &logSize},
 	{"disableRounding", &disableRounding},
 };
@@ -878,7 +878,7 @@ BOOL CALLBACK OptionsProc(HWND hWnd, UINT mesg, WPARAM wP, LPARAM)
 			SetDlgItemInt(hWnd, 103, sepFreq1, FALSE);
 			SetDlgItemInt(hWnd, 104, sepFreq2, FALSE);
 			SetDlgItemInt(hWnd, 105, maxHistory, FALSE);
-			CheckDlgButton(hWnd, 538, log ? BST_CHECKED : BST_UNCHECKED);
+			CheckDlgButton(hWnd, 538, logging ? BST_CHECKED : BST_UNCHECKED);
 			SetDlgItemText(hWnd, 106, fnLog);
 			SetDlgItemInt(hWnd, 107, logSize, FALSE);
 			SendMessage(GetDlgItem(hWnd, 101), EM_SETLIMITTEXT, 1, 0);
@@ -900,7 +900,7 @@ BOOL CALLBACK OptionsProc(HWND hWnd, UINT mesg, WPARAM wP, LPARAM)
 					sepFreq1= GetDlgItemInt(hWnd, 103, 0, FALSE);
 					sepFreq2= GetDlgItemInt(hWnd, 104, 0, FALSE);
 					maxHistory= GetDlgItemInt(hWnd, 105, 0, FALSE);
-					log= IsDlgButtonChecked(hWnd, 538);
+					logging= IsDlgButtonChecked(hWnd, 538);
 					GetDlgItemText(hWnd, 106, fnLog, sizeA(fnLog));
 					logSize= GetDlgItemInt(hWnd, 107, 0, FALSE);
 				case IDCANCEL:
@@ -1339,7 +1339,7 @@ BOOL CALLBACK AboutProc(HWND hWnd, UINT mesg, WPARAM wP, LPARAM)
 				case 123:
 				case 124:
 					GetDlgItemTextA(hWnd, cmd, buf, sizeA(buf)-13);
-					if(cmd==123 && !strcmp(lang, "English")) strcat(buf, "/indexEN.html");
+					if(cmd==123 && !strcmp(lang, "Czech")) strcat(buf, "/indexCS.html");
 					ShellExecuteA(0, 0, buf, 0, 0, SW_SHOWNORMAL);
 					break;
 				case IDOK: case IDCANCEL:

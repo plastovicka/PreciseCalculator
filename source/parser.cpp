@@ -745,7 +745,7 @@ int getIndex()
 				cerror(1051, "Index is less than zero");
 			}
 		}
-		FREEC(x);
+		FREEM(x);
 	}
 	return result;
 }
@@ -1397,7 +1397,7 @@ DWORD WINAPI calcThread(char *param)
 	if(*param==0){
 		delete[] param;
 		param= new char[1000];
-		strcpy(param, "pi");
+		strcpy(param, "cos(pi/2");
 	}
 #endif
 	output=0;
@@ -1588,7 +1588,7 @@ DWORD WINAPI calcThread(char *param)
 		sprintf(t, "%u ms", getTickCount()-time);
 		SetDlgItemText(hWin, IDC_TIME, t);
 		//save to log file
-		if(log && *fnLog && output){
+		if(logging && *fnLog && output){
 			HANDLE f= createFile(fnLog, OPEN_ALWAYS);
 			SetFilePointer(f, 0, 0, FILE_END);
 			saveResult(f, "%1\r\n =\r\n%2\r\n--------------------\r\n", /* format string is in saveResult, too */
