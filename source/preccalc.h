@@ -53,7 +53,7 @@ enum { clNumber, clFunction, clDelC, clOperator, clExe, Ncl };
 #define ID_MACROS 5000
 #define ID_CONSTANTS 6000
 #define ID_UNITS 7000
-#define MAX_MACRO_LEN 100
+#define MAX_MACRO_LEN 200
 
 #define sizeA(a) (sizeof(a)/sizeof(*a))
 #define endA(a) (a+(sizeof(a)/sizeof(*a)))
@@ -87,7 +87,8 @@ void wrAns();
 bool isVarLetter(char c);
 bool isLetter(char c);
 void setSel(int b, int e);
-char *getIn(int *startPos=0);
+char *getInput(int *startPos=0);
+void writeOutput(char* s);
 void _stdcall ASSIGNM(Complex y, const Complex a, const Complex x);
 void parse(const char *input, const char **e);
 DWORD getTickCount();
@@ -98,8 +99,6 @@ int skipString(const char *&s);
 bool skipComment(const char *&s);
 void skipArg(const char *s, const char **e);
 
-extern bool isWin9X;
-extern UINT codePage;
 extern const bool dual;
 extern char *title;
 extern int digits, numFormat, base, maxHistory, historyLen, matrixFormat, logging;

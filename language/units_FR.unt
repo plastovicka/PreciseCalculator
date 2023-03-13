@@ -1,4 +1,4 @@
-[longueur\angstrom]
+ï»¿[longueur\angstrom]
 1E-10
 [longueur\pouce]
 0.0254
@@ -10,21 +10,21 @@
 1609.344
 [longueur\mile nautique]
 1852
-[longueur\unité astronomique]
+[longueur\unitÃ© astronomique]
 1.4959787E11
-[longueur\année lumière]
+[longueur\annÃ©e lumiÃ¨re]
 9.46055E15
 [longueur\parsec]
 3.085678E16
-[Superficie\pouce ajusté]
+[Superficie\pouce ajustÃ©]
 6.4516E-4
-[Superficie\pied ajusté]
+[Superficie\pied ajustÃ©]
 0.09290304
-[Superficie\yard ajusté]
+[Superficie\yard ajustÃ©]
 0.83612736
 [Superficie\acre]
 4046.8564224
-[Superficie\mile ajusté]
+[Superficie\mile ajustÃ©]
 2.589988110336E6
 [Volume\onces liquides (UK)]
 28.4130625E-6
@@ -48,27 +48,27 @@
 4.1868
 [Energie\cheval vapeur]
 735.4988
-[Energie\cheval vapeur impérial]
+[Energie\cheval vapeur impÃ©rial]
 745.69987136
-[Pression\atmosphère]
+[Pression\atmosphÃ¨re]
 101324.905610778
 [Pression\Torr (mm Hg)]
 133.322144429454
-[Pression\millimètre d'eau]
+[Pression\millimÃ¨tre d'eau]
 9.80665
-[Vitesse\Kilomètre par heure]
+[Vitesse\KilomÃ¨tre par heure]
 (1/3.6)
-[Vitesse\nœud]
+[Vitesse\nÅ“ud]
 0.51444444438562
-[Durée\jour sidéral]
+[DurÃ©e\jour sidÃ©ral]
 86164.09962
-[Durée\jour du calendrier]
+[DurÃ©e\jour du calendrier]
 86400
-[Durée\Mois sideral]
+[DurÃ©e\Mois sideral]
 2360591.5 
-[Durée\mois lumaire]
+[DurÃ©e\mois lumaire]
 2551442.8 
-[Durée\Année sidérale]
+[DurÃ©e\AnnÃ©e sidÃ©rale]
 31558149.5 
-[Durée\année tropicale]
+[DurÃ©e\annÃ©e tropicale]
 31556925.7

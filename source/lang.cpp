@@ -24,8 +24,6 @@ char lang[64];         //current language name (from file name)
 char *langFile;        //file content (\n is replaced by \0)
 char *lngstr[MAXLNGSTR];    //pointers to lines in langFile
 char *lngNames[MAXLANG+1];  //all found languages names
-bool isWin9X;
-UINT codePage;
 WCHAR dtBuf[2048];
 //-------------------------------------------------------------------------
 // 1) File name.
@@ -90,18 +88,48 @@ void setDlgTexts(HWND hDlg, int id)
 
 void CodePageToWideChar(char* s)
 {
-	MultiByteToWideChar(codePage, 0, s, -1, dtBuf, sizeA(dtBuf)-1);
+	Utf8ToWideChar(s);
+}
+
+void Utf8ToWideChar(char* s)
+{
+	MultiByteToWideChar(CP_UTF8, 0, s, -1, dtBuf, sizeA(dtBuf));
+	dtBuf[sizeA(dtBuf) - 1] = 0;
 }
 
 void SetWindowTextT(HWND hWnd, char *s)
 {
 	if(s) {
-		if (codePage) {
-			CodePageToWideChar(s);
-			SetWindowTextW(hWnd, dtBuf);
-		} else
-			SetWindowTextA(hWnd, s);
+		CodePageToWideChar(s);
+		SetWindowTextW(hWnd, dtBuf);
 	}
+}
+
+void GetWindowTextT(HWND hWnd, char* s, int bufLen)
+{
+	GetWindowTextW(hWnd, dtBuf, sizeA(dtBuf));
+	WideCharToMultiByte(CP_UTF8, 0, dtBuf, -1, s, bufLen, 0, 0);
+	s[bufLen - 1] = 0;
+}
+
+void SetWindowTextUtf8(HWND hWnd, char* s)
+{
+	if(s) {
+		int len = MultiByteToWideChar(CP_UTF8, 0, s, -1, 0, 0);
+		if(len <= 0) return;
+		WCHAR* w = new WCHAR[len];
+		MultiByteToWideChar(CP_UTF8, 0, s, -1, w, len);
+		SetWindowTextW(hWnd, w);
+		delete[] w;
+	}
+}
+
+void SetEditTextUtf8(HWND hWnd, char* s, DWORD flags)
+{
+	SETTEXTEX st;
+	st.codepage = CP_UTF8;
+	st.flags = flags;
+	SendMessageW(hWnd, EM_SETTEXTEX, (WPARAM)&st, (LPARAM)s);
 }
 
 //reload not modal dialog or create new dialog at position x,y
@@ -134,8 +162,6 @@ static void fillPopup(HMENU h)
 	char *s, *a;
 	BOOL u;
 	UINT f;
-	HMENU sub;
-	MENUITEMINFO mii;
 
 	for(i=GetMenuItemCount(h)-1; i>=0; i--){
 		id=GetMenuItemID(h, i);
@@ -144,21 +170,20 @@ static void fillPopup(HMENU h)
 				if (!_strnicmp(a + 1, "esky", 4) || !_strnicmp(a, "Espa", 4)) continue; //ignore Cesky and Expanol from old version
 				f=MF_BYPOSITION|(_stricmp(a, lang) ? 0 : MF_CHECKED);
 				u = FALSE;
-				if(!isWin9X)
-					for(int k=0; k<sizeA(lngInter); k++)
-						if(!_stricmp(a, lngInter[k].a)) {
-							_snwprintf(dtBuf, sizeA(dtBuf)-1, L"%S (%s)", a, lngInter[k].u);
-							InsertMenuW(h, 0xFFFFFFFF, f, 30000+j, dtBuf);
-							u = TRUE;
-							break;
-						}
+				for(int k=0; k<sizeA(lngInter); k++)
+					if(!_stricmp(a, lngInter[k].a)) {
+						_snwprintf(dtBuf, sizeA(dtBuf)-1, L"%S (%s)", a, lngInter[k].u);
+						InsertMenuW(h, 0xFFFFFFFF, f, 30000+j, dtBuf);
+						u = TRUE;
+						break;
+					}
 				if(!u) InsertMenuA(h, 0xFFFFFFFF, f, 30000+j, a);
 			}
 			DeleteMenu(h, 0, MF_BYPOSITION);
 		}
 		else{
 			if(id<0 || id>=0xffffffff){
-				sub=GetSubMenu(h, i);
+				HMENU sub=GetSubMenu(h, i);
 				if(sub){
 					id=*subPtr++;
 					fillPopup(sub);
@@ -166,20 +191,14 @@ static void fillPopup(HMENU h)
 			}
 			s=lng(id, 0);
 			if(s){
-				mii.cbSize=sizeof(MENUITEMINFO);
+				MENUITEMINFOW mii;
+				mii.cbSize=sizeof(MENUITEMINFOW);
 				mii.fMask=MIIM_TYPE|MIIM_STATE;
 				mii.fType=MFT_STRING;
 				mii.fState=MFS_ENABLED;
-				if (codePage) {
-					mii.dwTypeData = reinterpret_cast<LPSTR>(dtBuf);
-					CodePageToWideChar(s);
-					SetMenuItemInfoW(h, i, TRUE, reinterpret_cast<MENUITEMINFOW*>(&mii));
-				}
-				else {
-					mii.dwTypeData = s;
-					mii.cch = (UINT)strlen(s);
-					SetMenuItemInfo(h, i, TRUE, &mii);
-				}
+				mii.dwTypeData=dtBuf;
+				CodePageToWideChar(s);
+				SetMenuItemInfoW(h, i, TRUE, &mii);
 			}
 		}
 	}
@@ -203,12 +222,12 @@ void loadMenu(HWND hwnd, char *name, int *subId)
 	DestroyMenu(m);
 }
 //-------------------------------------------------------------------------
-static void parseLng()
+static void parseLng(char *s)
 {
-	char *s, *d, *e;
+	char *d, *e;
 	int id, err=0, line=1;
 
-	for(s=langFile; *s; s++){
+	for(; *s; s++){
 		if(*s==';' || *s=='#' || *s=='\n' || *s=='\r'){
 			//comment
 		}
@@ -292,42 +311,86 @@ void scanLangDir()
 	}
 }
 //-------------------------------------------------------------------------
+int convertCodePage(char*& dest, char* src, int len, UINT destCodePage, UINT srcCodePage)
+{
+	if(len==-1) len = strleni(src);
+	WCHAR* w = new WCHAR[len];
+	int wlen = MultiByteToWideChar(srcCodePage, 0, src, len, w, len);
+	delete[] dest; //delete previous string
+	int ulen = WideCharToMultiByte(destCodePage, 0, w, wlen, 0, 0, 0, 0);
+	char *b = new char[ulen + 3]; //extra 2 bytes are used in loadLang
+	len = WideCharToMultiByte(destCodePage, 0, w, wlen, b, ulen, 0, 0);
+	delete[] w;
+	b[len] = 0;
+	dest = b;
+	return len;
+}
+
+bool loadFile(char* fn, char* &content, DWORD &len0, char*& start, void (*clear)(), bool ignoreError)
+{
+	HANDLE f = CreateFile(fn, GENERIC_READ, FILE_SHARE_READ, 0, OPEN_EXISTING, 0, 0);
+	if(f == INVALID_HANDLE_VALUE) {
+		if(!ignoreError && fn[0]) msg(lng(730, "Cannot open file %s"), fn);
+	}else {
+		DWORD len = GetFileSize(f, 0);
+		if(len > 20000000) {
+			CloseHandle(f);
+			msg(lng(753, "File %s is too long"), fn);
+		}else {
+			if(clear) clear();
+			delete[] content;
+			content = new char[len + 3]; //extra 2 bytes are used in loadLang and loadButtons
+			DWORD r;
+			ReadFile(f, content, len, &r, 0);
+			CloseHandle(f);
+			if(r < len) {
+				delete[] content;
+				content = 0;
+				len0 = 0;
+				msg(lng(754, "Error reading file %s"), fn);
+			}
+			else {
+				content[len] = 0;
+				if(content[0] == '\xEF' && content[1] == '\xBB' && content[2] == '\xBF') {
+					start = content + 3;
+					len0 = len - 3;
+				}
+				else {
+					UINT cp = CP_ACP;
+					char *src=content;
+					if(content[0] == '#' && content[1] == 'C' && content[2] == 'P' && len > 5) 
+					{
+						cp = (UINT) strtol(content + 3, &src, 10);
+						if(*src == '\r') src++;
+						if(*src == '\n') src++;
+					}
+					//convert to UTF-8
+					len0 = convertCodePage(content, src, -1, CP_UTF8, cp);
+					start = content;
+				}
+				return true;
+			}
+		}
+	}
+	return false;
+}
+//---------------------------------------------------------------------------
 static void loadLang()
 {
 	memset(lngstr, 0, sizeof(lngstr));
-	codePage = 0;
 	char buf[256];
 	GetModuleFileName(0, buf, sizeof(buf)-strleni(lang)-14);
 	strcpy(cutPath(buf), "language\\");
 	char *fn=strchr(buf, 0);
 	strcpy(fn, lang);
 	strcat(buf, ".lng");
-	HANDLE f=CreateFile(buf, GENERIC_READ, FILE_SHARE_READ, 0, OPEN_EXISTING, 0, 0);
-	if(f!=INVALID_HANDLE_VALUE){
-		DWORD len=GetFileSize(f, 0);
-		if(len>10000000){
-			msg(lng(753, "File %s is too long"), fn);
-		}
-		else{
-			delete[] langFile;
-			langFile= new char[len+3];
-			DWORD r;
-			ReadFile(f, langFile, len, &r, 0);
-			if(r<len){
-				msg(lng(754, "Error reading file %s"), fn);
-			}
-			else{
-				if(langFile[0]=='#' && langFile[1]=='C' && langFile[2]=='P' && !isWin9X){
-					codePage=atoi(langFile+3);
-					if(codePage == GetACP()) codePage=0;
-				}
-				langFile[len]='\n';
-				langFile[len+1]='\n';
-				langFile[len+2]='\0';
-				parseLng();
-			}
-		}
-		CloseHandle(f);
+	DWORD len;
+	char* start;
+	if(loadFile(buf, langFile, len, start, 0, true)){
+		start[len]='\n';
+		start[len+1]='\n';
+		start[len+2]='\0';
+		parseLng(start);
 	}
 }
 //---------------------------------------------------------------------------
@@ -345,11 +408,6 @@ int setLang(int cmd)
 //---------------------------------------------------------------------------
 void initLang()
 {
-	OSVERSIONINFO v;
-	v.dwOSVersionInfoSize= sizeof(OSVERSIONINFO);
-	GetVersionEx(&v);
-	isWin9X = v.dwPlatformId==VER_PLATFORM_WIN32_WINDOWS;
-
 	scanLangDir();
 	if(!lang[0]){
 		//language detection

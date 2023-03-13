@@ -1,4 +1,4 @@
-[&Vitesse de la lumière [m/s]]
+ï»¿[&Vitesse de la lumiÃ¨re [m/s]]
 299792458
 [&g [m/s^2]]
 9.80665
@@ -10,17 +10,17 @@
 8.314472
 [&Volume molaire du gaz [m^3/mol]]
 0.022413996
-[Permitivité du vide [F/m]]
+[PermitivitÃ© du vide [F/m]]
 (1/(299792458^2*4e-7*pi))
-[Permeabilité du vide [H/m]]
+[PermeabilitÃ© du vide [H/m]]
 (4e-7*pi)
 [Faraday [C/mol]]
 96485.3383
-[Charge élémentaire [C]]
+[Charge Ã©lÃ©mentaire [C]]
 1.60217653 E-19
 [Masse atomique [kilogramme]]
 1.66053886 E-27
-[Masse de l'électron [kilogramme]]
+[Masse de l'Ã©lectron [kilogramme]]
 9.1093826 E-31
 [Masse du proton [kilogramme]]
 1.67262171 E-27

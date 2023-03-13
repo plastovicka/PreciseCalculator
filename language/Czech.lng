@@ -1,366 +1,365 @@
-#CP1250
-501=(C) 2004-2022  Petr Laštovièka
+ï»¿501=(C) 2004-2023  Petr LaÅ¡toviÄka
 503=Verze
-504=Precizní Kalkulaèka
+504=PreciznÃ­ KalkulaÄka
 13=language\\CZ.chm
 10=language\\const_CZ.cns
 12=language\\units_CZ.unt
 21=language\\examples_CZ.cal
 
-296=Pøesnost:
+296=PÅ™esnost:
 
 1=OK
 2=Storno
-9=&Zavøít
+9=&ZavÅ™Ã­t
 11=O programu
-16=Pøejmenovat makro
-14=Vytvoøit makro
+16=PÅ™ejmenovat makro
+14=VytvoÅ™it makro
 15=Smazat makro
-17=Promìnné
-18=Monosti
+17=PromÄ›nnÃ©
+18=MoÅ¾nosti
 19=Barvy
 20=Historie
 
 ;menu
 450=&Soubor
 451=&Jazyk
-452=&Nápovìda
-453=Úpra&vy
+452=&NÃ¡povÄ›da
+453=Ãšpra&vy
 454=&Konstanty
 455=&Jednotky
 465=&Makra
 
-102=Uloit &nastavení
+102=UloÅ¾it &nastavenÃ­
 103=&Konec
-111=Naèíst &tlaèítka...\tCtrl+B
+111=NaÄÃ­st &tlaÄÃ­tka...\tCtrl+B
 224=&Barvy...
-105=O&dstranit nastavení
-106=&Otevøít vıraz...\tCtrl+O
-108=&Uloit vısledek...\tCtrl+S
-109=Ot&evøít makra...
-110=Uloit makra j&ako...
+105=O&dstranit nastavenÃ­
+106=&OtevÅ™Ã­t vÃ½raz...\tCtrl+O
+108=&UloÅ¾it vÃ½sledek...\tCtrl+S
+109=Ot&evÅ™Ã­t makra...
+110=UloÅ¾it makra j&ako...
 200=Vyjmou&t\tCtrl+X
-201=&Kopírovat\tCtrl+C
-202=V&loit\tCtrl+V
-203=Kopírovat &vısledek\tAlt+C
+201=&KopÃ­rovat\tCtrl+C
+202=V&loÅ¾it\tCtrl+V
+203=KopÃ­rovat &vÃ½sledek\tAlt+C
 204=Vy&mazat\tEsc
-205=&Zpìt\tCtrl+Z
-210=&Nové\tCtrl+N
+205=&ZpÄ›t\tCtrl+Z
+210=&NovÃ©\tCtrl+N
 211=&Odstranit\tCtrl+D
-212=&Pøejmenovat
-223=&Písmo...
-230=&Monosti...\tAlt+O
+212=&PÅ™ejmenovat
+223=&PÃ­smo...
+230=&MoÅ¾nosti...\tAlt+O
 234=&Historie...\tCtrl+H
-232=Pø&edchozí\tCtrl+nahoru
-233=&Další\tCtrl+dolù
+232=PÅ™&edchozÃ­\tCtrl+nahoru
+233=&DalÅ¡Ã­\tCtrl+dolÅ¯
 241=&1. parametr\tCtrl+1
 242=&2. parametr\tCtrl+2
 243=&3. parametr\tCtrl+3
 244=&4. parametr\tCtrl+4
-206=&Promìnné...\tCtrl+L
+206=&PromÄ›nnÃ©...\tCtrl+L
 122=&Obsah\tCtrl+F1
-120=&Pøehled funkcí\tF1
+120=&PÅ™ehled funkcÃ­\tF1
 121=O pro&gramu...
 
-505=Pùvodní název:
-506=Novı název:
-507=Název makra:
-508=Textové soubory (*.txt)\0*.txt\0Všechny soubory\0*.*\0
-509=Makra (*.cal)\0*.cal\0Všechny soubory\0*.*\0
-510=Tlaèítka (*.cbt)\0*.cbt\0Všechny soubory\0*.*\0
+505=PÅ¯vodnÃ­ nÃ¡zev:
+506=NovÃ½ nÃ¡zev:
+507=NÃ¡zev makra:
+508=TextovÃ© soubory (*.txt)\0*.txt\0VÅ¡echny soubory\0*.*\0
+509=Makra (*.cal)\0*.cal\0VÅ¡echny soubory\0*.*\0
+510=TlaÄÃ­tka (*.cbt)\0*.cbt\0VÅ¡echny soubory\0*.*\0
 520=&Vybrat
 521=&Odstranit
-522=Odstranit vše
+522=Odstranit vÅ¡e
 
-;Monosti
-530=oddìlovaè &pøed teèkou
-531=oddìlovaè za &teèkou
+;MoÅ¾nosti
+530=oddÄ›lovaÄ &pÅ™ed teÄkou
+531=oddÄ›lovaÄ za &teÄkou
 532=z&nak:
 533=zn&ak:
 534=&frekvence:
 535=f&rekvence:
-536=Maximální poèet poloek &historie:
-537=&Ukládat nastavení pøi ukonèení programu
-538=Ukládat všechny vıpoèty do &souboru:
+536=MaximÃ¡lnÃ­ poÄet poloÅ¾ek &historie:
+537=&UklÃ¡dat nastavenÃ­ pÅ™i ukonÄenÃ­ programu
+538=UklÃ¡dat vÅ¡echny vÃ½poÄty do &souboru:
 539=&Velikost souboru:
-2046=Z&obrazovat popisy tlaèítek
+2046=Z&obrazovat popisy tlaÄÃ­tek
 
 ;Barvy
-550=Èísla
+550=ÄŒÃ­sla
 551=Funkce
 
 
-730=Nelze otevøít soubor %s
-731=Chybnı formát souboru %s
-733=Nelze vytvoøit soubor %s
-735=Nelze uloit nastavení do registru
-736=Opravdu chcete smazat všechny konfiguraèní údaje ?
-753=Soubor %s je moc dlouhı
-754=Chyba pøi ètení souboru %s
-755=Chyba v %s\nØádek %d nezaèíná èíslem
-756=Chyba v %s\nÈíslo %d je moc velké
-757=Chyba v %s\nVícenásobnı vıskyt %d
-801=Makro "%s" u existuje
-802=Nejdøíve napište nìjakı vıraz do vstupního pole
+730=Nelze otevÅ™Ã­t soubor %s
+731=ChybnÃ½ formÃ¡t souboru %s
+733=Nelze vytvoÅ™it soubor %s
+735=Nelze uloÅ¾it nastavenÃ­ do registru
+736=Opravdu chcete smazat vÅ¡echny konfiguraÄnÃ­ Ãºdaje ?
+753=Soubor %s je moc dlouhÃ½
+754=Chyba pÅ™i ÄtenÃ­ souboru %s
+755=Chyba v %s\nÅ˜Ã¡dek %d nezaÄÃ­nÃ¡ ÄÃ­slem
+756=Chyba v %s\nÄŒÃ­slo %d je moc velkÃ©
+757=Chyba v %s\nVÃ­cenÃ¡sobnÃ½ vÃ½skyt %d
+801=Makro "%s" uÅ¾ existuje
+802=NejdÅ™Ã­ve napiÅ¡te nÄ›jakÃ½ vÃ½raz do vstupnÃ­ho pole
 
-950=Neznámá funkce nebo promìnná
-951=Neznámı operátor
-952=Zde se oèekává èíslo, promìnná nebo prefixová operace
-953=Zde se oèekává binární operace
-954=Èíslice nepatøí do zvolené èíselné soustavy
-955=Pøebıvá pravá závorka
-956=Nadbyteèná èárka
-957=Zde se oèekává levá závorka
-958=Chybnı poèet parametrù
-959=Chybí koncová uvozovka
-960=Nalevo od rovnítka je èíselnı vıraz
-961=Pøed operátorem ++ nebo -- není promìnná
-962=Zde se oèekává ]
-963=Nadbyteèná pravá hranatá závorka
-964=Chybí konec komentáøe
+950=NeznÃ¡mÃ¡ funkce nebo promÄ›nnÃ¡
+951=NeznÃ¡mÃ½ operÃ¡tor
+952=Zde se oÄekÃ¡vÃ¡ ÄÃ­slo, promÄ›nnÃ¡ nebo prefixovÃ¡ operace
+953=Zde se oÄekÃ¡vÃ¡ binÃ¡rnÃ­ operace
+954=ÄŒÃ­slice nepatÅ™Ã­ do zvolenÃ© ÄÃ­selnÃ© soustavy
+955=PÅ™ebÃ½vÃ¡ pravÃ¡ zÃ¡vorka
+956=NadbyteÄnÃ¡ ÄÃ¡rka
+957=Zde se oÄekÃ¡vÃ¡ levÃ¡ zÃ¡vorka
+958=ChybnÃ½ poÄet parametrÅ¯
+959=ChybÃ­ koncovÃ¡ uvozovka
+960=Nalevo od rovnÃ­tka je ÄÃ­selnÃ½ vÃ½raz
+961=PÅ™ed operÃ¡torem ++ nebo -- nenÃ­ promÄ›nnÃ¡
+962=Zde se oÄekÃ¡vÃ¡ ]
+963=NadbyteÄnÃ¡ pravÃ¡ hranatÃ¡ zÃ¡vorka
+964=ChybÃ­ konec komentÃ¡Å™e
 
-1010=Dìlení nulou
-1011=Pøeteèení, èíslo je moc velké
-1017=Operand posunu není celé èíslo
-1018=Operand kombinace není celé èíslo
-1019=Operand variace není celé èíslo
-1020=Operand faktoriálu není pøirozené èíslo
-1026=Nìkterı z operandù nejvìtšího spoleèného dìlitele není celé èíslo
-1027=Nìkterı z operandù nejmenšího spoleèného násobku není celé èíslo
-1028=Nedostatek pamìti !!!
-1030=Vıpoèet dìlitele reálného èísla
-1031=Vıpoèet je moc sloitı
-1032=Úhel bodu [0,0]
-1033=Chybné èíslo za pøíkazem goto
-1034=Vısledek je nekoneènì velkı
-1035=Nepovolená operace s imaginárním èíslem
+1010=DÄ›lenÃ­ nulou
+1011=PÅ™eteÄenÃ­, ÄÃ­slo je moc velkÃ©
+1017=Operand posunu nenÃ­ celÃ© ÄÃ­slo
+1018=Operand kombinace nenÃ­ celÃ© ÄÃ­slo
+1019=Operand variace nenÃ­ celÃ© ÄÃ­slo
+1020=Operand faktoriÃ¡lu nenÃ­ pÅ™irozenÃ© ÄÃ­slo
+1026=NÄ›kterÃ½ z operandÅ¯ nejvÄ›tÅ¡Ã­ho spoleÄnÃ©ho dÄ›litele nenÃ­ celÃ© ÄÃ­slo
+1027=NÄ›kterÃ½ z operandÅ¯ nejmenÅ¡Ã­ho spoleÄnÃ©ho nÃ¡sobku nenÃ­ celÃ© ÄÃ­slo
+1028=Nedostatek pamÄ›ti !!!
+1030=VÃ½poÄet dÄ›litele reÃ¡lnÃ©ho ÄÃ­sla
+1031=VÃ½poÄet je moc sloÅ¾itÃ½
+1032=Ãšhel bodu [0,0]
+1033=ChybnÃ© ÄÃ­slo za pÅ™Ã­kazem goto
+1034=VÃ½sledek je nekoneÄnÄ› velkÃ½
+1035=NepovolenÃ¡ operace s imaginÃ¡rnÃ­m ÄÃ­slem
 1036=Logaritmus z nuly
-1037=Komplexní nebo záporná mocnina nuly
-1038=Komplexní nebo záporná odmocnina z nuly
+1037=KomplexnÃ­ nebo zÃ¡pornÃ¡ mocnina nuly
+1038=KomplexnÃ­ nebo zÃ¡pornÃ¡ odmocnina z nuly
 1039=argtgh, argcotgh z 1 nebo -1
 1040=arctg, arccotg z 1i nebo -1i
-1041=Chybnı rozmìr matice
-1042=Operátor ++ nebo -- pouit na matici
-1043=Nepovolená operace s maticemi
-1044=Matice nemají stejné rozmìry
-1045=Poèet sloupcù první matice se nerovná poètu øádek druhé matice
-1046=Vektory nejsou stejnì dlouhé
-1047=Neceloèíselná mocnina matice
-1048=Matice není ètvercová
-1049=Operandy musejí bıt vektory délky 3
-1050=Matice není regulární
+1041=ChybnÃ½ rozmÄ›r matice
+1042=OperÃ¡tor ++ nebo -- pouÅ¾it na matici
+1043=NepovolenÃ¡ operace s maticemi
+1044=Matice nemajÃ­ stejnÃ© rozmÄ›ry
+1045=PoÄet sloupcÅ¯ prvnÃ­ matice se nerovnÃ¡ poÄtu Å™Ã¡dek druhÃ© matice
+1046=Vektory nejsou stejnÄ› dlouhÃ©
+1047=NeceloÄÃ­selnÃ¡ mocnina matice
+1048=Matice nenÃ­ ÄtvercovÃ¡
+1049=Operandy musejÃ­ bÃ½t vektory dÃ©lky 3
+1050=Matice nenÃ­ regulÃ¡rnÃ­
 1051=Index je mimo rozsah
-1052=Index není celé èíslo
-1053=Matice musí mít dva sloupce
-1054=Matice musí mít více ne jeden sloupec
-1055=Soustava rovnic nemá øešení
-1056=Parametr není vektor
-1057=První parametr musí bıt promìnná
-1058=Ètvrtı parametr musí bıt celé èíslo
-1059=Funkce matrix musí mít parametry poèet øádek, poèet sloupcù
-1060=Operand goniometrické funkce je moc velkı
-1061=Parametry musejí bıt promìnné
-1062=Vısledek je pøíliš dlouhı
-1063=První operand funkce MOD je vìtší ne pøesnost vıpoètu
-1064=Matice je prázdná
-1065=Funkce vyaduje jeden parametr
+1052=Index nenÃ­ celÃ© ÄÃ­slo
+1053=Matice musÃ­ mÃ­t dva sloupce
+1054=Matice musÃ­ mÃ­t vÃ­ce neÅ¾ jeden sloupec
+1055=Soustava rovnic nemÃ¡ Å™eÅ¡enÃ­
+1056=Parametr nenÃ­ vektor
+1057=PrvnÃ­ parametr musÃ­ bÃ½t promÄ›nnÃ¡
+1058=ÄŒtvrtÃ½ parametr musÃ­ bÃ½t celÃ© ÄÃ­slo
+1059=Funkce matrix musÃ­ mÃ­t parametry poÄet Å™Ã¡dek, poÄet sloupcÅ¯
+1060=Operand goniometrickÃ© funkce je moc velkÃ½
+1061=Parametry musejÃ­ bÃ½t promÄ›nnÃ©
+1062=VÃ½sledek je pÅ™Ã­liÅ¡ dlouhÃ½
+1063=PrvnÃ­ operand funkce MOD je vÄ›tÅ¡Ã­ neÅ¾ pÅ™esnost vÃ½poÄtu
+1064=Matice je prÃ¡zdnÃ¡
+1065=Funkce vyÅ¾aduje jeden parametr
 
 ;tooltips
-291=Poèítat se zlomky, pokud je to moné
-292=Poèet èíslic za desetinnou èárkou
-298=Inverzní funkce
-299=Hyperbolické funkce
-2000=hyperbolickı
-2001=Zaokrouhlit na nejbliší celé èíslo
-2002=Zaokrouhlit na menší celé èíslo
-2003=Faktoriál
-2004=Zaokrouhlit na vìtší celé èíslo
-2005=Nejvìtší spoleènı dìlitel
-2006=Nejmenší spoleènı násobek
-2007=Poèet kombinací
-2008=Poèet permutací
-2009=Èást za desetinnou èárkou
-2010=Zaokrouhlit na celé èíslo smìrem k nule
-2011=bitové násobení, logická operace “a”
-2012=bitová negace, logická operace “ne”
-2013=bitové sèítání, logická operace “nebo”
-2014=bitovı rozdíl, logická operace “vıluèné nebo”
-2015=Posun bitù doleva
-2016=Posun bitù doprava, oøíznout zlomkovou èást
-2017=Druhá odmocnina
-2018=Druhá mocnina
-2019=Exponenciální funkce (2,718 ^ X)
-2020=Tøetí mocnina
-2021=Pøirozenı logaritmus
-2022=Dekadickı logaritmus
+291=PoÄÃ­tat se zlomky, pokud je to moÅ¾nÃ©
+292=PoÄet ÄÃ­slic za desetinnou ÄÃ¡rkou
+298=InverznÃ­ funkce
+299=HyperbolickÃ© funkce
+2000=hyperbolickÃ½
+2001=Zaokrouhlit na nejbliÅ¾Å¡Ã­ celÃ© ÄÃ­slo
+2002=Zaokrouhlit na menÅ¡Ã­ celÃ© ÄÃ­slo
+2003=FaktoriÃ¡l
+2004=Zaokrouhlit na vÄ›tÅ¡Ã­ celÃ© ÄÃ­slo
+2005=NejvÄ›tÅ¡Ã­ spoleÄnÃ½ dÄ›litel
+2006=NejmenÅ¡Ã­ spoleÄnÃ½ nÃ¡sobek
+2007=PoÄet kombinacÃ­
+2008=PoÄet permutacÃ­
+2009=ÄŒÃ¡st za desetinnou ÄÃ¡rkou
+2010=Zaokrouhlit na celÃ© ÄÃ­slo smÄ›rem k nule
+2011=bitovÃ© nÃ¡sobenÃ­, logickÃ¡ operace â€œaâ€
+2012=bitovÃ¡ negace, logickÃ¡ operace â€œneâ€
+2013=bitovÃ© sÄÃ­tÃ¡nÃ­, logickÃ¡ operace â€œneboâ€
+2014=bitovÃ½ rozdÃ­l, logickÃ¡ operace â€œvÃ½luÄnÃ© neboâ€
+2015=Posun bitÅ¯ doleva
+2016=Posun bitÅ¯ doprava, oÅ™Ã­znout zlomkovou ÄÃ¡st
+2017=DruhÃ¡ odmocnina
+2018=DruhÃ¡ mocnina
+2019=ExponenciÃ¡lnÃ­ funkce (2,718 ^ X)
+2020=TÅ™etÃ­ mocnina
+2021=PÅ™irozenÃ½ logaritmus
+2022=DekadickÃ½ logaritmus
 2023=Mocnina deseti
-2024=Konstanta pí
-2025=Stupnì, minuty, sekundy => stupnì
+2024=Konstanta pÃ­
+2025=StupnÄ›, minuty, sekundy => stupnÄ›
 2026=sinus
-2027=inverzní sinus
+2027=inverznÃ­ sinus
 2028=kosinus
-2029=inverzní kosinus
+2029=inverznÃ­ kosinus
 2030=tangens
-2031=inverzní tangens
-2032=Absolutní hodnota
-2033=Znaménko
-2034=Levá závorka
-2035=Reálná èást èísla
-2036=Pravá závorka
-2037=Imaginární èást èísla
+2031=inverznÃ­ tangens
+2032=AbsolutnÃ­ hodnota
+2033=ZnamÃ©nko
+2034=LevÃ¡ zÃ¡vorka
+2035=ReÃ¡lnÃ¡ ÄÃ¡st ÄÃ­sla
+2036=PravÃ¡ zÃ¡vorka
+2037=ImaginÃ¡rnÃ­ ÄÃ¡st ÄÃ­sla
 2038=Mocnina
 2039=Odmocnina
-2040=Aritmeticko-geometrickı prùmìr
-2041=Minimální hodnota
-2042=Dvojitı faktoriál
-2043=Maximální hodnota
-2044=Gaussova eliminaèní metoda
-2045=Medián
-2047=Smazat pøedchozí symbol
-2048=Vymazat vše
-2049=Standardní odchylka populace
-2050=Øešení soustavy lineárních rovnic
-2051=Souèet
+2040=Aritmeticko-geometrickÃ½ prÅ¯mÄ›r
+2041=MinimÃ¡lnÃ­ hodnota
+2042=DvojitÃ½ faktoriÃ¡l
+2043=MaximÃ¡lnÃ­ hodnota
+2044=Gaussova eliminaÄnÃ­ metoda
+2045=MediÃ¡n
+2047=Smazat pÅ™edchozÃ­ symbol
+2048=Vymazat vÅ¡e
+2049=StandardnÃ­ odchylka populace
+2050=Å˜eÅ¡enÃ­ soustavy lineÃ¡rnÃ­ch rovnic
+2051=SouÄet
 2052=Hodnota polynomu
-2053=Souèet ètvercù
-2054=Hodnoty splòující podmínku
+2053=SouÄet ÄtvercÅ¯
+2054=Hodnoty splÅˆujÃ­cÃ­ podmÃ­nku
 2055=Rozptyl
-2056=Násobení
-2057=Náhodné reálné èíslo, 0 =< ... < 1
-2058=Dìlení
-2059=Zbytek po dìlení
-2060=Filtrování matice podle podmínky
-2061=Aritmetickı prùmìr
-2062=Prázdná matice
-2063=Prùmìr ètvercù
-2065=Standardní odchylka
-2066=Sèítání
-2067=Poèet prvkù matice
-2068=Odeèítání
-2069=Skok na návìští nebo na n-tı støedník
-2071=Pøiøazení do promìnné
-2072=Desetinná èárka
-2073=Oddìlovaè pøíkazù
+2056=NÃ¡sobenÃ­
+2057=NÃ¡hodnÃ© reÃ¡lnÃ© ÄÃ­slo, 0 =< ... < 1
+2058=DÄ›lenÃ­
+2059=Zbytek po dÄ›lenÃ­
+2060=FiltrovÃ¡nÃ­ matice podle podmÃ­nky
+2061=AritmetickÃ½ prÅ¯mÄ›r
+2062=PrÃ¡zdnÃ¡ matice
+2063=PrÅ¯mÄ›r ÄtvercÅ¯
+2065=StandardnÃ­ odchylka
+2066=SÄÃ­tÃ¡nÃ­
+2067=PoÄet prvkÅ¯ matice
+2068=OdeÄÃ­tÃ¡nÃ­
+2069=Skok na nÃ¡vÄ›Å¡tÃ­ nebo na n-tÃ½ stÅ™ednÃ­k
+2071=PÅ™iÅ™azenÃ­ do promÄ›nnÃ©
+2072=DesetinnÃ¡ ÄÃ¡rka
+2073=OddÄ›lovaÄ pÅ™Ã­kazÅ¯
 2074=Exponent, mocnina 10
-2075=Oddìlovaè prvkù seznamu
-2076=Vısledek pøedchozího vıpoètu
-2077=Imaginární jednotka
-2078=Spustit vıpoèet
-2079=Náhodné celé èíslo, 0 =< ... < N
+2075=OddÄ›lovaÄ prvkÅ¯ seznamu
+2076=VÃ½sledek pÅ™edchozÃ­ho vÃ½poÄtu
+2077=ImaginÃ¡rnÃ­ jednotka
+2078=Spustit vÃ½poÄet
+2079=NÃ¡hodnÃ© celÃ© ÄÃ­slo, 0 =< ... < N
 2080=Rozptyl populace
-2081=Nejèastìjší hodnota
-2082=Rovná se
-2083=Nerovná se
-2084=Menší
-2085=Vìtší
-2086=Menší nebo rovno
-2087=Vìtší nebo rovno
-2088=Podmínka
-2089=Relativní skok na pøíkaz
-2090=Vypsat vısledek do vıstupního okna
-2091=Zastavit vıpoèet a zobrazit vısledek
-2092=Nejmenší prvoèíselnı dìlitel
-2093=První prvoèíslo vìtší ne operand
-2094=Oddìlovaè sloupcù v matici
-2095=N-tá èíselná soustava
-2096=Èíslo v desítkové soustavì
-2097=Hexadecimální èíslo
-2098=Binární èíslo
-2099=Èíslo v osmièkové soustavì
-2100=Seøadit poloky od menšího k vìtšímu
-2101=Seøadit poloky od vìtšího k menšímu
-2102=Obrácené poøadí poloek od poslední k první
-2103=Geometrickı prùmìr, N-tá odmocnina souèinu N poloek
-2104=Harmonickı prùmìr
-2105=Souèin poloek
-2106=Pøepona
-2107=Pøevést na polární souøadnice
-2108=Vytvoøit komplexní èíslo
+2081=NejÄastÄ›jÅ¡Ã­ hodnota
+2082=RovnÃ¡ se
+2083=NerovnÃ¡ se
+2084=MenÅ¡Ã­
+2085=VÄ›tÅ¡Ã­
+2086=MenÅ¡Ã­ nebo rovno
+2087=VÄ›tÅ¡Ã­ nebo rovno
+2088=PodmÃ­nka
+2089=RelativnÃ­ skok na pÅ™Ã­kaz
+2090=Vypsat vÃ½sledek do vÃ½stupnÃ­ho okna
+2091=Zastavit vÃ½poÄet a zobrazit vÃ½sledek
+2092=NejmenÅ¡Ã­ prvoÄÃ­selnÃ½ dÄ›litel
+2093=PrvnÃ­ prvoÄÃ­slo vÄ›tÅ¡Ã­ neÅ¾ operand
+2094=OddÄ›lovaÄ sloupcÅ¯ v matici
+2095=N-tÃ¡ ÄÃ­selnÃ¡ soustava
+2096=ÄŒÃ­slo v desÃ­tkovÃ© soustavÄ›
+2097=HexadecimÃ¡lnÃ­ ÄÃ­slo
+2098=BinÃ¡rnÃ­ ÄÃ­slo
+2099=ÄŒÃ­slo v osmiÄkovÃ© soustavÄ›
+2100=SeÅ™adit poloÅ¾ky od menÅ¡Ã­ho k vÄ›tÅ¡Ã­mu
+2101=SeÅ™adit poloÅ¾ky od vÄ›tÅ¡Ã­ho k menÅ¡Ã­mu
+2102=ObrÃ¡cenÃ© poÅ™adÃ­ poloÅ¾ek od poslednÃ­ k prvnÃ­
+2103=GeometrickÃ½ prÅ¯mÄ›r, N-tÃ¡ odmocnina souÄinu N poloÅ¾ek
+2104=HarmonickÃ½ prÅ¯mÄ›r
+2105=SouÄin poloÅ¾ek
+2106=PÅ™epona
+2107=PÅ™evÃ©st na polÃ¡rnÃ­ souÅ™adnice
+2108=VytvoÅ™it komplexnÃ­ ÄÃ­slo
 2109=Logaritmus
-2110=Zvìtšit o 1
-2111=Sníit o 1
-2112=Oba nulové nebo oba nenulové
-2113=Stejné bity v obou èíslech
+2110=ZvÄ›tÅ¡it o 1
+2111=SnÃ­Å¾it o 1
+2112=Oba nulovÃ© nebo oba nenulovÃ©
+2113=StejnÃ© bity v obou ÄÃ­slech
 2114=Posunout bity doprava
-2115=Celoèíselné dìlení
-2116=Symbol stupòù
-2117=Sdruené èíslo komplexního èísla
-2118=Zkontroluje, zda je èíslo prvoèíslo
-2119=Fibonacciho èíslo, 0,1,1,2,3,5,8,...
-2120=Úhel komplexního èísla
+2115=CeloÄÃ­selnÃ© dÄ›lenÃ­
+2116=Symbol stupÅˆÅ¯
+2117=SdruÅ¾enÃ© ÄÃ­slo komplexnÃ­ho ÄÃ­sla
+2118=Zkontroluje, zda je ÄÃ­slo prvoÄÃ­slo
+2119=Fibonacciho ÄÃ­slo, 0,1,1,2,3,5,8,...
+2120=Ãšhel komplexnÃ­ho ÄÃ­sla
 2121=kotangens
 2122=sekans
 2123=kosekans
-2124=inverzní kotangens
-2125=inverzní sekans
-2126=inverzní kosekans
-2127=Souèet sloupce X matice se 2 sloupci
-2128=Souèet sloupce Y matice se 2 sloupci
-2129=Prùmìr sloupce X matice se 2 sloupci
-2130=Prùmìr sloupce Y matice se 2 sloupci
-2131=Souèet ètvercù sloupce X matice se 2 sloupci
-2132=Souèet ètvercù sloupce Y matice se 2 sloupci
-2133=Souèet X*Y sloupcù matice se 2 sloupci
-2134=Prùmìr ètvercù sloupce X matice se 2 sloupci
-2135=Prùmìr ètvercù sloupce Y matice se 2 sloupci
+2124=inverznÃ­ kotangens
+2125=inverznÃ­ sekans
+2126=inverznÃ­ kosekans
+2127=SouÄet sloupce X matice se 2 sloupci
+2128=SouÄet sloupce Y matice se 2 sloupci
+2129=PrÅ¯mÄ›r sloupce X matice se 2 sloupci
+2130=PrÅ¯mÄ›r sloupce Y matice se 2 sloupci
+2131=SouÄet ÄtvercÅ¯ sloupce X matice se 2 sloupci
+2132=SouÄet ÄtvercÅ¯ sloupce Y matice se 2 sloupci
+2133=SouÄet X*Y sloupcÅ¯ matice se 2 sloupci
+2134=PrÅ¯mÄ›r ÄtvercÅ¯ sloupce X matice se 2 sloupci
+2135=PrÅ¯mÄ›r ÄtvercÅ¯ sloupce Y matice se 2 sloupci
 2136=Rozptyl sloupce X matice se 2 sloupci
 2137=Rozptyl sloupce Y matice se 2 sloupci
 2138=Rozptyl populace sloupce X matice se 2 sloupci
 2139=Rozptyl populace sloupce Y matice se 2 sloupci
-2140=Standardní odchylka populace sloupce X matice se 2 sloupci
-2141=Standardní odchylka populace sloupce Y matice se 2 sloupci
-2142=Standardní odchylka sloupce X matice se 2 sloupci
-2143=Standardní odchylka sloupce Y matice se 2 sloupci
-2148=Lineární regresní koeficient A z y=A+B*x
-2149=Lineární regresní koeficient B z y=A+B*x
-2150=Lineární regresní korelaèní koeficient
-2151=X odpovídající Y pro y=A+B*x
-2152=Y odpovídající X pro y=A+B*x
-2153=(x,a,b,n,f()); Integrál z f() pro x=a...b; n=pøesnost
-2154=(x,a,b,f()); Provede f() pro x=a...b, vrátí 0
-2155=(x,A,f()); Provede f() pro x=kadı prvek matice A, vrátí 0
-2156=(x,a,b,f()); Souèet f() pro x=a...b
-2157=(x,A,f()); Souèet f() pro x=kadı prvek matice A
-2158=(x,a,b,f()); Souèin f() pro x=a...b
-2159=(x,A,f()); Souèin f() pro x=kadı prvek matice A
-2160=(x,a,b,f()); Øádkovı vektor f() pro x=a...b
-2161=(x,A,f()); Øádkovı vektor f() pro x=kadı prvek matice A
-2162=(x,a,b,f()); Sloupcovı vektor f() pro x=a...b
-2163=(x,A,f()); Sloupcovı vektor f() pro x=kadı prvek matice A
+2140=StandardnÃ­ odchylka populace sloupce X matice se 2 sloupci
+2141=StandardnÃ­ odchylka populace sloupce Y matice se 2 sloupci
+2142=StandardnÃ­ odchylka sloupce X matice se 2 sloupci
+2143=StandardnÃ­ odchylka sloupce Y matice se 2 sloupci
+2148=LineÃ¡rnÃ­ regresnÃ­ koeficient A z y=A+B*x
+2149=LineÃ¡rnÃ­ regresnÃ­ koeficient B z y=A+B*x
+2150=LineÃ¡rnÃ­ regresnÃ­ korelaÄnÃ­ koeficient
+2151=X odpovÃ­dajÃ­cÃ­ Y pro y=A+B*x
+2152=Y odpovÃ­dajÃ­cÃ­ X pro y=A+B*x
+2153=(x,a,b,n,f()); IntegrÃ¡l z f() pro x=a...b; n=pÅ™esnost
+2154=(x,a,b,f()); Provede f() pro x=a...b, vrÃ¡tÃ­ 0
+2155=(x,A,f()); Provede f() pro x=kaÅ¾dÃ½ prvek matice A, vrÃ¡tÃ­ 0
+2156=(x,a,b,f()); SouÄet f() pro x=a...b
+2157=(x,A,f()); SouÄet f() pro x=kaÅ¾dÃ½ prvek matice A
+2158=(x,a,b,f()); SouÄin f() pro x=a...b
+2159=(x,A,f()); SouÄin f() pro x=kaÅ¾dÃ½ prvek matice A
+2160=(x,a,b,f()); Å˜Ã¡dkovÃ½ vektor f() pro x=a...b
+2161=(x,A,f()); Å˜Ã¡dkovÃ½ vektor f() pro x=kaÅ¾dÃ½ prvek matice A
+2162=(x,a,b,f()); SloupcovÃ½ vektor f() pro x=a...b
+2163=(x,A,f()); SloupcovÃ½ vektor f() pro x=kaÅ¾dÃ½ prvek matice A
 2164=(x,a,b,f()); Minimum f() pro x=a...b
-2165=(x,A,f()); Minimum f() pro x=kadı prvek matice A
+2165=(x,A,f()); Minimum f() pro x=kaÅ¾dÃ½ prvek matice A
 2166=(x,a,b,f()); Maximum f() pro x=a...b
-2167=(x,A,f()); Maximum f() pro x=kadı prvek matice A
+2167=(x,A,f()); Maximum f() pro x=kaÅ¾dÃ½ prvek matice A
 2168=NOT OR
-2169=Bitové NOT OR
+2169=BitovÃ© NOT OR
 2170=NOT AND
-2171=Bitové NOT AND
+2171=BitovÃ© NOT AND
 2172=Implikace
-2173=Bitová implikace
+2173=BitovÃ¡ implikace
 2174=Index prvku matice
-2183=radiány => stupnì
-2184=stupnì => radiány
-2185=radiány => gradienty
-2186=gradienty => radiány
-2187=stupnì => gradienty
-2188=gradienty => stupnì
-2189=Následující hodnota je ve stupních
-2190=Následující hodnota je v radiánech
-2191=Následující hodnota je v gradientech
-2192=Aktuální jednotky úhlu => stupnì
-2193=Aktuální jednotky úhlu => radiány
-2194=Aktuální jednotky úhlu => gradienty
-2195=Stupnì => stupnì, minuty, sekundy
-2196=Stupnì Fahrenheita => stupnì Celsia
-2197=Stupnì Celsia => stupnì Fahrenheita
-2198=Transpozice (prohodit sloupce a øádky, diagonální symetrie)
-2199=Inverzní matice
-2200=Úhel mezi dvìma vektory
-2201=Vektorovı souèin
-2202=Poèet sloupcù matice
-2203=Poèet øádkù matice
+2183=radiÃ¡ny => stupnÄ›
+2184=stupnÄ› => radiÃ¡ny
+2185=radiÃ¡ny => gradienty
+2186=gradienty => radiÃ¡ny
+2187=stupnÄ› => gradienty
+2188=gradienty => stupnÄ›
+2189=NÃ¡sledujÃ­cÃ­ hodnota je ve stupnÃ­ch
+2190=NÃ¡sledujÃ­cÃ­ hodnota je v radiÃ¡nech
+2191=NÃ¡sledujÃ­cÃ­ hodnota je v gradientech
+2192=AktuÃ¡lnÃ­ jednotky Ãºhlu => stupnÄ›
+2193=AktuÃ¡lnÃ­ jednotky Ãºhlu => radiÃ¡ny
+2194=AktuÃ¡lnÃ­ jednotky Ãºhlu => gradienty
+2195=StupnÄ› => stupnÄ›, minuty, sekundy
+2196=StupnÄ› Fahrenheita => stupnÄ› Celsia
+2197=StupnÄ› Celsia => stupnÄ› Fahrenheita
+2198=Transpozice (prohodit sloupce a Å™Ã¡dky, diagonÃ¡lnÃ­ symetrie)
+2199=InverznÃ­ matice
+2200=Ãšhel mezi dvÄ›ma vektory
+2201=VektorovÃ½ souÄin
+2202=PoÄet sloupcÅ¯ matice
+2203=PoÄet Å™Ã¡dkÅ¯ matice
 2204=Determinant
-2205=Poèet lineárnì nezávislıch øádkù
-2206=(r,c); Vytvoøí nulovou matici s R øádky a C sloupci
-2207=Vımìna dvou promìnnıch
-2208=Návìští
+2205=PoÄet lineÃ¡rnÄ› nezÃ¡vislÃ½ch Å™Ã¡dkÅ¯
+2206=(r,c); VytvoÅ™Ã­ nulovou matici s R Å™Ã¡dky a C sloupci
+2207=VÃ½mÄ›na dvou promÄ›nnÃ½ch
+2208=NÃ¡vÄ›Å¡tÃ­

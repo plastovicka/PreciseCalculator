@@ -1,4 +1,4 @@
-[&Velocidad de la luz [m/s]]
+锘縖&Velocidad de la luz [m/s]]
 299792458
 [&g [m/s^2]]
 9.80665
@@ -10,21 +10,21 @@
 8.314472
 [&Volumen molar del gas [m^3/mol]]
 0.022413996
-[Permitivity del vac韔 [F/m]]
+[Permitivity del vac铆o [F/m]]
 (1/(299792458^2*4e-7*pi))
-[Permeabilidad del vac韔 [H/m]]
+[Permeabilidad del vac铆o [H/m]]
 (4e-7*pi)
 [Faraday [C/mol]]
 96485.3383
 [Carga elemental [C]]
 1.60217653 E-19
-[Masa at髆ica [kilogramo]]
+[Masa at贸mica [kilogramo]]
 1.66053886 E-27
-[Masa del electr髇 [kilogramo]]
+[Masa del electr贸n [kilogramo]]
 9.1093826 E-31
-[Masa del prot髇 [kilogramo]]
+[Masa del prot贸n [kilogramo]]
 1.67262171 E-27
-[Masa del neutr髇 [kilogramo]]
+[Masa del neutr贸n [kilogramo]]
 1.67492728 E-27
 [Rydberg [el 1/m]]
 10973731.568525

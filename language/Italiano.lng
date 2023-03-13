@@ -1,5 +1,4 @@
-#CP1252
-503=Versione
+Ôªø503=Versione
 504=Precise Calculator 
 13=language\\IT.chm
 10=language\\const_IT.cns
@@ -26,7 +25,7 @@
 452=Aiuto
 453=Modifica
 454=Costanti
-455=Unit‡
+455=Unit√†
 465=Macro
 470=Conversione
 471=nose
@@ -99,16 +98,16 @@
 753=Impostazione %s troppo lungo
 754=Errore su impostazione vuota
 755=Errore in %s \ nRiga %d 
-756=Errore in %s \ nNumero messaggio %d Ë troppo grande 
+756=Errore in %s \ nNumero messaggio %d √® troppo grande 
 757=Errore in %s \ nNumero duplicato %d 
-801=La Macro "%s" esiste gi‡
+801=La Macro "%s" esiste gi√†
 802=Prima indica un'espressione nella casella
 
 950=Funzione o variabile sconosciuta
 951=Operazione sconosciuta
 952=Numero, variabile o funzione attesa
 953=Atteso operatore binario
-954=Una cifra Ë fuori dalla base selezionata
+954=Una cifra √® fuori dalla base selezionata
 955=Le parentesi non coincidono
 956=La virgola non corrisponde
 957=Attesa parentesi a sinistra 
@@ -121,11 +120,11 @@
 964=Fine commento mancante
 
 1010=Divisione per zero
-1011=Eccesso, il numero Ë troppo grande 
-1017=Il cambio dell'operando non Ë un numero intero 
-1018=l'operatore della combinazione non Ë un numero intero
-1019=l'operatore della permutazione non Ë un numero intero
-1020=il fattoriale dell'operatore non Ë un numero intero
+1011=Eccesso, il numero √® troppo grande 
+1017=Il cambio dell'operando non √® un numero intero 
+1018=l'operatore della combinazione non √® un numero intero
+1019=l'operatore della permutazione non √® un numero intero
+1020=il fattoriale dell'operatore non √® un numero intero
 1026=Il massimo comun divisore del numero effettivo
 1027=Il minimo comune multiplo del numero effettivo
 1030=divisore del numero effettivo
@@ -141,20 +140,20 @@
 1040=arctan, arccot di 1i o -1i
 1041=le matrici hanno il formato non corretto
 1042=Aumento o diminuzione della matrice
-1043=La funzione non Ë compatibile con le matrici
+1043=La funzione non √® compatibile con le matrici
 1044=Le matrici hanno lo stesso formato
-1045=Il numero di colonne della prima matrice non Ë uguale al numero di righe della seconda matrice
+1045=Il numero di colonne della prima matrice non √® uguale al numero di righe della seconda matrice
 1046=I vettori hanno lunghezze differenti
-1047=Non Ë una potenza della matrice
-1048=La matrice non Ë quadrata
+1047=Non √® una potenza della matrice
+1048=La matrice non √® quadrata
 1049=Gli argomenti devono essere vettori di lunghezza 3
-1050=La matrice non Ë regolare
-1051=L'indice Ë fuori intervallo
-1052=L'indice non Ë un numero intero
+1050=La matrice non √® regolare
+1051=L'indice √® fuori intervallo
+1052=L'indice non √® un numero intero
 1053=La matrice non ha 2 colonne
-1054=La matrice deve avere pi˘ di una colonna
+1054=La matrice deve avere pi√π di una colonna
 1055=Le equazioni non sono risolvibili
-1056=Il parametro non Ë un vettore
+1056=Il parametro non √® un vettore
 1057=Il primo parametro deve essere una variabile
 1058=Il quarto argomento deve essere un numero intero
 1059=I parametri di funzione matrice devono avere il numero delle righe ed il numero delle colonne 

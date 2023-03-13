@@ -20,9 +20,15 @@ void changeDialog(HWND &wnd, int x, int y, LPCTSTR dlgTempl, DLGPROC dlgProc);
 void setDlgTexts(HWND hDlg);
 void setDlgTexts(HWND hDlg, int id);
 void CodePageToWideChar(char* s);
+void Utf8ToWideChar(char* s);
 void SetWindowTextT(HWND hWnd, char* s);
+void GetWindowTextT(HWND hWnd, char* s, int bufLen);
+void SetWindowTextUtf8(HWND hWnd, char* s);
+void SetEditTextUtf8(HWND hWnd, char* s, DWORD flags=0);
 void getExeDir(char *fn, char *e);
 char *cutPath(char *s);
+int convertCodePage(char*& dest, char* src, int len, UINT destCodePage, UINT srcCodePage);
+bool loadFile(char* fn, char*& content, DWORD& len, char*& start, void (*clear)(), bool ignoreError=false);
 
 extern void langChanging();
 extern void langChanged();

@@ -1,231 +1,231 @@
-
-[Dìlitelé]
-n=12345678; print"Rozklad èísla",n;
+ï»¿
+[DÄ›litelÃ©]
+n=12345678; print"Rozklad ÄÃ­sla",n;
 p=0;k=0;e=1;c=1;j=n;m=1; cykl: print d=divisor j; e=e*(d-(p!=d));if(p==d,gotor4,0); c=c*m;m=1;k++; m++;p=d; j=j/d; if(j>=d, goto cykl, 0);
-print;print"Poèet dìlitelù:",c*m;print"Poèet prvoèíselnıch dìlitelù:",k;print"Eulerova funkce:",e
-[Kubická rovnice]
+print;print"PoÄet dÄ›litelÅ¯:",c*m;print"PoÄet prvoÄÃ­selnÃ½ch dÄ›litelÅ¯:",k;print"Eulerova funkce:",e
+[KubickÃ¡ rovnice]
 /* a*x^3 + b*x^2 + c*x + d = 0 */
 a=1; b=2; c=3; d=4;
 u=-b/3/a; v=c/a; t=u^3-(u*v+d/a)/2; s=t^2+(v/3-u^2)*(v/3-u^2)^2; if(s>=0, goto complex, 0); s=2*sqrt(u^2-v/3); t=acos(t*8/s^3)/3; print cos(t)*s+u; print cos(t+deg120)*s+u;
 return cos(t+deg240)*s+u;   
 complex: v=3#(t+sqrt s); t=3#(t-sqrt s);
 print v+t+u; if(s<>0 or v<>0, return u-(v+t)/2+(v-t)*sqrt-3/2, 0);
-[Kvadratická rovnice]
+[KvadratickÃ¡ rovnice]
 /* a*x^2 + b*x + c = 0 */
 a=1; b=3; c=2;
 D=sqrt(b^2-4*a*c; print(-b-D)/2/a; (-b+D)/2/a
-[Prvoèísla]
-/* n=poèet; p=od kterého èísla */
+[PrvoÄÃ­sla]
+/* n=poÄet; p=od kterÃ©ho ÄÃ­sla */
 n=100; p=1;
 print p=prime p; n--; if(n>0, goto2, 0);
-[Rovinné obrazce\Kruh]
-R=6; /* polomìr */
-s=deg30; /* støedovı úhel */
+[RovinnÃ© obrazce\Kruh]
+R=6; /* polomÄ›r */
+s=deg30; /* stÅ™edovÃ½ Ãºhel */
 print "Kruh
  obsah=",pi*R^2,"
  obvod=",2*pi*R,"
- obsah vıseèe=",torad(s)*R^2/2,"
- délka oblouku=",torad(s)*R,"
- délka tìtivy=",2*R*sin(s/2),"
- obsah úseèe=",(torad(s)-sin(s))*R^2/2,"
- vıška úseèe=",R*(1-cos(s/2))
-[Rovinné obrazce\Ètverec]
+ obsah vÃ½seÄe=",torad(s)*R^2/2,"
+ dÃ©lka oblouku=",torad(s)*R,"
+ dÃ©lka tÄ›tivy=",2*R*sin(s/2),"
+ obsah ÃºseÄe=",(torad(s)-sin(s))*R^2/2,"
+ vÃ½Å¡ka ÃºseÄe=",R*(1-cos(s/2))
+[RovinnÃ© obrazce\ÄŒtverec]
 s=6;
-print "Ètverec
+print "ÄŒtverec
  obsah=",s^2,"
  obvod=",4*s,"
- úhlopøíèka=",s*sqrt2
-[Rovinné obrazce\Obdélník]
+ ÃºhlopÅ™Ã­Äka=",s*sqrt2
+[RovinnÃ© obrazce\ObdÃ©lnÃ­k]
 L=6; W=5;
-print "Obdélník
+print "ObdÃ©lnÃ­k
  obsah=",L*W,"
  obvod=",2*(L+W),"
- úhlopøíèka=",hypot(L,W)
-[Rovinné obrazce\Deltoid]
+ ÃºhlopÅ™Ã­Äka=",hypot(L,W)
+[RovinnÃ© obrazce\Deltoid]
 c=4.4721; d=2.8284;   /* strany */
-f=4; g=6;   /* úhlopøíèky */
+f=4; g=6;   /* ÃºhlopÅ™Ã­Äky */
 print "Deltoid
  obsah=",(f*g)/2,"
  obvod=",2*(c+d)
-[Rovinné obrazce\Pravidelnı mnohoúhelník]
-n=5; /* poèet vrcholù */
+[RovinnÃ© obrazce\PravidelnÃ½ mnohoÃºhelnÃ­k]
+n=5; /* poÄet vrcholÅ¯ */
 s=6; /* strana */
-print "Pravidelnı mnohoúhelník
+print "PravidelnÃ½ mnohoÃºhelnÃ­k
  obsah=",s^2*n/4*cot(deg180/n),"
  obvod=",s*n,"
- vnitøní úhel=",(1-2/n)*deg180,"
- polomìr krunice opsané=",s/2/sin(deg180/n),"
- polomìr krunice vepsané=",s/2*cot(deg180/n)
-[Rovinné obrazce\Rovnobìník]
-L=4.5; /* první strana */
-W=6;  /* druhá strana */
-h=4;  /* vıška na stranu W */
-print "Rovnobìník
+ vnitÅ™nÃ­ Ãºhel=",(1-2/n)*deg180,"
+ polomÄ›r kruÅ¾nice opsanÃ©=",s/2/sin(deg180/n),"
+ polomÄ›r kruÅ¾nice vepsanÃ©=",s/2*cot(deg180/n)
+[RovinnÃ© obrazce\RovnobÄ›Å¾nÃ­k]
+L=4.5; /* prvnÃ­ strana */
+W=6;  /* druhÃ¡ strana */
+h=4;  /* vÃ½Å¡ka na stranu W */
+print "RovnobÄ›Å¾nÃ­k
  obsah=",W*h,"
  obvod=",2*(L+W),"
- úhlopøíèka1=",sqrt(W^2+L^2+2*W*sqrt(L^2-h^2)),"
- úhlopøíèka2=",sqrt(W^2+L^2-2*W*sqrt(L^2-h^2)),"
+ ÃºhlopÅ™Ã­Äka1=",sqrt(W^2+L^2+2*W*sqrt(L^2-h^2)),"
+ ÃºhlopÅ™Ã­Äka2=",sqrt(W^2+L^2-2*W*sqrt(L^2-h^2)),"
  alfa=",asin(h/L),"
  beta=",deg180-Ans
-[Rovinné obrazce\Kosoètverec]
+[RovinnÃ© obrazce\KosoÄtverec]
 s=5;  /* strana */
-h=4.5;  /* vıška */
-print "Kosoètverec
+h=4.5;  /* vÃ½Å¡ka */
+print "KosoÄtverec
  obsah=",s*h,"
  obvod=",4*s,"
- úhlopøíèka1=",sqrt(2*s*(s+sqrt(s^2-h^2))),"
- úhlopøíèka2=",sqrt(2*s*(s-sqrt(s^2-h^2))),"
+ ÃºhlopÅ™Ã­Äka1=",sqrt(2*s*(s+sqrt(s^2-h^2))),"
+ ÃºhlopÅ™Ã­Äka2=",sqrt(2*s*(s-sqrt(s^2-h^2))),"
  alfa=",asin(h/s),"
  beta=",deg180-Ans
-[Rovinné obrazce\Lichobìník]
-a=6; b=3;  /* základny */
+[RovinnÃ© obrazce\LichobÄ›Å¾nÃ­k]
+a=6; b=3;  /* zÃ¡kladny */
 c=3; d=3.5; /* ramena */
-print "Lichobìník
- vıška=",h=sqrt((-a+b+c+d)*(a-b+c+d)*(a-b+c-d)*(a-b-c+d))/2/abs(b-a),"
+print "LichobÄ›Å¾nÃ­k
+ vÃ½Å¡ka=",h=sqrt((-a+b+c+d)*(a-b+c+d)*(a-b+c-d)*(a-b-c+d))/2/abs(b-a),"
  obsah=",(a+b)/2*h,"
  obvod=",a+b+c+d,"
  alfa=",asin(h/c),"
  beta=",asin(h/d)
-[Rovinné obrazce\Trojúhelník - sss]
-/* jsou zadány všechny tøi strany */
+[RovinnÃ© obrazce\TrojÃºhelnÃ­k - sss]
+/* jsou zadÃ¡ny vÅ¡echny tÅ™i strany */
 a=3; b=4; c=5;
-print"Obvod:",a+b+c; p=ans/2;S=sqrt(p*(p-a)*(p-b)*(p-c; if(real ans,gotor3,0);print"Neplatí trojúhelníková nerovnost !";return;
-print"Obsah:",S; print"Krunice vepsaná:",S/p; print "Krunice opsaná:",a*b*c/4/S;print; print"Vıška a:",2*S/a; print"Vıška b:",2*S/b; print"Vıška c:",2*S/c; print"Tìnice a:",sqrt(2*(b^2+c^2)-a^2)/2; print"Tìnice b:",sqrt(2*(a^2+c^2)-b^2)/2; print"Tìnice c:",sqrt(2*(b^2+a^2)-c^2)/2; print; print"alfa:",acos((b^2+c^2-a^2)/(2*b*c; print"beta:",acos((a^2+c^2-b^2)/(2*a*c; print"gamma:",acos((b^2+a^2-c^2)/(2*b*a;
-[Rovinné obrazce\Trojúhelník - Ssu]
-/* jsou zadány dvì strany a úhel, kterı jimi není sevøenı */
+print"Obvod:",a+b+c; p=ans/2;S=sqrt(p*(p-a)*(p-b)*(p-c; if(real ans,gotor3,0);print"NeplatÃ­ trojÃºhelnÃ­kovÃ¡ nerovnost !";return;
+print"Obsah:",S; print"KruÅ¾nice vepsanÃ¡:",S/p; print "KruÅ¾nice opsanÃ¡:",a*b*c/4/S;print; print"VÃ½Å¡ka a:",2*S/a; print"VÃ½Å¡ka b:",2*S/b; print"VÃ½Å¡ka c:",2*S/c; print"TÄ›Å¾nice a:",sqrt(2*(b^2+c^2)-a^2)/2; print"TÄ›Å¾nice b:",sqrt(2*(a^2+c^2)-b^2)/2; print"TÄ›Å¾nice c:",sqrt(2*(b^2+a^2)-c^2)/2; print; print"alfa:",acos((b^2+c^2-a^2)/(2*b*c; print"beta:",acos((a^2+c^2-b^2)/(2*a*c; print"gamma:",acos((b^2+a^2-c^2)/(2*b*a;
+[RovinnÃ© obrazce\TrojÃºhelnÃ­k - Ssu]
+/* jsou zadÃ¡ny dvÄ› strany a Ãºhel, kterÃ½ jimi nenÃ­ sevÅ™enÃ½ */
 alfa=deg90; a=5; b=4;
-print"Strana c:",c=b*cos alfa+sqrt(a^2-(b*sin alfa)^2;  print"Obvod:",o=a+b+c; print"Obsah:",S=b*c*sin alfa/2; print"Krunice vepsaná:",2*S/o; print "Krunice opsaná:",a/2/sin alfa;print; print"Vıška a:",2*S/a; print"Vıška b:",2*S/b; print"Vıška c:",b*sin alfa; print"Tìnice a:",sqrt(2*(b^2+c^2)-a^2)/2; print"Tìnice b:",sqrt(2*(a^2+c^2)-b^2)/2; print"Tìnice c:",sqrt(2*(b^2+a^2)-c^2)/2; print; print"beta:",acos((a^2+c^2-b^2)/(2*a*c; print"gamma:",acos((b^2+a^2-c^2)/(2*b*a
-[Rovinné obrazce\Trojúhelník - sus]
-/* jsou zadány dvì strany a úhel jimi sevøenı */
+print"Strana c:",c=b*cos alfa+sqrt(a^2-(b*sin alfa)^2;  print"Obvod:",o=a+b+c; print"Obsah:",S=b*c*sin alfa/2; print"KruÅ¾nice vepsanÃ¡:",2*S/o; print "KruÅ¾nice opsanÃ¡:",a/2/sin alfa;print; print"VÃ½Å¡ka a:",2*S/a; print"VÃ½Å¡ka b:",2*S/b; print"VÃ½Å¡ka c:",b*sin alfa; print"TÄ›Å¾nice a:",sqrt(2*(b^2+c^2)-a^2)/2; print"TÄ›Å¾nice b:",sqrt(2*(a^2+c^2)-b^2)/2; print"TÄ›Å¾nice c:",sqrt(2*(b^2+a^2)-c^2)/2; print; print"beta:",acos((a^2+c^2-b^2)/(2*a*c; print"gamma:",acos((b^2+a^2-c^2)/(2*b*a
+[RovinnÃ© obrazce\TrojÃºhelnÃ­k - sus]
+/* jsou zadÃ¡ny dvÄ› strany a Ãºhel jimi sevÅ™enÃ½ */
 a=3; b=4; gamma=deg90;
-print"Strana c:",c=sqrt(a^2+b^2-2*a*b*cos gamma; print"Obvod:",o=a+b+c; print"Obsah:",S=a*b*sin gamma/2; print"Krunice vepsaná:",2*S/o; print "Krunice opsaná:",c/2/sin gamma;print; print"Vıška a:",2*S/a; print"Vıška b:",2*S/b; print"Vıška c:",2*S/c; print"Tìnice a:",sqrt(2*(b^2+c^2)-a^2)/2; print"Tìnice b:",sqrt(2*(a^2+c^2)-b^2)/2; print"Tìnice c:",sqrt(2*(b^2+a^2)-c^2)/2; print; print"alfa:",acos((b^2+c^2-a^2)/(2*b*c; print"beta:",acos((a^2+c^2-b^2)/(2*a*c; 
-[Rovinné obrazce\Trojúhelník - usu]
-/* je zadána strana a úhly k ní pøilehlé */
+print"Strana c:",c=sqrt(a^2+b^2-2*a*b*cos gamma; print"Obvod:",o=a+b+c; print"Obsah:",S=a*b*sin gamma/2; print"KruÅ¾nice vepsanÃ¡:",2*S/o; print "KruÅ¾nice opsanÃ¡:",c/2/sin gamma;print; print"VÃ½Å¡ka a:",2*S/a; print"VÃ½Å¡ka b:",2*S/b; print"VÃ½Å¡ka c:",2*S/c; print"TÄ›Å¾nice a:",sqrt(2*(b^2+c^2)-a^2)/2; print"TÄ›Å¾nice b:",sqrt(2*(a^2+c^2)-b^2)/2; print"TÄ›Å¾nice c:",sqrt(2*(b^2+a^2)-c^2)/2; print; print"alfa:",acos((b^2+c^2-a^2)/(2*b*c; print"beta:",acos((a^2+c^2-b^2)/(2*a*c; 
+[RovinnÃ© obrazce\TrojÃºhelnÃ­k - usu]
+/* je zadÃ¡na strana a Ãºhly k nÃ­ pÅ™ilehlÃ© */
 a=3; beta=deg40; gamma=deg50;
-p=a/sin(beta+gamma; print"Strana b:",b=p*sin beta; print"Strana c:",c=p*sin gamma; print"Obvod:",o=a+b+c; v=a/(cot beta+cot gamma; print"Obsah:",S=a*v/2; print"Krunice vepsaná:",2*S/o; print "Krunice opsaná:",p/2;print; print"Vıška a:",v; print"Vıška b:",2*S/b; print"Vıška c:",2*S/c; print"Tìnice a:",sqrt(2*(b^2+c^2)-a^2)/2; print"Tìnice b:",sqrt(2*(a^2+c^2)-b^2)/2; print"Tìnice c:",sqrt(2*(b^2+a^2)-c^2)/2; print; print"alfa:",deg180-beta-gamma
-[Tìlesa\Kvádr]
+p=a/sin(beta+gamma; print"Strana b:",b=p*sin beta; print"Strana c:",c=p*sin gamma; print"Obvod:",o=a+b+c; v=a/(cot beta+cot gamma; print"Obsah:",S=a*v/2; print"KruÅ¾nice vepsanÃ¡:",2*S/o; print "KruÅ¾nice opsanÃ¡:",p/2;print; print"VÃ½Å¡ka a:",v; print"VÃ½Å¡ka b:",2*S/b; print"VÃ½Å¡ka c:",2*S/c; print"TÄ›Å¾nice a:",sqrt(2*(b^2+c^2)-a^2)/2; print"TÄ›Å¾nice b:",sqrt(2*(a^2+c^2)-b^2)/2; print"TÄ›Å¾nice c:",sqrt(2*(b^2+a^2)-c^2)/2; print; print"alfa:",deg180-beta-gamma
+[TÄ›lesa\KvÃ¡dr]
 L=5; W=6; H=4;
-print "Kvádr
+print "KvÃ¡dr
  objem=", L*W*H, "
  povrch=", 2*(L*W+W*H+L*H), "
- úhlopøíèka=", abs(L,W,H)
-[Tìlesa\Trojbokı hranol]
-b=5; /* základna trojúhelníku */
-h=4; /* vıška trojúhelníku */
-l=5; /* vıška hranolu */
-print "Trojbokı hranol
+ ÃºhlopÅ™Ã­Äka=", abs(L,W,H)
+[TÄ›lesa\TrojbokÃ½ hranol]
+b=5; /* zÃ¡kladna trojÃºhelnÃ­ku */
+h=4; /* vÃ½Å¡ka trojÃºhelnÃ­ku */
+l=5; /* vÃ½Å¡ka hranolu */
+print "TrojbokÃ½ hranol
  objem=", b*h*l/2, "
  strana=", s=hypot(b/2,h), "
  povrch=", b*(h+l)+2*l*s
-[Tìlesa\Válec]
-R=6; /* polomìr */
-H=4; /* vıška */
-print "Válec
+[TÄ›lesa\VÃ¡lec]
+R=6; /* polomÄ›r */
+H=4; /* vÃ½Å¡ka */
+print "VÃ¡lec
  objem=", pi*R^2*H, "
  povrch=", 2*pi*R*(R+H)
-[Tìlesa\Kuel]
-R=6; /* polomìr */
-H=4; /* vıška */
-print "Kuel
+[TÄ›lesa\KuÅ¾el]
+R=6; /* polomÄ›r */
+H=4; /* vÃ½Å¡ka */
+print "KuÅ¾el
  objem=", pi*R^2*H/3, "
  povrch=", pi*R*(R+hypot(R,H))
-[Tìlesa\Komolı kuel]
-R1=6; /* polomìr první podstavy */
-R2=3; /* polomìr druhé podstavy */
-H=4; /* vıška */
-print "Komolı kuel
+[TÄ›lesa\KomolÃ½ kuÅ¾el]
+R1=6; /* polomÄ›r prvnÃ­ podstavy */
+R2=3; /* polomÄ›r druhÃ© podstavy */
+H=4; /* vÃ½Å¡ka */
+print "KomolÃ½ kuÅ¾el
  objem=", pi*(R1^2+R1*R2+R2^2)*H/3, "
  povrch=", pi*(R1^2+R2^2+(R1+R2)*hypot(R1-R2,H))
-[Tìlesa\Jehlan]
-L=5; /* délka obdélníkové podstavy */
-W=6; /* šíøka obdélníkové podstavy */
-H=4; /* vıška jehlanu */
+[TÄ›lesa\Jehlan]
+L=5; /* dÃ©lka obdÃ©lnÃ­kovÃ© podstavy */
+W=6; /* Å¡Ã­Å™ka obdÃ©lnÃ­kovÃ© podstavy */
+H=4; /* vÃ½Å¡ka jehlanu */
 print "Jehlan
  objem=", L*W*H/3, "
  povrch=", L*hypot(W/2,H)+W*hypot(L/2,H)+L*W
-[Tìlesa\Komolı jehlan]
-a=4; b=6; /* rozmìry dolní podstavy */
-c=2; d=3; /* rozmìry horní podstavy */
-h=3;      /* vıška */
-print "Komolı jehlan
+[TÄ›lesa\KomolÃ½ jehlan]
+a=4; b=6; /* rozmÄ›ry dolnÃ­ podstavy */
+c=2; d=3; /* rozmÄ›ry hornÃ­ podstavy */
+h=3;      /* vÃ½Å¡ka */
+print "KomolÃ½ jehlan
  objem=", h/3*(a*b+c*d+(a*d+b*c)/2), "
  povrch=", a*b+c*d+(a+c)*hypot(h,(b-d)/2)+(b+d)*hypot(h,(a-c)/2)
-[Tìlesa\Pravidelnı ètyøstìn]
-S=6; /* délka hrany */
-print "Pravidelnı ètyøstìn
+[TÄ›lesa\PravidelnÃ½ ÄtyÅ™stÄ›n]
+S=6; /* dÃ©lka hrany */
+print "PravidelnÃ½ ÄtyÅ™stÄ›n
  objem=", sqrt(2)/12*S^3, "
  povrch=", S^2*sqrt(3)
-[Tìlesa\Koule]
-r=5; /* polomìr */
+[TÄ›lesa\Koule]
+r=5; /* polomÄ›r */
 print "Koule
  objem=", 4/3*pi*r^3, "
  povrch=", 4*pi*r^2
-[Tìlesa\Kulová úseè]
-h=3; /* vıška */
-r=6; /* polomìr koule */
-print "Kulová úseè
+[TÄ›lesa\KulovÃ¡ ÃºseÄ]
+h=3; /* vÃ½Å¡ka */
+r=6; /* polomÄ›r koule */
+print "KulovÃ¡ ÃºseÄ
  objem=", pi*h^2*(r-h/3), "
- obsah vrchlíku=", 2*pi*r*h, "
- povrch vèetnì podstavy=", pi*h*(4*r-h)
-[Tìlesa\Kulová vıseè]
-h=3; /* vıška vrchlíku */
-R=6; /* polomìr koule */
-print "Kulová vıseè
+ obsah vrchlÃ­ku=", 2*pi*r*h, "
+ povrch vÄetnÄ› podstavy=", pi*h*(4*r-h)
+[TÄ›lesa\KulovÃ¡ vÃ½seÄ]
+h=3; /* vÃ½Å¡ka vrchlÃ­ku */
+R=6; /* polomÄ›r koule */
+print "KulovÃ¡ vÃ½seÄ
  objem=", 2/3*pi*R^2*h, "
  povrch=", pi*R*(2*h+sqrt(h*(2*R-h)))
-[Tìlesa\Kulová vrstva]
-a=6; /* polomìr první podstavy */
-b=4; /* polomìr druhé podstavy */
-h=3; /* vıška */
-print "Kulová vrstva
+[TÄ›lesa\KulovÃ¡ vrstva]
+a=6; /* polomÄ›r prvnÃ­ podstavy */
+b=4; /* polomÄ›r druhÃ© podstavy */
+h=3; /* vÃ½Å¡ka */
+print "KulovÃ¡ vrstva
  objem=", pi/2*h*(a^2+b^2+h^2/3), "
- polomìr koule=", r=hypot(a,(a^2-b^2-h^2)/2/h), "
- obsah pásu=", 2*pi*r*h, "
- celkovı povrch=", pi*(2*r*h+a^2+b^2)
-[Tìlesa\Kulovı klín]
-r=6;  /* polomìr koule */
-a=30; /* úhel ve stupních */
-print "Kulovı klín
+ polomÄ›r koule=", r=hypot(a,(a^2-b^2-h^2)/2/h), "
+ obsah pÃ¡su=", 2*pi*r*h, "
+ celkovÃ½ povrch=", pi*(2*r*h+a^2+b^2)
+[TÄ›lesa\KulovÃ½ klÃ­n]
+r=6;  /* polomÄ›r koule */
+a=30; /* Ãºhel ve stupnÃ­ch */
+print "KulovÃ½ klÃ­n
  objem=", pi/270*r^3*a, "
- obsah sférické plochy=", pi/90*r^2*a, "
- celkovı povrch=", pi*r^2*(a/90+1)
-[Tìlesa\Kruhovı prstenec]
-R=6; /* vzdálenost støedu trubice od støedu prstence */
-s=3; /* polomìr trubice */
-print "Kruhovı prstenec (anuloid, torus)
+ obsah sfÃ©rickÃ© plochy=", pi/90*r^2*a, "
+ celkovÃ½ povrch=", pi*r^2*(a/90+1)
+[TÄ›lesa\KruhovÃ½ prstenec]
+R=6; /* vzdÃ¡lenost stÅ™edu trubice od stÅ™edu prstence */
+s=3; /* polomÄ›r trubice */
+print "KruhovÃ½ prstenec (anuloid, torus)
  objem=", 2*pi^2*R*s^2, "
  povrch=", 4*pi^2*R*s
-[Statistika\Smìrodatná odchylka]
+[Statistika\SmÄ›rodatnÃ¡ odchylka]
 x=(10,16,3,25,7,26,19,11);
-print "poèet=", count x, "
-aritmetickı prùmìr=", ave x, "
-medián=", med x, "
-geometrickı prùmìr=", geom x, "
-harmonickı prùmìr=", harmon x, "
+print "poÄet=", count x, "
+aritmetickÃ½ prÅ¯mÄ›r=", ave x, "
+mediÃ¡n=", med x, "
+geometrickÃ½ prÅ¯mÄ›r=", geom x, "
+harmonickÃ½ prÅ¯mÄ›r=", harmon x, "
 minimum=", min x, "
 maximum=", max x, "
 rozptyl=", var x, "
-smìrodatná odchylka=", stdev x
-[Statistika\Smìrodatná odchylka s frekvencemi]
+smÄ›rodatnÃ¡ odchylka=", stdev x
+[Statistika\SmÄ›rodatnÃ¡ odchylka s frekvencemi]
 Data=(14,13,12,11,10,9,8,7,6,5);
 Freq=(1,2,3,3,5,3,2,1,2,1);
-print "poèet=",n=sum Freq, "
-souèet x=", s=sum(Data*Freq), "
-souèet x^2=", s2=sumfor(i,0,count Data-1,Data[i]^2*Freq[i]), "
-aritmetickı prùmìr=", s/n, "
-geometrickı prùmìr=", n#productfor(i,0,count Data-1,Data[i]^Freq[i]), "
-harmonickı prùmìr=", n/sumfor(i,0,count Data-1,Freq[i]/Data[i]), "
+print "poÄet=",n=sum Freq, "
+souÄet x=", s=sum(Data*Freq), "
+souÄet x^2=", s2=sumfor(i,0,count Data-1,Data[i]^2*Freq[i]), "
+aritmetickÃ½ prÅ¯mÄ›r=", s/n, "
+geometrickÃ½ prÅ¯mÄ›r=", n#productfor(i,0,count Data-1,Data[i]^Freq[i]), "
+harmonickÃ½ prÅ¯mÄ›r=", n/sumfor(i,0,count Data-1,Freq[i]/Data[i]), "
 minimum=", min Data, "
 maximum=", max Data, "
 rozptyl=", (s2-s^2/n)/(n-1), "
-smìrodatná odchylka=", sqrt Ans
+smÄ›rodatnÃ¡ odchylka=", sqrt Ans
 [Statistika\Korelace]
 X=(100,40,95,90,92,85,55,60,98,20);
 Y=(0,95,5,20,30,40,50,70,0,100);
 Rx=rowsforeach(m,X, sumforeach(j,X,j<m) + (sumforeach(j,X,j==m)+1)/2);
 Ry=rowsforeach(m,Y, sumforeach(j,Y,j<m) + (sumforeach(j,Y,j==m)+1)/2);
-print "Spearmanùv koeficient poøadové korelace=", lrr(Rx,Ry),"
-Pearsonùv korelaèní koeficient=", lrr(X',Y')
+print "SpearmanÅ¯v koeficient poÅ™adovÃ© korelace=", lrr(Rx,Ry),"
+PearsonÅ¯v korelaÄnÃ­ koeficient=", lrr(X',Y')
 [Statistika\t-test]
 x=(10, 9, 9, 8, 7, 7, 7, 6, 6, 5, 3, 2);
 y=(14, 13, 13, 13, 12, 12, 10, 8, 8, 7, 7, 5, 5);
@@ -237,16 +237,16 @@ Freq1=(1, 2, 1, 3, 2, 1, 1, 1);
 Data2=(14, 13, 12, 10, 8, 7, 5);
 Freq2=(1, 3, 2, 1, 2, 2, 2);
 print "n1=",n1=sum Freq1, "
-prùmìr1=",m1=sum(Data1*Freq1)/n1, "
+prÅ¯mÄ›r1=",m1=sum(Data1*Freq1)/n1, "
 rozptyl1=", v1=(sumfor(i,0,count Data1-1,Data1[i]^2 * Freq1[i]) -
  m1^2*n1)/(n1-1), "
 n2=",n2=sum Freq2, "
-prùmìr2=",m2=sum(Data2*Freq2)/n2, "
+prÅ¯mÄ›r2=",m2=sum(Data2*Freq2)/n2, "
 rozptyl2=", v2=(sumfor(i,0,count Data2-1,Data2[i]^2 * Freq2[i]) -
  m2^2*n2)/(n2-1), "
  
 t =",(m1-m2)/sqrt(((n1-1)*v1+(n2-1)*v2)/(n1+n2-2)*(1/n1+1/n2))
-[Statistika\Poøadovı test (U test)]
+[Statistika\PoÅ™adovÃ½ test (U test)]
 /* Mann-Whitney (Wilcoxon) U test */
 L1=(12, 12, 11, 8, 7, 6, 6);
 L2=(24, 24, 16, 15, 14, 12, 11, 10, 9);
@@ -269,26 +269,26 @@ next: o++; if(b,t1++,t2++); goto merge;
 end:
 U1=R1-n1*(n1+1)/2; U2=R2-n2*(n2+1)/2;
 if(U1+U2==n1*n2, gotor3,0); print "error"; return;
-print "souèet poøadí první velièiny=",R1, "
-souèet poøadí druhé velièiny=",R2, "
-poèet shodnıch vzorkù=",ties, "
+print "souÄet poÅ™adÃ­ prvnÃ­ veliÄiny=",R1, "
+souÄet poÅ™adÃ­ druhÃ© veliÄiny=",R2, "
+poÄet shodnÃ½ch vzorkÅ¯=",ties, "
 U=",U=max(U1,U2), "
-prùmìr U=",Mu=n1*n2/2, "
+prÅ¯mÄ›r U=",Mu=n1*n2/2, "
 odchylka U=",Su=sqrt(n1*n2*(n1+n2+1)/12), "
 Z=",(U-Mu)/Su
-[Statistika\Wilcoxonùv párovı test]
+[Statistika\WilcoxonÅ¯v pÃ¡rovÃ½ test]
 L1=(51, 49, 46, 45, 46, 39, 38, 40, 41, 40, 49, 55, 45, 37, 44, 52, 37);
 L2=(50, 48, 46, 44, 45, 41, 39, 39, 39, 42, 48, 56, 48, 36, 45, 51, 36);
 D=sort(L1-L2); n=count D;
 i=-1;
 i++; if(i==n, gotor1, if(D[i]<0, gotor-1, 0));
 if(i>0,gotor3,0);
-print "ádnı rozdíl není zápornı"; return;
+print "Å½Ã¡dnÃ½ rozdÃ­l nenÃ­ zÃ¡pornÃ½"; return;
 S1=listforeach(x, reverse D[0,i-1], abs x);
 i--;
 i++; if(i==n, gotor1, if(D[i]==0, gotor-1, 0));
 if(i<n,gotor3,0);
-print "ádnı rozdíl není kladnı"; return;
+print "Å½Ã¡dnÃ½ rozdÃ­l nenÃ­ kladnÃ½"; return;
 S2=D[i,n-1];
 n1=count S1; n2=count S2;
 R1=0;R2=0;i=0;j=0;o=1;t1=0;t2=0;last=0;
@@ -307,11 +307,11 @@ if(o>n1+n2, goto end, 0);
 t1=0;t2=0; last=item;
 next: o++; if(b,t1++,t2++); goto merge;
 end:
-print "Souèet poøadí zápornıch rozdílù=",R1, "
-Souèet poøadí kladnıch rozdílù=",R2,"
+print "SouÄet poÅ™adÃ­ zÃ¡pornÃ½ch rozdÃ­lÅ¯=",R1, "
+SouÄet poÅ™adÃ­ kladnÃ½ch rozdÃ­lÅ¯=",R2,"
 N=",N=n1+n2,"
 W=",abs(R1-R2),"
 
-Pøiblinı odhad pomocí normálního rozdìlení:
+PÅ™ibliÅ¾nÃ½ odhad pomocÃ­ normÃ¡lnÃ­ho rozdÄ›lenÃ­:
 Z=",z=(abs(R1-R2)-.5)/sqrt(N*(N+1)*(2*N+1)/6),"
 p=",2*exp(-z^2/2)/sqrt(2*pi) * polynom(1/(1+0.2316419*z), (0,0.319381530, -0.356563782, 1.781477937, -1.821255978, 1.330274429))

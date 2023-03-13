@@ -1,4 +1,4 @@
-
+Ôªø
 [Equazione di secondo grado]
 a=1; b=3; c=2;   /* a*x^2 + b*x + c = 0 */
 D=sqrt(b^2-4*a*c; print(-b-D)/2/a; (-b+D)/2/a
@@ -84,7 +84,7 @@ print "Trapezoid
  beta=",asin(h/d)
 [Piano\Triangolo - sss]
 a=3; b=4; c=5;
-p=(a+b+c)/2;S=sqrt(p*(p-a)*(p-b)*(p-c)); if(real ans,gotor3,0);print"Disparit‡ triangolo Ë false !";return;
+p=(a+b+c)/2;S=sqrt(p*(p-a)*(p-b)*(p-c)); if(real ans,gotor3,0);print"Disparit√† triangolo √® false !";return;
 print"Triangle
 alpha=",acos((b^2+c^2-a^2)/(2*b*c)),"
 beta=",acos((a^2+c^2-b^2)/(2*a*c)),"

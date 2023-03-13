@@ -1,15 +1,14 @@
-#CP1252
-; TraducciÛn: Ricardo A. Rivas
+Ôªø; Traducci√≥n: Ricardo A. Rivas
 ; https://sites.google.com/site/rivica
-; VersiÛn 2.6.3 - 10-junio-2020
-;men˙
+; Versi√≥n 2.6.3 - 10-junio-2020
+;men√∫
 450=&Archivo
 451=&Idioma
 223=&Fuente...
 230=&Opciones...\tAlt+O
 224=&Colores...
 111=Abrir &botones...\tCtrl+B
-106=Abrir e&xpresiÛn...\tCtrl+O
+106=Abrir e&xpresi√≥n...\tCtrl+O
 108=G&uardar resultado...\tCtrl+S
 109=Abrir &macros...
 110=Gua&rdar macros como...
@@ -27,10 +26,10 @@
 234=&Historial...\tCtrl+H
 232=Anter&ior\tCtrl+up
 233=&Siguiente\tCtrl+down
-241=Pri&mer par·metro\tCtrl+1
-242=Segu&ndo par·metro\tCtrl+2
-243=&Tercer par·metro\tCtrl+3
-244=Cuart&o par·metro\tCtrl+4
+241=Pri&mer par√°metro\tCtrl+1
+242=Segu&ndo par√°metro\tCtrl+2
+243=&Tercer par√°metro\tCtrl+3
+244=Cuart&o par√°metro\tCtrl+4
 206=&Variables...\tCtrl+L
 
 454=Constan&tes
@@ -47,15 +46,15 @@
 120=&Funciones\tF1
 121=&Detalles...
 
-296=PrecisiÛn:
+296=Precisi√≥n:
 
 1=Aceptar
 2=Cancelar
 9=&Cerrar
 
-;ventanas de di·logo
+;ventanas de di√°logo
 11=Detalles
-503=VersiÛn
+503=Versi√≥n
 504=Precise Calculator
 
 14=Crear macro
@@ -76,12 +75,12 @@
 18=Opciones
 537=&Guardar opciones al salir
 530=separador &antes de punto
-532=&Car·cter:
+532=&Car√°cter:
 534=F&recuencia:
 531=&separador luego de punto
-533=Car·c&ter:
+533=Car√°c&ter:
 535=Fr&ecuencia:
-536=&M·xima cifra de elementos de historial:
+536=&M√°xima cifra de elementos de historial:
 538=&Registrar expresiones y resultados en archivo:
 539=&Longitud de archivo de registro:
 
@@ -90,78 +89,78 @@
 551=Funciones
 
 ;mensajes de error
-1010=DivisiÛn por cero
+1010=Divisi√≥n por cero
 1011=Exceso - cifra enorme
 1017=operando shift no es entero
 1018=operando de combinaciones no es entero
 1019=operando de permutaciones no es entero
 1020=operando de factorial no es entero
-1026=M·ximo com˙n divisor de no enteros
-1027=MÌnimo com˙n multiplo de no enteros
-1030=divisor de n˙mero real
-1031=C·lculo muy difÌcil
-1032=¡ngulo de punto [0,0]
-1033=Cifra inv·lida luego de goto
+1026=M√°ximo com√∫n divisor de no enteros
+1027=M√≠nimo com√∫n multiplo de no enteros
+1030=divisor de n√∫mero real
+1031=C√°lculo muy dif√≠cil
+1032=√Ångulo de punto [0,0]
+1033=Cifra inv√°lida luego de goto
 1034=Resultado infinito
-1035=FunciÛn no aplicable a n˙meros imaginarios
+1035=Funci√≥n no aplicable a n√∫meros imaginarios
 1036=Logaritmo de cero
 1037=Potencia compleja o negativa de cero
-1038=RaÌz compleja o negativa de cero
+1038=Ra√≠z compleja o negativa de cero
 1039=argtanh,argcoth de 1 o -1
 1040=arctan, arccot de 1i o -1i
-1041=TamaÒo incorrecto de matrices
+1041=Tama√±o incorrecto de matrices
 1042=Incremento o decremento de matriz
-1043=FunciÛn no aplicable a matrices
-1044=Matrices de tamaÒos desiguales
+1043=Funci√≥n no aplicable a matrices
+1044=Matrices de tama√±os desiguales
 1045=Cifra de columnas de primera matriz desigual a cifra de filas de segunda matriz
 1046=Vectores de longitudes desiguales
 1047=Potencia no entera de matriz
 1048=Matriz no cuadrada
 1049=Argumentos deben ser vectores de longitud 3
 1050=Matriz irregular
-1051=Õndice fuera de valores normales
-1052=Õndice no entero
+1051=√çndice fuera de valores normales
+1052=√çndice no entero
 1053=Matriz no tiene 2 columnas
 1054=Matriz debe tener al menos dos columnas
 1055=Ecuaciones irresolubles
-1056=Par·metro no es vector
-1057=Primer par·metro debe ser variable
+1056=Par√°metro no es vector
+1057=Primer par√°metro debe ser variable
 1058=Cuarto argumento debe ser entero
-1059=Matriz de funciÛn debe tener cifra de par·metros de filas, cifra de columnas
-1060=Operador de funciÛn trigonomÈtrica es enorme
-1061=Par·metros deben ser variables
+1059=Matriz de funci√≥n debe tener cifra de par√°metros de filas, cifra de columnas
+1060=Operador de funci√≥n trigonom√©trica es enorme
+1061=Par√°metros deben ser variables
 1062=Resultado muy largo
-1063=Primer operando de funciÛn MOD excede precisiÛn
+1063=Primer operando de funci√≥n MOD excede precisi√≥n
 
-960=Hay una expresiÛn numÈrica al lado izquierdo de una asignaciÛn
-961=Incremento o decremento de expresiÛn
+960=Hay una expresi√≥n num√©rica al lado izquierdo de una asignaci√≥n
+961=Incremento o decremento de expresi√≥n
 962=] esperado
 954=Cifra fuera de base elegida
-950=FunciÛn o variable desconocida
+950=Funci√≥n o variable desconocida
 951=Operador desconocido
-957=Se espera parÈntesis izquierdo
-958=Cifra inv·lida de argumentos
-952=Se espera funciÛn de cifra, variable o prefijo
+957=Se espera par√©ntesis izquierdo
+958=Cifra inv√°lida de argumentos
+952=Se espera funci√≥n de cifra, variable o prefijo
 953=Se espera operador binario
 959=Comilla faltante al final de texto impreso
 1029=Error grave
 956=Coma aislada
 963=Corchete derecho aislado
-955=ParÈntesis aislado
+955=Par√©ntesis aislado
 964=Final de comentario faltante
 
-755=Error en %s\nlÌnea %d
-756=Error en %s\mensaje n˙mero %d es enorme
+755=Error en %s\nl√≠nea %d
+756=Error en %s\mensaje n√∫mero %d es enorme
 757=Error en %s\ncifra duplicada %d
 753=Archivo %s es muy largo
 754=Error al leer archivo %s
 730=Imposible abrir archivo %s
 733=Imposible crear archivo %s
 735=Imposible escribir en Registro de Windows
-736=øBorrar opciones?
+736=¬øBorrar opciones?
 801=Macro "%s" existente
-731=Formato inv·lido de %s
-802=Escribir primero alguna expresiÛn en recuadro de entrada
+731=Formato inv√°lido de %s
+802=Escribir primero alguna expresi√≥n en recuadro de entrada
 1028=Memoria insuficiente
 
 508=Archivos de texto (*.txt)\0*.txt\0Todo archivo\0*.*\0

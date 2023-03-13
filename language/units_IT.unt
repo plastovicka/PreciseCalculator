@@ -1,4 +1,4 @@
-[lunghezza\angstrom]
+Ôªø[lunghezza\angstrom]
 1E-10
 [lunghezza\pollice]
 0.0254
@@ -10,7 +10,7 @@
 1609.344
 [lunghezza\miglio nautico]
 1852
-[lunghezza\unit‡ astronomica]
+[lunghezza\unit√† astronomica]
 1.4959787E11
 [lunghezza\anno luce]
 9.46055E15
@@ -56,9 +56,9 @@
 133.322144429454
 [Pressione\millimetro di acqua]
 9.80665
-[Velocit‡\Kilometro per ora]
+[Velocit√†\Kilometro per ora]
 (1/3.6)
-[Velocit‡\nodo]
+[Velocit√†\nodo]
 0.51444444438562
 [Tempo\giorno siderale]
 86164.09962

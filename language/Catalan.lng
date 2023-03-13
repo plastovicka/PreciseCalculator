@@ -1,17 +1,16 @@
-#CP1252
-;menu
+ï»¿;menu
 450=&Fitxer
 451=&Llenguatge
 223=&Font...
 230=Opc&ions...\tAlt+O
 224=&Colors...
 111=&botons d'obrir...\tCtrl+B
-106=expressió d'&Obrir ...\tCtrl+O
+106=expressiÃ³ d'&Obrir ...\tCtrl+O
 108=&Guardar resultat...\tCtrl+S
 109=Obrir &macros...
 110=Guardar m&acros com a...
 102=Guardar se&ttings
-105=&Esborrar configuració
+105=&Esborrar configuraciÃ³
 103=&Sortir
 
 453=&Editar
@@ -21,13 +20,13 @@
 202=&Enganxar\tCtrl+V
 204=Net&ejar\tEsc
 203=Copiar &resultat\tAlt+C
-234=&Històric...\tCtrl+H
+234=&HistÃ²ric...\tCtrl+H
 232=Anter&ior\tCtrl+up
 233=&Proper\tCtrl+down
-241=&1r  paràmetre\tCtrl+1
-242=&2n paràmetre\tCtrl+2
-243=&3r  paràmetre\tCtrl+3
-244=&4t  paràmetre\tCtrl+4
+241=&1r  parÃ metre\tCtrl+1
+242=&2n parÃ metre\tCtrl+2
+243=&3r  parÃ metre\tCtrl+3
+244=&4t  parÃ metre\tCtrl+4
 206=&Variables...\tCtrl+L
 
 454=Constan&ts
@@ -45,16 +44,16 @@
 121=&Sobre...
 
 
-296=Presició:
+296=PresiciÃ³:
 
 1=OK
-2=Cancel·lar
+2=CancelÂ·lar
 9=&Tancar
 
-;finstres de diàleg
+;finstres de diÃ leg
 11=Sobre
-503=Versió
-504=Calculadora de precisió
+503=VersiÃ³
+504=Calculadora de precisiÃ³
 
 14=Crear una nova macro
 507=Nom de la macro:
@@ -66,20 +65,20 @@
 15=Esborrar macro
 
 17=Variables
-20=Història
+20=HistÃ²ria
 520=&Enganxar
 521=&Esborrar
 522=Esborrar &tot
 
 18=Opcions
-537=&Guardar configuració al Sortir
+537=&Guardar configuraciÃ³ al Sortir
 530=separador &abans del punt
-532=&Caràcter:
+532=&CarÃ cter:
 534=F&requencia:
 531=separador &despres del punt
 533=C&aracter:
-535=Fr&eqüència:
-536=&Màxim numero de items a Història:
+535=Fr&eqÃ¼Ã¨ncia:
+536=&MÃ xim numero de items a HistÃ²ria:
 538=&Exportar totes les expressions i resultats a un fitxer:
 539=&guardar la longitud del fitxer :
 
@@ -88,79 +87,79 @@
 551=Funcions
 
 ;error messages
-1010=Divisó per zero
-1011=Overflow, el numero és massa gran
-1017=L'operand canviat no és un enter
-1018=L'operand de combinació no és un enter
-1019=L'operand de permutació no és un enter
-1020=L'operand de factorial no és un enter
-1026=El màxim comú divisor de no-enters
-1027=El mínim comú múltiple de no-enters
+1010=DivisÃ³ per zero
+1011=Overflow, el numero Ã©s massa gran
+1017=L'operand canviat no Ã©s un enter
+1018=L'operand de combinaciÃ³ no Ã©s un enter
+1019=L'operand de permutaciÃ³ no Ã©s un enter
+1020=L'operand de factorial no Ã©s un enter
+1026=El mÃ xim comÃº divisor de no-enters
+1027=El mÃ­nim comÃº mÃºltiple de no-enters
 1030=divisor de numero real
-1031=El càlcul és massa difícil
+1031=El cÃ lcul Ã©s massa difÃ­cil
 1032=Angle de punt [0,0]
-1033=Número invàlid després de goto
+1033=NÃºmero invÃ lid desprÃ©s de goto
 1034=Resultat infinit
-1035=La funció no soporta números imaginaris
+1035=La funciÃ³ no soporta nÃºmeros imaginaris
 1036=Logaritme de zero
-1037=Potència de zero complexe o negativa
+1037=PotÃ¨ncia de zero complexe o negativa
 1038=Arrel de zero complexe o negativa
 1039=argtanh,argcoth desde 1 o -1
 1040=arctan, arccot desde 1i o -1i
 1041=Les matrius tenen un tamany incorrecte
 1042=Increment o decrement d'una matriu
-1043=La funció no suporta matrius
+1043=La funciÃ³ no suporta matrius
 1044=Les matrius no tenen el mateix tamany
-1045=El número de columnes de la primera matriu no és igual al numero de files de la segona
+1045=El nÃºmero de columnes de la primera matriu no Ã©s igual al numero de files de la segona
 1046=Els vectors tenen longituds diferents
-1047=Potència de la matriu no sencera
-1048=La matriu no és quadrada
+1047=PotÃ¨ncia de la matriu no sencera
+1048=La matriu no Ã©s quadrada
 1049=Els arguments han de ser de longitud 3
-1050=La matriu no és regular
+1050=La matriu no Ã©s regular
 1051=Index fora de rang
-1052=L'Index no és un enter
-1053=La matriu no té 2 columnes
-1054=La matriu ha de tenir més d'una columna
+1052=L'Index no Ã©s un enter
+1053=La matriu no tÃ© 2 columnes
+1054=La matriu ha de tenir mÃ©s d'una columna
 1055=Les equacions no son resolubles
-1056=El paràmetre no és un vector
-1057=El primer paràmetre ha de ser una variable
+1056=El parÃ metre no Ã©s un vector
+1057=El primer parÃ metre ha de ser una variable
 1058=El quart argument ha de ser un enter
-1059=La funció matriu ha de tenir els paràmetres de número de files, Númeroo de columnes
-1060=L'operand de la funció trigonometrica és massa gran
-1061=Els paràmetres han de ser variables
-1062=El resultat és massa llarg
-1063=El primer operand de la funció MOD és més gran que la precisió
+1059=La funciÃ³ matriu ha de tenir els parÃ metres de nÃºmero de files, NÃºmeroo de columnes
+1060=L'operand de la funciÃ³ trigonometrica Ã©s massa gran
+1061=Els parÃ metres han de ser variables
+1062=El resultat Ã©s massa llarg
+1063=El primer operand de la funciÃ³ MOD Ã©s mÃ©s gran que la precisiÃ³
 
-960=Hi ha una expressió numèrica a l'esquerra d'una assignació
-961=Increment o decrement d'una expressió
+960=Hi ha una expressiÃ³ numÃ¨rica a l'esquerra d'una assignaciÃ³
+961=Increment o decrement d'una expressiÃ³
 962=S'esperava un ]
-954=El dígit és fora de la base seleccionada
-950=Funció o variable desconeguda
+954=El dÃ­git Ã©s fora de la base seleccionada
+950=FunciÃ³ o variable desconeguda
 951=Operator desconegut
-957=S'esperava un parèntesi esquerra
-958=Número d'arguments equivocat
-952=S'esperava un número, variabla o funció prefix
+957=S'esperava un parÃ¨ntesi esquerra
+958=NÃºmero d'arguments equivocat
+952=S'esperava un nÃºmero, variabla o funciÃ³ prefix
 953=S'esperava un operador binari
-959=Comete perduda al final d'un text imprès
+959=Comete perduda al final d'un text imprÃ¨s
 1029=Error fatal
 956=coma desaparellada
-963=paréntesi dret desaparellat
-955=paréntesi desaparellat
+963=parÃ©ntesi dret desaparellat
+955=parÃ©ntesi desaparellat
 964=No hi ha final de comentari
 
 755=Error a la  %s\nLinia %d
-756=Error a %s\nMissatge número %d és massa gran
-757=Error a %s\nNúmero duplicat %d
-753=El fitxer %s és massa llarg
+756=Error a %s\nMissatge nÃºmero %d Ã©s massa gran
+757=Error a %s\nNÃºmero duplicat %d
+753=El fitxer %s Ã©s massa llarg
 754=Error llegint el fitxer %s
 730=No es pot obrir el fitxer %s
 733=No es pot crear el fitxer %s
 735=No es pot escriure al registre de Windows
-736=Vols esborrar la teva configuració ?
+736=Vols esborrar la teva configuraciÃ³ ?
 801=La macro "%s" ja existeix
 731=Mal format de %s
-802=Primerament, escriu alguna expressió a la caixa de input
-1028=No hi ha prou memòria !!!
+802=Primerament, escriu alguna expressiÃ³ a la caixa de input
+1028=No hi ha prou memÃ²ria !!!
 
 508=Fitxers de texte (*.txt)\0*.txt\0Tots el fitxers\0*.*\0
 509=Macros (*.cal)\0*.cal\0Tots els fitxers\0*.*\0

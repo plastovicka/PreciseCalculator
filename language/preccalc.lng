@@ -1,5 +1,4 @@
-#CP1252
-;menu
+﻿;menu
 450=&File
 451=&Language
 223=&Font...
@@ -264,7 +263,7 @@
 ;#
 2039=Root
 ;agm
-2040=Arithmetic�geometric mean
+2040=Arithmetic–geometric mean
 ;min
 2041=Minimal value
 ;!!

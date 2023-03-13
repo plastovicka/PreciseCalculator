@@ -1,5 +1,5 @@
 /*
-	(C) 2004-2022  Petr Lastovicka
+	(C) Petr Lastovicka
 
 	This program is free software; you can redistribute it and/or
 	modify it under the terms of the GNU General Public License.
@@ -508,7 +508,7 @@ void cerror(int id, char *txt)
 #ifdef CONSOLE
 	puts(lng(id, txt));
 #else
-	SetWindowText(hOut, lng(id, txt));
+	SetWindowTextT(hOut, lng(id, txt));
 #endif
 }
 
@@ -1360,20 +1360,7 @@ void checkInfinite(Complex &y, Tint prec)
 //---------------------------------------------------------------
 void ClearError(int err)
 {
-#ifdef ARIT64
 	InterlockedCompareExchange((Tinterlock*)&error, 0, (Tinterlock)err);
-#else
-	typedef LONG(WINAPI *TInterlockedCompareExchange)(LONG volatile *, LONG, LONG);
-	static TInterlockedCompareExchange pInterlockedCompareExchange = NULL;
-	if(!pInterlockedCompareExchange){
-		pInterlockedCompareExchange = (TInterlockedCompareExchange)GetProcAddress(GetModuleHandle("kernel32"), "InterlockedCompareExchange");
-		if(!pInterlockedCompareExchange){
-			if(error==err) error=0;
-			return;
-		}
-	}
-	pInterlockedCompareExchange((Tinterlock*)&error, 0, (Tinterlock)err);
-#endif
 }
 //---------------------------------------------------------------
 DWORD WINAPI calcThread(char *param)
@@ -1570,7 +1557,7 @@ DWORD WINAPI calcThread(char *param)
 		buf.array= new char[buf.capacity];
 		if(b) break;
 #ifndef CONSOLE
-		SetWindowText(hOut, output);
+		writeOutput(output);
 #endif
 		if(precision>=prec2){
 			precision++;
@@ -1622,7 +1609,7 @@ int stop()
 		while(MsgWaitForMultipleObjects(1, &thread, FALSE, INFINITE, QS_ALLINPUT)==
 			WAIT_OBJECT_0+1){
 			MSG mesg;
-			while(PeekMessage(&mesg, NULL, 0, 0, PM_REMOVE)){
+			while(PeekMessageW(&mesg, NULL, 0, 0, PM_REMOVE)){
 				if(mesg.message==WM_CLOSE){
 					PostMessage(hWin, WM_CLOSE, 0, 0);
 					return 2;
@@ -1657,7 +1644,7 @@ void calc(char *input)
 void calc()
 {
 	//copy content of the input edit box
-	char *input= getIn();
+	char *input= getInput();
 	//add to history
 	forl2(TstrItem, history){
 		if(!strcmp(input, item->s)){
@@ -1693,7 +1680,7 @@ void wrAns()
 {
 	if(error) return;
 	char *buf= AWRITEM(ans, digits, matrixFormat);
-	SetWindowText(hOut, buf);
+	writeOutput(buf);
 	delete[] buf;
 }
 

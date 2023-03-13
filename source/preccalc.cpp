@@ -1,5 +1,5 @@
 /*
-	(C) 2004-2022  Petr Lastovicka
+	(C) Petr Lastovicka
 
 	This program is free software; you can redistribute it and/or
 	modify it under the terms of the GNU General Public License.
@@ -47,7 +47,6 @@ int width=522,
  maxHistory=200,
  keyboard=0,
  historyLen,
- macroFileLen, constantsFileLen, unitsFileLen,
  idEnter,
  sizeLock,
  autoSave=1,
@@ -55,10 +54,11 @@ int width=522,
  logSize=0,
  tooltipsShow=1;
 
+DWORD macroFileLen, constantsFileLen, unitsFileLen;
+
 char *sepExpr="\r--------------------\r";
 char *sepResult="\r =\r";
 char *macroFile, *constantsFile, *unitsFile;
-char *richEditClass;
 static int oldW, oldH;
 const int MBUTTONTEXT=32;
 UINT inv, hyp;
@@ -69,7 +69,6 @@ bool clearInput,
 resizing,
  delreg,
  modif,
- richEdit20,
  invByShift;
 
 TfileName fnExpr, fnMacro, fnBtn, fnLog;
@@ -165,23 +164,18 @@ OPENFILENAME btnOfn={
 int vmsg(HWND w, char *caption, char *text, int btn, va_list v)
 {
 	if(!text) return IDCANCEL;
-	if (codePage) {
-		WCHAR buf[1024];
-		CodePageToWideChar(text);
-		for (WCHAR* s = dtBuf; *s; s++) {
-			if (*s == 's') *s = 'S';
-		}		
-		_vsnwprintf(buf, sizeof(buf), dtBuf, v);
-		buf[sizeA(buf) - 1] = 0;
-		CodePageToWideChar(caption);
-		return MessageBoxW(w, buf, dtBuf, btn);
-	}
-	else {
-		char buf[1024];
-		_vsnprintf(buf, sizeof(buf), text, v);
-		buf[sizeof(buf) - 1] = 0;
-		return MessageBox(w, buf, caption, btn);
-	}
+	WCHAR buf[1024];
+	CodePageToWideChar(text);
+	for (WCHAR* s = dtBuf; *s; s++) {
+		if(*s == '%') {
+			if(s[1] == 's') s[1] = 'S';
+			if(s[1] == 'S') s[1] = 's';
+		}
+	}		
+	_vsnwprintf(buf, sizeof(buf), dtBuf, v);
+	buf[sizeA(buf) - 1] = 0;
+	CodePageToWideChar(caption);
+	return MessageBoxW(w, buf, dtBuf, btn);
 }
 
 void msg(char *text, ...)
@@ -210,15 +204,6 @@ DWORD getTickCount()
 	LARGE_INTEGER c;
 	QueryPerformanceCounter(&c);
 	return (DWORD)(c.QuadPart*1000/freq.QuadPart);
-}
-
-HANDLE openFile(char *fn)
-{
-	HANDLE f=CreateFile(fn, GENERIC_READ, FILE_SHARE_READ, 0, OPEN_EXISTING, 0, 0);
-	if(f==INVALID_HANDLE_VALUE){
-		if(fn[0]) msg(lng(730, "Cannot open file %s"), fn);
-	}
-	return f;
 }
 
 HANDLE createFile(char *fn, DWORD creation)
@@ -312,9 +297,9 @@ void logx(char *msg, Pint x)
 }
 #endif
 
-char *getIn(int *startPos)
+char *getInput(int *startPos)
 {
-	TEXTRANGE tr;
+	TEXTRANGEW tr;
 	if(dual){
 		tr.chrg.cpMin=0;
 		tr.chrg.cpMax=-1;
@@ -340,12 +325,16 @@ char *getIn(int *startPos)
 		int result= (int)SendMessage(hIn, EM_FINDTEXT, FR_DOWN|FR_MATCHCASE, (LPARAM)&ft);
 		tr.chrg.cpMax= (result>=0 && (result<next || next<0)) ? result : next;
 	}
-	if(tr.chrg.cpMax<0) tr.chrg.cpMax=GetWindowTextLength(hIn);
-	tr.lpstrText=new char[tr.chrg.cpMax - tr.chrg.cpMin + 2]; //reserve 1 byte for checkBrackets()
+	if(tr.chrg.cpMax<0) tr.chrg.cpMax=GetWindowTextLengthW(hIn);
+	int len = tr.chrg.cpMax - tr.chrg.cpMin + 2; //reserve 1 byte for checkBrackets()
+	tr.lpstrText=new WCHAR[len];
 	tr.lpstrText[0]=0;
 	if(startPos) *startPos=tr.chrg.cpMin;
-	SendMessage(hIn, EM_GETTEXTRANGE, 0, (LPARAM)&tr);
-	return tr.lpstrText;
+	SendMessageW(hIn, EM_GETTEXTRANGE, 0, (LPARAM)&tr);
+	char* result = new char[len*3];
+	WideCharToMultiByte(CP_UTF8, 0, tr.lpstrText, -1, result, len*3, 0, 0);
+	delete[] tr.lpstrText;
+	return result;
 }
 
 void clearhIn()
@@ -360,6 +349,11 @@ void clearhIn()
 	}
 }
 
+void writeOutput(char* s)
+{
+	SetEditTextUtf8(hOut, s);
+}
+
 void paste(char *text)
 {
 	if(clearInput){
@@ -369,7 +363,7 @@ void paste(char *text)
 			SendMessage(hIn, EM_REPLACESEL, TRUE, (LPARAM)"Ans");
 		}
 	}
-	SendMessage(hIn, EM_REPLACESEL, TRUE, (LPARAM)text);
+	SetEditTextUtf8(hIn, text, ST_SELECTION | ST_KEEPUNDO);
 }
 
 void focusEXE()
@@ -505,25 +499,18 @@ void openExpr()
 {
 	OPENFILENAME *o= &exprOfn;
 	if(!openDlg(o)) return;
-	HANDLE f=openFile(o->lpstrFile);
-	if(f!=INVALID_HANDLE_VALUE){
-		DWORD len=GetFileSize(f, 0);
-		amax(len, 100000);
-		char *buf= new char[len+1];
-		DWORD r;
-		ReadFile(f, buf, len, &r, 0);
-		CloseHandle(f);
-		buf[len]=0;
-		char *n;
-		for(n=buf;; n++){
+	DWORD len;
+	char* buf = 0, *n, *start;
+	if(loadFile(o->lpstrFile, buf, len, start, 0, true)) {
+		for(n=start;; n++){
 			n=strchr(n, '[');
-			if(!n){ n=buf+len; break; }
-			if(n[1]=='=' && n[2]==']' && (n==buf || n[-1]=='\n' || n[-1]=='\r')) break;
+			if(!n){ n=start+len; break; }
+			if(n[1]=='=' && n[2]==']' && (n==start || n[-1]=='\n' || n[-1]=='\r')) break;
 		}
-		while(n>buf && (n[-1]=='\r' || n[-1]=='\n')) n--;
+		while(n>start && (n[-1]=='\r' || n[-1]=='\n')) n--;
 		*n=0;
-		SetWindowText(hOut, 0);
-		SetWindowText(hIn, buf);
+		SetWindowText(hOut, "");
+		SetWindowTextUtf8(hIn, start);
 		delete[] buf;
 	}
 }
@@ -564,6 +551,10 @@ void saveResult(HANDLE f, char *fmt, char *input, char *output, bool truncate)
 			delete[] buf;
 		}
 	}
+
+	if(SetFilePointer(f, 0, NULL, FILE_CURRENT) == 0) 
+		WriteFile(f, "\xEF\xBB\xBF", 3, &w, 0); //BOM
+
 	for(s=fmt; *s; s++){
 		if(*s=='%'){
 			s++;
@@ -579,18 +570,26 @@ void saveResult(HANDLE f, char *fmt, char *input, char *output, bool truncate)
 	CloseHandle(f);
 }
 
+char* getEditText(HWND hwnd)
+{
+	int len = GetWindowTextLengthW(hwnd) + 1;
+	WCHAR* buf = new WCHAR[len];
+	GetWindowTextW(hwnd, buf, len);
+	char* result = new char[len * 3];
+	WideCharToMultiByte(CP_UTF8, 0, buf, len, result, len * 3, 0, 0);
+	delete[] buf;
+	return result;
+}
+
 void saveResult()
 {
 	OPENFILENAME *o= &exprOfn;
 	if(!saveDlg(o)) return;
 
-	int lenIn = GetWindowTextLength(hIn)+1;
-	int lenOut = GetWindowTextLength(hOut)+1;
-	char *bufIn= new char[lenIn+lenOut];
-	char *bufOut= bufIn + lenIn;
-	GetWindowText(hIn, bufIn, lenIn);
-	GetWindowText(hOut, bufOut, lenOut);
+	char* bufIn = getEditText(hIn);
+	char* bufOut= getEditText(hOut);
 	saveResult(createFile(o->lpstrFile), "%1\r\n[=]\r\n%2", bufIn, bufOut);
+	delete[] bufOut;
 	delete[] bufIn;
 }
 
@@ -624,28 +623,18 @@ int findMacro(char *s)
 HMENU insertSubmenu(HMENU menu, char *name)
 {
 	HMENU p;
-	if (codePage) CodePageToWideChar(name);
+	CodePageToWideChar(name);
 
 	for(int i=GetMenuItemCount(menu)-1; i>=0; i--){
 		p=GetSubMenu(menu, i);
 		if(p){
-			if(codePage) {
-				WCHAR wbuf[64];
-				GetMenuStringW(menu, i, wbuf, sizeA(wbuf), MF_BYPOSITION);
-				if(!wcscmp(dtBuf, wbuf)) return p;
-			}
-			else {
-				char buf[64];
-				GetMenuString(menu, i, buf, sizeA(buf), MF_BYPOSITION);
-				if(!strcmp(name, buf)) return p;
-			}
+			WCHAR wbuf[64];
+			GetMenuStringW(menu, i, wbuf, sizeA(wbuf), MF_BYPOSITION);
+			if(!wcscmp(dtBuf, wbuf)) return p;
 		}
 	}
 	p=CreatePopupMenu();
-	if (codePage)
-		AppendMenuW(menu, MF_POPUP, (UINT_PTR)p, dtBuf);
-	else
-		AppendMenu(menu, MF_POPUP, (UINT_PTR)p, name);
+	AppendMenuW(menu, MF_POPUP, (UINT_PTR)p, dtBuf);
 	return p;
 }
 
@@ -664,12 +653,8 @@ void addMacro(HMENU menu, char *name, int id)
 			}
 		}
 	}
-	if (codePage) {
-		CodePageToWideChar(name);
-		AppendMenuW(menu, MF_STRING, id, dtBuf);
-	} 
-	else
-		AppendMenu(menu, MF_STRING, id, name);
+	CodePageToWideChar(name);
+	AppendMenuW(menu, MF_STRING, id, dtBuf);
 }
 
 void initMenu()
@@ -696,32 +681,22 @@ void initMenu()
 	DeleteMenu(h1, 0, MF_BYPOSITION);
 }
 
-void rdMacro(HANDLE f, Darray<Tmacro> &_macros, char *&_macroFile, int &_macroFileLen)
+void rdMacro(Darray<Tmacro> &_macros, char *start)
 {
 	char *s, *t, *n;
 	Tmacro *m;
 
-	_macroFileLen=GetFileSize(f, 0);
-	aminmax(_macroFileLen, 0, 10000000);
-	delete[] _macroFile;
-	s= new char[_macroFileLen+1];
-	_macroFile=s;
-	DWORD r;
-	ReadFile(f, s, _macroFileLen, &r, 0);
-	CloseHandle(f);
-	s[_macroFileLen]=0;
-
-	for(;;){
+	for(s=start; ;){
 		//find left bracket
 		for(;;){
 			s=strchr(s, '[');
 			if(!s) return;
-			if(s==_macroFile || s[-1]=='\n' || s[-1]=='\r') break;
+			if(s==start || s[-1]=='\n' || s[-1]=='\r') break;
 			s++;
 		}
 		//trim trailing EOL
 		t=s;
-		while(t>_macroFile && (t[-1]=='\r' || t[-1]=='\n')) t--;
+		while(t>start && (t[-1]=='\r' || t[-1]=='\n')) t--;
 		*t=0;
 		//find right bracket
 		s++;
@@ -745,16 +720,15 @@ void rdMacros()
 {
 	char *s;
 	int i, len;
+	char* start;
 
-	HANDLE f=openFile(fnMacro);
-	if(f==INVALID_HANDLE_VALUE){
-		*fnMacro=0;
-	}
-	else{
-		destroyMacros();
-		rdMacro(f, macros, macroFile, macroFileLen);
+	if(!loadFile(fnMacro, macroFile, macroFileLen, start, destroyMacros)) {
+		*fnMacro = 0;
+	}else{
+		rdMacro(macros, start);
 		initMenu();
 		modif=false;
+
 		//autostart macro
 		for(i=0; i<macros.len; i++){
 			Tmacro *m=&macros[i];
@@ -770,26 +744,32 @@ void rdMacros()
 	}
 }
 
+void destroyConstants() 
+{
+	constants.reset();
+}
+
 void rdConstants()
 {
+	char* start;
 	TfileName fn;
 	getExeDir(fn, lng(10, "constants.cns"));
-	HANDLE f=openFile(fn);
-	if(f!=INVALID_HANDLE_VALUE){
-		constants.reset();
-		rdMacro(f, constants, constantsFile, constantsFileLen);
-	}
+	if(loadFile(fn, constantsFile, constantsFileLen, start, destroyConstants))
+		rdMacro(constants, start);
+}
+
+void destroyUnits()
+{
+	units.reset();
 }
 
 void rdUnits()
 {
+	char* start;
 	TfileName fn;
 	getExeDir(fn, lng(12, "units.unt"));
-	HANDLE f=openFile(fn);
-	if(f!=INVALID_HANDLE_VALUE){
-		units.reset();
-		rdMacro(f, units, unitsFile, unitsFileLen);
-	}
+	if(loadFile(fn, unitsFile, unitsFileLen, start, destroyUnits))
+		rdMacro(units, start);
 }
 
 void wrMacro()
@@ -799,6 +779,7 @@ void wrMacro()
 
 	HANDLE f=createFile(fnMacro);
 	if(f!=INVALID_HANDLE_VALUE){
+		WriteFile(f, "\xEF\xBB\xBF", 3, &w, 0); //BOM
 		for(i=0; i<macros.len; i++){
 			Tmacro *m=&macros[i];
 			WriteFile(f, "\r\n[", 3, &w, 0);
@@ -1004,14 +985,16 @@ BOOL CALLBACK VarListProc(HWND hWnd, UINT mesg, WPARAM wP, LPARAM lP)
 					rc.bottom= lpdis->rcItem.bottom;
 					rc.left=4;
 					rc.right=60;
-					DrawText(lpdis->hDC, v->name, -1, &rc, DT_END_ELLIPSIS|DT_NOPREFIX);
+					Utf8ToWideChar(v->name);
+					DrawTextW(lpdis->hDC, dtBuf, -1, &rc, DT_END_ELLIPSIS|DT_NOPREFIX);
 					c=ALLOCC(5);
 					COPYM(c, v->modif ? v->newx : v->oldx);
 					s= AWRITEM(c, isMatrix(c) ? 3 : (!isZero(c.r) && !isZero(c.i) ? 10 : 20), 0);
 					FREEM(c);
 					rc.left=rc.right+5;
 					rc.right=lpdis->rcItem.right;
-					DrawText(lpdis->hDC, s, -1, &rc, DT_END_ELLIPSIS|DT_NOPREFIX);
+					Utf8ToWideChar(s);
+					DrawTextW(lpdis->hDC, dtBuf, -1, &rc, DT_END_ELLIPSIS|DT_NOPREFIX);
 					delete[] s;
 				case ODA_SELECT:
 					drawFocus(lpdis);
@@ -1100,7 +1083,8 @@ BOOL CALLBACK HistoryProc(HWND hWnd, UINT mesg, WPARAM wP, LPARAM lP)
 					rc.bottom= lpdis->rcItem.bottom;
 					rc.left=4;
 					rc.right=lpdis->rcItem.right;
-					DrawText(lpdis->hDC, h->s, -1, &rc, DT_END_ELLIPSIS|DT_NOPREFIX);
+					Utf8ToWideChar(h->s);
+					DrawTextW(lpdis->hDC, dtBuf, -1, &rc, DT_END_ELLIPSIS|DT_NOPREFIX);
 				case ODA_SELECT:
 					drawFocus(lpdis);
 			}
@@ -1126,7 +1110,7 @@ BOOL CALLBACK HistoryProc(HWND hWnd, UINT mesg, WPARAM wP, LPARAM lP)
 				case 520: //paste
 					if(item<0 || item>=vHlen) break;
 					curHistory= vH[item];
-					SetWindowText(hIn, curHistory->s);
+					SetEditTextUtf8(hIn, curHistory->s);
 					pressEXE();
 
 					//!
@@ -1176,19 +1160,19 @@ BOOL CALLBACK NewMacroProc(HWND hWnd, UINT mesg, WPARAM wP, LPARAM)
 {
 	Tmacro *m;
 	int i;
-	char *buf;
 
 	switch(mesg){
 		case WM_INITDIALOG:
 			setDlgTexts(hWnd, 14);
-			SetDlgItemText(hWnd, 101, lastMacro);
+			SetWindowTextT(GetDlgItem(hWnd, 101), lastMacro);
 			return 1;
 		case WM_COMMAND:
 			wP=LOWORD(wP);
 			switch(wP){
 				case IDOK:
-					buf=lastMacro;
-					GetDlgItemText(hWnd, 101, buf, MAX_MACRO_LEN);
+				{
+					char* buf = lastMacro;
+					GetWindowTextT(GetDlgItem(hWnd, 101), buf, MAX_MACRO_LEN);
 					if(*buf){
 						i=findMacro(buf);
 						if(i>=0){
@@ -1201,10 +1185,11 @@ BOOL CALLBACK NewMacroProc(HWND hWnd, UINT mesg, WPARAM wP, LPARAM)
 						}
 						m->name= new char[strlen(buf)+1];
 						strcpy(m->name, buf);
-						m->content= getIn();
+						m->content= getInput();
 						checkBrackets(m->content);
 						sortMacros();
 					}
+				}
 				case IDCANCEL:
 					EndDialog(hWnd, wP);
 			}
@@ -1216,7 +1201,8 @@ BOOL CALLBACK NewMacroProc(HWND hWnd, UINT mesg, WPARAM wP, LPARAM)
 void initMacroCombo(HWND combo)
 {
 	for(int m=0; m<macros.len; m++){
-		SendMessage(combo, CB_ADDSTRING, 0, (LPARAM)macros[m].name);
+		Utf8ToWideChar(macros[m].name);
+		SendMessageW(combo, CB_ADDSTRING, 0, (LPARAM)dtBuf);
 	}
 	SendMessage(combo, CB_SELECTSTRING, (WPARAM)-1, (LPARAM)lastMacro);
 }
@@ -1225,7 +1211,6 @@ BOOL CALLBACK DeleteMacroProc(HWND hWnd, UINT mesg, WPARAM wP, LPARAM)
 {
 	int m;
 	HWND combo=GetDlgItem(hWnd, 101);
-	char buf[MAX_MACRO_LEN];
 
 	switch(mesg){
 		case WM_INITDIALOG:
@@ -1236,16 +1221,15 @@ BOOL CALLBACK DeleteMacroProc(HWND hWnd, UINT mesg, WPARAM wP, LPARAM)
 			wP=LOWORD(wP);
 			switch(wP){
 				case IDOK:
-					GetWindowText(combo, buf, MAX_MACRO_LEN);
-					if(*buf){
-						m=findMacro(buf);
-						if(m>=0){
-							delStr(macros[m].name);
-							delStr(macros[m].content);
-							memmove(macros+m, macros+m+1, sizeof(Tmacro)*(macros.len-m-1));
-							macros--;
-							sortMacros();
-						}
+					char buf[MAX_MACRO_LEN];
+					GetWindowTextT(combo, buf, MAX_MACRO_LEN);
+					m=findMacro(buf);
+					if(m>=0){
+						delStr(macros[m].name);
+						delStr(macros[m].content);
+						memmove(macros+m, macros+m+1, sizeof(Tmacro)*(macros.len-m-1));
+						macros--;
+						sortMacros();
 					}
 				case IDCANCEL:
 					EndDialog(hWnd, wP);
@@ -1259,7 +1243,6 @@ BOOL CALLBACK RenameMacroProc(HWND hWnd, UINT mesg, WPARAM wP, LPARAM)
 {
 	Tmacro *m;
 	int i, j, cmd;
-	char *buf=lastMacro;
 	HWND ed2=GetDlgItem(hWnd, 102);
 	HWND combo=GetDlgItem(hWnd, 101);
 
@@ -1273,20 +1256,24 @@ BOOL CALLBACK RenameMacroProc(HWND hWnd, UINT mesg, WPARAM wP, LPARAM)
 			switch(cmd){
 				case 101:
 					if(HIWORD(wP)==CBN_CLOSEUP){
-						GetWindowText(combo, buf, MAX_MACRO_LEN);
-						SetWindowText(ed2, buf);
+						GetWindowTextW(combo, dtBuf, MAX_MACRO_LEN);
+						SetWindowTextW(ed2, dtBuf);
 						SendMessage(ed2, EM_SETSEL, 0, (LPARAM)-1);
 						SetFocus(ed2);
 					}
 					break;
 				case IDOK:
-					GetWindowText(combo, buf, MAX_MACRO_LEN);
+				{
+					char* buf = lastMacro;
+					GetWindowTextT(combo, buf, MAX_MACRO_LEN);
 					i=findMacro(buf);
 					if(i>=0){
-						GetWindowText(ed2, buf, MAX_MACRO_LEN);
+						GetWindowTextT(ed2, buf, MAX_MACRO_LEN);
 						j=findMacro(buf);
 						if(j>=0){
-							msg(hWnd, lng(801, "Macro \"%s\" already exists"), buf);
+							WCHAR bufw[MAX_MACRO_LEN];
+							GetWindowTextW(ed2, bufw, MAX_MACRO_LEN);
+							msg(hWnd, lng(801, "Macro \"%S\" already exists"), bufw);
 						}
 						else if(*buf){
 							m=&macros[i];
@@ -1296,6 +1283,7 @@ BOOL CALLBACK RenameMacroProc(HWND hWnd, UINT mesg, WPARAM wP, LPARAM)
 							sortMacros();
 						}
 					}
+				}
 				case IDCANCEL:
 					EndDialog(hWnd, cmd);
 			}
@@ -1423,6 +1411,14 @@ void langChanging()
 	IsDefaultMacro = !strcmp(buf, fnMacro);
 }
 
+void setOfnFilter(OPENFILENAME& ofn, int id, char* s)
+{
+	s = lng(id, s);
+	char* e;
+	for(e = s; *e || e[1]; e++);
+	convertCodePage(*(char**)&ofn.lpstrFilter,s, int(e-s)+1, CP_ACP, CP_UTF8);
+}
+
 void langChanged()
 {
 	rdConstants();
@@ -1433,9 +1429,11 @@ void langChanged()
 	SetWindowTextT(hWin, title= "Precise Calculator 64-bit");
 #endif
 	SetWindowTextT(GetDlgItem(hWin, IDC_SPRECISION), lng(IDC_SPRECISION, "Precision:"));
-	exprOfn.lpstrFilter= lng(508, "Text files (*.txt)\0*.txt\0All files\0*.*\0");
-	macroOfn.lpstrFilter= lng(509, "Macros (*.cal)\0*.cal\0All files\0*.*\0");
-	btnOfn.lpstrFilter= lng(510, "Buttons (*.cbt)\0*.cbt\0All files\0*.*\0");
+
+	setOfnFilter(exprOfn, 508, "Text files (*.txt)\0*.txt\0All files\0*.*\0");
+	setOfnFilter(macroOfn, 509, "Macros (*.cal)\0*.cal\0All files\0*.*\0");
+	setOfnFilter(btnOfn, 510, "Buttons (*.cbt)\0*.cbt\0All files\0*.*\0");
+
 	if (IsDefaultMacro) {
 		getExeDir(fnMacro, lng(21, "examples.cal"));
 		if (!modif) rdMacros();
@@ -1533,17 +1531,19 @@ void getBtnTooltip(int i, BOOL shift)
 
 void initButtons()
 {
-	char buf[MBUTTONTEXT], buf2[MBUTTONTEXT], *s;
+	char buf[MBUTTONTEXT], * s;
+	WCHAR buf1[MBUTTONTEXT], buf2[MBUTTONTEXT];
 
 	if(!inv) invByShift=false;
 
 	for(int i=0; i<buttons.len; i++){
 		getBtnTxt(i, buf, false);
-		s=strchr(buf+1, '(');
-		if(s) *s=0;
+		s = strchr(buf + 1, '(');
+		if(s) *s = 0;
+		MultiByteToWideChar(CP_UTF8, 0, buf, -1, buf1, MBUTTONTEXT);
 		HWND w= buttons[i].wnd;
-		GetWindowText(w, buf2, sizeof(buf2));
-		if(strcmp(buf, buf2)) SetWindowText(w, buf);
+		GetWindowTextW(w, buf2, MBUTTONTEXT);
+		if(wcscmp(buf1, buf2)) SetWindowTextW(w, buf1);
 	}
 }
 
@@ -1590,13 +1590,12 @@ int getDescrIndex(char *s)
 	return - (int)sizeA(custT) - 1; // non-existent custom or wrong function name
 }
 
-void parseButtons()
+void parseButtons(char* s)
 {
-	char *s, *t;
+	char *t;
 	int i, j, ver, x0, y0, x, y, w, h, rows, cols;
 	Tbtn *b;
 
-	s=btnFile;
 	if(sscanf(s, "PRECCALC%d", &ver)!=1){
 		msg(lng(731, "Bad format of %s"), fnBtn);
 		return;
@@ -1655,13 +1654,18 @@ void setSel(int b, int e)
 	SendMessage(hIn, EM_EXSETSEL, 0, (LPARAM)&p);
 }
 
+int charCount(const char* buf, const char* ptr)
+{
+	return MultiByteToWideChar(CP_UTF8, 0, buf, int(ptr - buf), 0, 0);
+}
+
 void selVar(int n)
 {
 	char *buf;
 	const char *s, *b, *e;
 	int startPos;
 
-	buf=getIn(&startPos);
+	buf=getInput(&startPos);
 	s=buf;
 	while(n--){
 		for(;;){
@@ -1682,7 +1686,7 @@ void selVar(int n)
 	skipArg(s, &e);
 	while(e[-1]==' ') e--; //trim trailing spaces
 	if(*b=='(' && e[-1]==')') b++, e--; //remove parenthesis
-	setSel(startPos + int(b-buf), startPos + int(e-buf));
+	setSel(startPos + charCount(buf, b), startPos + charCount(buf, e));
 	SetFocus(hIn);
 e:
 	delete[] buf;
@@ -1692,26 +1696,26 @@ e:
 void bcksp()
 {
 	int i, m;
-	TEXTRANGE r;
+	TEXTRANGEW r;
 	CHARRANGE p;
-	char c, buf[2];
+	WCHAR c, buf[2];
 
-	SendMessage(hIn, EM_EXGETSEL, 0, (LPARAM)&p);
+	SendMessageW(hIn, EM_EXGETSEL, 0, (LPARAM)&p);
 	m=p.cpMax;
 	if(!m) return;
 	for(i=m; i>0; i--){
 		r.chrg.cpMin=i-1;
 		r.chrg.cpMax=i;
 		r.lpstrText=buf;
-		SendMessage(hIn, EM_GETTEXTRANGE, 0, (LPARAM)&r);
+		SendMessageW(hIn, EM_GETTEXTRANGE, 0, (LPARAM)&r);
 		c=buf[0];
-		if(!(isLetter(c) || c==' ' && i==m)){
+		if(!(isLetter((char)c) && c<0x80 || c==' ' && i==m)){
 			break;
 		}
 	}
 	if(i==m) i--;
 	setSel(i, m);
-	SendMessage(hIn, EM_REPLACESEL, TRUE, (LPARAM)"");
+	SendMessageW(hIn, EM_REPLACESEL, TRUE, (LPARAM)L"");
 }
 
 LRESULT CALLBACK enterProc(HWND hWnd, UINT mesg, WPARAM wP, LPARAM lP)
@@ -1742,7 +1746,7 @@ LRESULT CALLBACK enterProc(HWND hWnd, UINT mesg, WPARAM wP, LPARAM lP)
 	if(mesg==WM_GETDLGCODE){
 		return DLGC_BUTTON|DLGC_WANTARROWS|DLGC_WANTCHARS;
 	}
-	return CallWindowProc((WNDPROC)btnProc, hWnd, mesg, wP, lP);
+	return CallWindowProcW((WNDPROC)btnProc, hWnd, mesg, wP, lP);
 }
 
 LRESULT CALLBACK buttonProc(HWND hWnd, UINT mesg, WPARAM wP, LPARAM lP)
@@ -1756,7 +1760,7 @@ LRESULT CALLBACK buttonProc(HWND hWnd, UINT mesg, WPARAM wP, LPARAM lP)
 			initButtons();
 		}
 	}
-	return CallWindowProc((WNDPROC)btnProc, hWnd, mesg, wP, lP);
+	return CallWindowProcW((WNDPROC)btnProc, hWnd, mesg, wP, lP);
 }
 
 LRESULT CALLBACK inProc(HWND hWnd, UINT mesg, WPARAM wP, LPARAM lP)
@@ -1771,7 +1775,7 @@ LRESULT CALLBACK inProc(HWND hWnd, UINT mesg, WPARAM wP, LPARAM lP)
 		}
 		wP0=wP;
 	}
-	return CallWindowProc((WNDPROC)editProc, hWnd, mesg, wP, lP);
+	return CallWindowProcW((WNDPROC)editProc, hWnd, mesg, wP, lP);
 }
 
 HWND createRichEdit(int x, int y, int r, int b, int id)
@@ -1779,14 +1783,35 @@ HWND createRichEdit(int x, int y, int r, int b, int id)
 	RECT rc;
 	SetRect(&rc, x, y, r, b);
 	MapDialogRect(hWin, &rc);
-	HWND w=CreateWindowEx(0, richEditClass, "",
+	HWND w=CreateWindowExW(0, RICHEDIT_CLASSW, L"",
 		ES_MULTILINE|ES_AUTOVSCROLL|WS_BORDER|WS_VSCROLL|WS_TABSTOP|WS_VISIBLE|WS_CHILD,
 		rc.left, rc.top, rc.right-rc.left, rc.bottom-rc.top,
 		hWin, (HMENU)(UINT_PTR)id, inst, 0);
 	SendMessage(w, EM_SETLANGOPTIONS, 0, 0);
-	SendMessage(w, EM_SETTEXTMODE, TM_PLAINTEXT|TM_MULTILEVELUNDO|TM_SINGLECODEPAGE, 0);
+	SendMessage(w, EM_SETTEXTMODE, TM_PLAINTEXT|TM_MULTILEVELUNDO, 0);
 	SendMessage(w, EM_SETLIMITTEXT, 10000000, 0);
 	return w;
+}
+
+void destroyButtons()
+{
+	LockWindowUpdate(hWin);
+	//unregister tooltips
+	if(hTt) {
+		TOOLINFO ti;
+		ti.cbSize = sizeof(ti);
+		ti.hwnd = hWin;
+
+		for(int i = 0; i < buttons.len; i++) {
+			ti.uId = (UINT_PTR)buttons[i].wnd;
+			SendMessage(hTt, TTM_DELTOOL, 0, (LPARAM)&ti);
+		}
+	}
+	//delete buttons
+	for(int i = 0; i < buttons.len; i++) {
+		DestroyWindow(buttons[i].wnd);
+	}
+	buttons.reset();
 }
 
 void loadButtons()
@@ -1797,97 +1822,70 @@ void loadButtons()
 	RECT rc;
 	SIZE sz;
 
-	TOOLINFO ti;
-	ti.cbSize = sizeof(ti);
-	ti.uFlags = TTF_IDISHWND; // TTF_IDISHWND | TTF_SUBCLASS;
-	ti.hwnd = hWin;
-	ti.hinst = inst;
-	ti.lpszText = LPSTR_TEXTCALLBACK;
-
 	fn=fnBtn;
 	if(!*fn){
 		fn=buf;
 		getExeDir(buf, "buttons\\default.cbt");
 	}
-	HANDLE f=CreateFile(fn, GENERIC_READ, FILE_SHARE_READ, 0, OPEN_EXISTING, 0, 0);
-	if(f==INVALID_HANDLE_VALUE){
-		msg(lng(730, "Cannot open file %s"), fn);
-	}
-	else{
-		DWORD len=GetFileSize(f, 0);
-		if(len>1000000){
-			msg(lng(753, "File %s is too long"), fn);
+	DWORD len;
+	char* start;
+	if(loadFile(fn, btnFile, len, start, destroyButtons))
+	{
+		start[len] = '\n';
+		start[len + 1] = '\n';
+		start[len + 2] = '\0';
+		parseButtons(start);
+
+		//resize window
+		dc = GetDC(hWin);
+		dpix = GetDeviceCaps(dc, LOGPIXELSX);
+		dpiy = GetDeviceCaps(dc, LOGPIXELSY);
+		GetTextExtentPoint32(dc, "InvHyp", 6, &sz);
+		ReleaseDC(hWin, dc);
+		GetWindowRect(GetDlgItem(hWin, IDC_FIXDIGITS), &rc);
+		MapWindowPoints(0, hWin, (POINT*)&rc, 2);
+		GetWindowRect(GetDlgItem(hWin, IDC_INV), &rc);
+		MapWindowPoints(0, hWin, (POINT*)&rc, 2);
+		rc.top += sz.cy + 5 + ygap;
+		amin(height, rc.top + bottom * dpiy / 96 + 7 +
+			GetSystemMetrics(SM_CYCAPTION) + GetSystemMetrics(SM_CYMENU));
+		int dw = rc.left + right * dpix / 96 + 7;
+		if(dw > width) oldW = dw;
+		sizeLock++;
+		SetWindowPos(hWin, 0, 0, 0, width, height, SWP_NOMOVE | SWP_NOZORDER);
+		sizeLock--;
+
+		TOOLINFO ti;
+		ti.cbSize = sizeof(ti);
+		ti.uFlags = TTF_IDISHWND; // TTF_IDISHWND | TTF_SUBCLASS;
+		ti.hwnd = hWin;
+		ti.hinst = inst;
+		ti.lpszText = LPSTR_TEXTCALLBACK;
+
+		//create buttons
+		for(i = 0; i < buttons.len; i++) {
+			Tbtn* b = &buttons[i];
+			b->wnd = CreateWindowW(L"BUTTON", L"",
+				WS_CHILD | WS_VISIBLE | BS_OWNERDRAW,
+				rc.left + b->x * dpix / 96, rc.top + b->y * dpiy / 96,
+				b->w * dpix / 96 - xgap, b->h * dpiy / 96 - ygap, hWin,
+				(HMENU)(UINT_PTR)(300 + i), inst, 0);
+			if(hTt) { // register tooltip
+				ti.uId = (UINT_PTR)b->wnd;
+				SendMessage(hTt, TTM_ADDTOOL, 0, (LPARAM)&ti);
+			}
+			if(!strcmp(b->f, "EXE")) {
+				idEnter = 300 + i;
+				btnProc = (WNDPROC)SetWindowLongPtrW(b->wnd, GWLP_WNDPROC, (LONG_PTR)enterProc);
+				SendMessage(hWin, DM_SETDEFID, 300 + i, 0);
+			}
+			else {
+				btnProc = (WNDPROC)SetWindowLongPtrW(b->wnd, GWLP_WNDPROC, (LONG_PTR)buttonProc);
+			}
+			SendMessage(b->wnd, WM_SETFONT, SendMessage(hWin, WM_GETFONT, 0, 0), 0);
 		}
-		else{
-			LockWindowUpdate(hWin);
-			//unregister tooltips
-			if(hTt) for(i=0; i<buttons.len; i++){
-				ti.uId = (UINT_PTR)buttons[i].wnd;
-				SendMessage(hTt, TTM_DELTOOL, 0, (LPARAM)&ti);
-			}
-			//delete buttons
-			for(i=0; i<buttons.len; i++){
-				DestroyWindow(buttons[i].wnd);
-			}
-			buttons.reset();
-			delete[] btnFile;
-			//read file
-			btnFile= new char[len+3];
-			DWORD r;
-			ReadFile(f, btnFile, len, &r, 0);
-			if(r<len){
-				msg(lng(754, "Error reading file %s"), fn);
-			}
-			else{
-				btnFile[len]='\n';
-				btnFile[len+1]='\n';
-				btnFile[len+2]='\0';
-				parseButtons();
-			}
-			//resize window
-			dc=GetDC(hWin);
-			dpix=GetDeviceCaps(dc, LOGPIXELSX);
-			dpiy=GetDeviceCaps(dc, LOGPIXELSY);
-			GetTextExtentPoint32(dc, "InvHyp", 6, &sz);
-			ReleaseDC(hWin, dc);
-			GetWindowRect(GetDlgItem(hWin, IDC_FIXDIGITS), &rc);
-			MapWindowPoints(0, hWin, (POINT*)&rc, 2);
-			GetWindowRect(GetDlgItem(hWin, IDC_INV), &rc);
-			MapWindowPoints(0, hWin, (POINT*)&rc, 2);
-			rc.top+=sz.cy+5+ygap;
-			amin(height, rc.top+bottom*dpiy/96+7+
-				GetSystemMetrics(SM_CYCAPTION)+GetSystemMetrics(SM_CYMENU));
-			int dw= rc.left+right*dpix/96+7;
-			if(dw>width) oldW=dw;
-			sizeLock++;
-			SetWindowPos(hWin, 0, 0, 0, width, height, SWP_NOMOVE|SWP_NOZORDER);
-			sizeLock--;
-			//create buttons
-			for(i=0; i<buttons.len; i++){
-				Tbtn *b= &buttons[i];
-				b->wnd= CreateWindow("BUTTON", "",
-					WS_CHILD|WS_VISIBLE|BS_OWNERDRAW,
-					rc.left+b->x*dpix/96, rc.top+b->y*dpiy/96,
-					b->w*dpix/96-xgap, b->h*dpiy/96-ygap, hWin,
-					(HMENU)(UINT_PTR)(300+i), inst, 0);
-				if(hTt) { // register tooltip
-					ti.uId = (UINT_PTR)b->wnd;
-					SendMessage(hTt, TTM_ADDTOOL, 0, (LPARAM)&ti);
-				}
-				if(!strcmp(b->f, "EXE")){
-					idEnter=300+i;
-					btnProc= (WNDPROC)SetWindowLongPtr(b->wnd, GWLP_WNDPROC, (LONG_PTR)enterProc);
-					SendMessage(hWin, DM_SETDEFID, 300+i, 0);
-				}
-				else{
-					btnProc= (WNDPROC)SetWindowLongPtr(b->wnd, GWLP_WNDPROC, (LONG_PTR)buttonProc);
-				}
-				SendMessage(b->wnd, WM_SETFONT, SendMessage(hWin, WM_GETFONT, 0, 0), 0);
-			}
-			initButtons();
-			LockWindowUpdate(0);
-		}
-		CloseHandle(f);
+		initButtons();
+		LockWindowUpdate(0);
 	}
 }
 
@@ -1924,8 +1922,7 @@ void showHelp(char *topic)
 
 void dialogBox(int id, DLGPROC proc)
 {
-	if(codePage) DialogBoxW(inst, MAKEINTRESOURCEW(id), hWin, (DLGPROC)proc);
-	else DialogBoxA(inst, MAKEINTRESOURCEA(id), hWin, (DLGPROC)proc);
+	DialogBoxW(inst, MAKEINTRESOURCEW(id), hWin, (DLGPROC)proc);
 }
 //-----------------------------------------------------------------
 LRESULT CALLBACK MainWndProc(HWND hWnd, UINT mesg, WPARAM wP, LPARAM lP)
@@ -1938,7 +1935,6 @@ LRESULT CALLBACK MainWndProc(HWND hWnd, UINT mesg, WPARAM wP, LPARAM lP)
 	HGDIOBJ oldF;
 	char *s;
 	static const int Mbuf=256;
-	char *buf=(char*)_alloca(Mbuf);
 
 	switch(mesg){
 
@@ -2041,7 +2037,7 @@ LRESULT CALLBACK MainWndProc(HWND hWnd, UINT mesg, WPARAM wP, LPARAM lP)
 			SetDlgItemInt(hWnd, IDC_PRECISION, digits, FALSE);
 			SetDlgItemInt(hWnd, IDC_FIXDIGITS, fixDigits, FALSE);
 			checkFractButton();
-			editProc = (WNDPROC)SetWindowLongPtr(GetDlgItem(hWnd, IDC_IN),
+			editProc = (WNDPROC)SetWindowLongPtrW(GetDlgItem(hWnd, IDC_IN),
 				GWLP_WNDPROC, (LONG_PTR)inProc);
 			setFont();
 			return 1;
@@ -2089,25 +2085,26 @@ LRESULT CALLBACK MainWndProc(HWND hWnd, UINT mesg, WPARAM wP, LPARAM lP)
 			break;
 		case WM_DRAWITEM:
 			dis= (DRAWITEMSTRUCT*)lP;
-			GetWindowText(dis->hwndItem, buf, Mbuf);
-			c=clFunction;
-			i=dis->CtlID;
-			if(*buf>='0' && *buf<='9' && buf[1]==0
-				|| *buf=='.' || *buf==' ' && buf[1]=='E') c=clNumber;
-			else if(!strcmp(buf, "C") || !strcmp(buf, "Del")) c=clDelC;
-			else if(*buf=='+' || *buf=='-' || *buf=='*' || *buf=='/'){
-				c=clOperator;
+			{
+				WCHAR* buf = (WCHAR*)_alloca(Mbuf * 2);
+				GetWindowTextW(dis->hwndItem, buf, Mbuf);
+				c = clFunction;
+				i = dis->CtlID;
+				if(*buf >= '0' && *buf <= '9' && buf[1] == 0
+					|| *buf == '.' || *buf == ' ' && buf[1] == 'E') c = clNumber;
+				else if(!wcscmp(buf, L"C") || !wcscmp(buf, L"Del")) c = clDelC;
+				else if(*buf == '+' || *buf == '-' || *buf == '*' || *buf == '/') c = clOperator;
+				else if(!wcscmp(buf, L"EXE")) c = clExe;
+				SetTextColor(dis->hDC, colors[c]);
+				SetBkMode(dis->hDC, TRANSPARENT);
+				oldF = 0;
+				if(c == clNumber || c == clOperator) oldF = SelectObject(dis->hDC, hFontBut);
+				DrawFrameControl(dis->hDC, &dis->rcItem, DFC_BUTTON,
+					DFCS_BUTTONPUSH | (dis->itemState & ODS_SELECTED ? DFCS_PUSHED : 0));
+				DrawTextW(dis->hDC, buf, -1,
+					&dis->rcItem, DT_CENTER | DT_NOCLIP | DT_NOPREFIX | DT_VCENTER | DT_SINGLELINE);
+				if(oldF) SelectObject(dis->hDC, oldF);
 			}
-			else if(!strcmp(buf, "EXE")) c=clExe;
-			SetTextColor(dis->hDC, colors[c]);
-			SetBkMode(dis->hDC, TRANSPARENT);
-			oldF=0;
-			if(c==clNumber || c==clOperator) oldF = SelectObject(dis->hDC, hFontBut);
-			DrawFrameControl(dis->hDC, &dis->rcItem, DFC_BUTTON,
-				DFCS_BUTTONPUSH|(dis->itemState&ODS_SELECTED ? DFCS_PUSHED : 0));
-			DrawText(dis->hDC, buf, -1,
-				&dis->rcItem, DT_CENTER|DT_NOCLIP|DT_NOPREFIX|DT_VCENTER|DT_SINGLELINE);
-			if(oldF) SelectObject(dis->hDC, oldF);
 			break;
 		case WM_SYSCOMMAND:
 			if(wP!=SC_RESTORE) return FALSE;
@@ -2136,6 +2133,7 @@ LRESULT CALLBACK MainWndProc(HWND hWnd, UINT mesg, WPARAM wP, LPARAM lP)
 							PostMessage(hWnd, WM_COMMAND, ID_CLEAR, 0);
 						}
 						else{
+							char* buf = (char*)_alloca(MBUTTONTEXT+4);
 							getBtnTxt(cmd-300, buf, GetKeyState(VK_SHIFT)<0);
 							paste(buf);
 						}
@@ -2330,7 +2328,7 @@ LRESULT CALLBACK MainWndProc(HWND hWnd, UINT mesg, WPARAM wP, LPARAM lP)
 						if(!curHistory) curHistory=(TstrItem*)history.last();
 						curHistory=(TstrItem*)curHistory->prv;
 						if((NxtPrv*)curHistory==&history) curHistory=(TstrItem*)history.first();
-						SetWindowText(hIn, curHistory->s);
+						SetEditTextUtf8(hIn, curHistory->s);
 					}
 					break;
 				case ID_HIST_NEXT:
@@ -2338,7 +2336,7 @@ LRESULT CALLBACK MainWndProc(HWND hWnd, UINT mesg, WPARAM wP, LPARAM lP)
 						if(!curHistory) curHistory=(TstrItem*)history.first();
 						else curHistory=(TstrItem*)curHistory->nxt;
 						if((NxtPrv*)curHistory==&history) curHistory=(TstrItem*)history.last();
-						SetWindowText(hIn, curHistory->s);
+						SetEditTextUtf8(hIn, curHistory->s);
 					}
 					break;
 			}
@@ -2352,11 +2350,11 @@ LRESULT CALLBACK MainWndProc(HWND hWnd, UINT mesg, WPARAM wP, LPARAM lP)
 //-----------------------------------------------------------------
 void processMessage(MSG &mesg)
 {
-	if(TranslateAccelerator(hWin, haccel, &mesg)==0){
+	if(TranslateAcceleratorW(hWin, haccel, &mesg)==0){
 		if(clearInput && (mesg.wParam==VK_LEFT || mesg.wParam==VK_RIGHT) && mesg.message==WM_KEYDOWN
-			|| !IsDialogMessage(hWin, &mesg)){
+			|| !IsDialogMessageW(hWin, &mesg)){
 			TranslateMessage(&mesg);
-			DispatchMessage(&mesg);
+			DispatchMessageW(&mesg);
 		}
 	}
 }
@@ -2391,29 +2389,21 @@ int pascal WinMain(HINSTANCE hInstance, HINSTANCE, LPSTR, int)
 	aminmax(width, 300, w);
 	aminmax(height, 200, h-16);
 
-	WNDCLASS wc;
+	WNDCLASSW wc;
 	wc.style=0;
-	wc.lpfnWndProc=(WNDPROC)DefDlgProc;
+	wc.lpfnWndProc=(WNDPROC)DefDlgProcW;
 	wc.cbClsExtra=0;
 	wc.cbWndExtra=DLGWINDOWEXTRA;
 	wc.hInstance=hInstance;
 	wc.hIcon=LoadIcon(inst, MAKEINTRESOURCE(1));
 	wc.hCursor=0;
 	wc.hbrBackground=(HBRUSH)COLOR_BTNFACE;
-	wc.lpszMenuName=MAKEINTRESOURCE(IDD_MENU);
-	wc.lpszClassName="PreciseCalculator";
-	if(!RegisterClass(&wc)){ msg("RegisterClass error"); return 2; }
-	richEditClass="RichEdit20A";
+	wc.lpszMenuName=MAKEINTRESOURCEW(IDD_MENU);
+	wc.lpszClassName=L"PreciseCalculator";
+	if(!RegisterClassW(&wc)){ msg("RegisterClass error"); return 2; }
 	HMODULE richLib=LoadLibrary("riched20.dll");
-	richEdit20=true;
-	if(!richLib){
-		richEdit20=false;
-		richLib=LoadLibrary("riched32.dll");
-		richEditClass="RichEdit";
-	}
-	if(!richLib){ msg("Cannot find RICHED20.DLL or RICHED32.DLL"); return 4; }
-	if(isWin9X) CreateDialogA(hInstance, MAKEINTRESOURCEA(IDD_MAIN), 0, (DLGPROC)MainWndProc);
-	else CreateDialogW(hInstance, MAKEINTRESOURCEW(IDD_MAIN), 0, (DLGPROC)MainWndProc);
+	if(!richLib){ msg("Cannot find RICHED20.DLL"); return 4; }
+	CreateDialogW(hInstance, MAKEINTRESOURCEW(IDD_MAIN), 0, (DLGPROC)MainWndProc);
 	if(!hWin){ msg("CreateDialog error"); return 3; }
 
 	RECT rc;
@@ -2423,17 +2413,12 @@ int pascal WinMain(HINSTANCE hInstance, HINSTANCE, LPSTR, int)
 	MoveWindow(hWin, left, top, width, height, FALSE);
 
 	// creating tooltip window
-	if(GetProcAddress(GetModuleHandle("comctl32.dll"), "DllGetVersion")){
-		INITCOMMONCONTROLSEX iccs;
-		iccs.dwSize= sizeof(INITCOMMONCONTROLSEX);
-		iccs.dwICC= ICC_TAB_CLASSES;
-		InitCommonControlsEx(&iccs);
-	}
-	else{
-		InitCommonControls();
-	}
-	hTt = isWin9X ? CreateWindowExA(0, TOOLTIPS_CLASSA, NULL, WS_DISABLED, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, hWin, NULL, inst, 0)
-		: CreateWindowExW(0, TOOLTIPS_CLASSW, NULL, WS_DISABLED, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, hWin, NULL, inst, 0);
+	INITCOMMONCONTROLSEX iccs;
+	iccs.dwSize= sizeof(INITCOMMONCONTROLSEX);
+	iccs.dwICC= ICC_TAB_CLASSES;
+	InitCommonControlsEx(&iccs);
+
+	hTt = CreateWindowExW(0, TOOLTIPS_CLASSW, NULL, WS_DISABLED, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, hWin, NULL, inst, 0);
 	// registering tooltips for permanent controls
 	TOOLINFO ti;
 	ti.cbSize = sizeof(ti);
@@ -2466,8 +2451,8 @@ int pascal WinMain(HINSTANCE hInstance, HINSTANCE, LPSTR, int)
 	}
 
 	MSG mesg;
-	while(GetMessage(&mesg, NULL, 0, 0)>0){
-		if(hTt) SendMessage(hTt, TTM_RELAYEVENT, 0, (LPARAM)&mesg);
+	while(GetMessageW(&mesg, NULL, 0, 0)>0){
+		if(hTt) SendMessageW(hTt, TTM_RELAYEVENT, 0, (LPARAM)&mesg);
 		processMessage(mesg);
 	}
 	DeleteObject(hFont);
