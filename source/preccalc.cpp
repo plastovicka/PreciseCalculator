@@ -2241,9 +2241,9 @@ LRESULT CALLBACK MainWndProc(HWND hWnd, UINT mesg, WPARAM wP, LPARAM lP)
 					break;
 				case ID_CLEAR:
 					error=1100;
-					focusEXE();
 					SetWindowText(hIn, "");
-					Sleep(20);
+					SetFocus(hIn);
+					Sleep(10);
 					SetWindowText(hOut, "");
 					break;
 				case ID_STOP:
