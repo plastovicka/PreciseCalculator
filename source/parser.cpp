@@ -1549,16 +1549,25 @@ DWORD WINAPI calcThread(char *param)
 			if(!*e) break;
 		}
 	lout:
-		if(error) break;
-		//compare with the previous result
-		b= output && !strcmp(output, buf);
-		delete[] output;
-		output=buf.array;
-		buf.array= new char[buf.capacity];
-		if(b) break;
+		if(error == 1030 && precision < prec2) { //divisor of a big number
+			ClearError(1030);
+			cleanup();
 #ifndef CONSOLE
-		writeOutput(output);
+			SetWindowText(hOut, "");
 #endif
+		}
+		else {
+			if(error) break;
+			//compare with the previous result
+			b= output && !strcmp(output, buf);
+			delete[] output;
+			output=buf.array;
+			buf.array= new char[buf.capacity];
+			if(b) break;
+#ifndef CONSOLE
+			writeOutput(output);
+#endif
+		}
 		if(precision>=prec2){
 			precision++;
 		}
