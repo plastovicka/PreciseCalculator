@@ -100,7 +100,7 @@ int main()
 		while(*s==' ') s++;
 		if(*s!='-' || (!isLetter(s[1]) && s[1]!='-')) break;
 		s++;
-		if(isParam(s, 'p', "precision", digits, 5, 999999)) {}
+		if(isParam(s, 'p', "precision", digits, 5, 1000000000)) {}
 		else if(isParam(s, 'i', "fix", fixDigits, 0, 99999))  numFormat=MODE_FIX;
 		else if(isParam(s, 's', "sci")) numFormat=MODE_SCI;
 		else if(isParam(s, 'e', "eng")) numFormat=MODE_ENG;
