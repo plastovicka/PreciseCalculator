@@ -1584,11 +1584,13 @@ DWORD WINAPI calcThread(char *param)
 			precision=prec2;
 		}
 	}
-
+#ifndef CONSOLE
 	if(isGrey) {
 		isGrey=false;
 		outputColor(0);
 	}
+#endif
+
 	if(!error || error==1100){
 #ifdef CONSOLE
 		puts(output);
