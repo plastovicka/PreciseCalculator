@@ -349,6 +349,18 @@ void clearhIn()
 	}
 }
 
+void outputColor(COLORREF color)
+{
+#ifndef CONSOLE
+	CHARFORMATW cf;
+	cf.cbSize = sizeof(cf);
+	cf.dwMask = CFM_COLOR;
+	cf.crTextColor = color;
+	cf.dwEffects = 0;
+	SendMessageW(hOut, EM_SETCHARFORMAT, SCF_ALL, (LPARAM)&cf);
+#endif
+}
+
 void writeOutput(char* s)
 {
 	SetEditTextUtf8(hOut, s);

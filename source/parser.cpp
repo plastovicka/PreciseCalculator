@@ -1367,7 +1367,7 @@ DWORD WINAPI calcThread(char *param)
 {
 	char *output, *a;
 	const char *e, *input, *s;
-	bool b, isPrint;
+	bool b, isPrint, isGrey;
 	Tvar *v;
 	Complex y;
 	Tlen i;
@@ -1396,6 +1396,7 @@ DWORD WINAPI calcThread(char *param)
 	amin(prec2, 8*32/TintBits);
 	Nseed=prec2;
 	baseOld=base;
+	isGrey=false;
 
 	for(precision= (prec2>60) ? (8*32/TintBits+1) : prec2; ; ){
 		baseIn=baseOld;
@@ -1565,6 +1566,14 @@ DWORD WINAPI calcThread(char *param)
 			buf.array= new char[buf.capacity];
 			if(b) break;
 #ifndef CONSOLE
+			if(precision < prec2) {
+				isGrey=true;
+				outputColor(0x707070);
+			}
+			else if(isGrey) {
+				isGrey=false;
+				outputColor(0);
+			}
 			writeOutput(output);
 #endif
 		}
@@ -1574,6 +1583,11 @@ DWORD WINAPI calcThread(char *param)
 		else{
 			precision=prec2;
 		}
+	}
+
+	if(isGrey) {
+		isGrey=false;
+		outputColor(0);
 	}
 	if(!error || error==1100){
 #ifdef CONSOLE

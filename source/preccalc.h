@@ -89,6 +89,7 @@ bool isLetter(char c);
 void setSel(int b, int e);
 char *getInput(int *startPos=0);
 void writeOutput(char* s);
+void outputColor(COLORREF c);
 void _stdcall ASSIGNM(Complex y, const Complex a, const Complex x);
 void parse(const char *input, const char **e);
 DWORD getTickCount();
