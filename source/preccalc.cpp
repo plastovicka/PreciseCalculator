@@ -35,8 +35,8 @@ const struct TcustTT { const char *name; int trid; const char *tooltip; } custT[
 	{":",   2208, "Label mark"},
 };
 
-int width=522,
- height=499,
+int width,
+ height,
  left=50,
  top=60,
  right,
@@ -192,6 +192,15 @@ void msg(HWND w, char *text, ...)
 	va_start(ap, text);
 	vmsg(w, title, text, MB_OK|MB_ICONERROR, ap);
 	va_end(ap);
+}
+
+int msg(int btn, char *text, ...)
+{
+	va_list ap;
+	va_start(ap, text);
+	int result=vmsg(hWin, title, text, btn, ap);
+	va_end(ap);
+	return result;
 }
 
 DWORD getTickCount()
@@ -1765,7 +1774,7 @@ LRESULT CALLBACK buttonProc(HWND hWnd, UINT mesg, WPARAM wP, LPARAM lP)
 		if(((wP&MK_SHIFT)!=0) == !inv && (invByShift || !inv))
 		{
 			invByShift=true;
-			inv=!inv;
+			inv^=1;
 			CheckDlgButton(hWin, IDC_INV, inv ? BST_CHECKED : BST_UNCHECKED);
 			initButtons();
 		}
@@ -1846,10 +1855,21 @@ void loadButtons()
 		start[len + 2] = '\0';
 		parseButtons(start);
 
-		//resize window
 		dc = GetDC(hWin);
 		dpix = GetDeviceCaps(dc, LOGPIXELSX);
 		dpiy = GetDeviceCaps(dc, LOGPIXELSY);
+
+		//create font
+		DeleteObject(hFontBut);
+		LOGFONT fontBut;
+		ZeroMemory(&fontBut, sizeof(LOGFONT));
+		fontBut.lfHeight= -18 * dpiy/96;
+		fontBut.lfWeight=FW_NORMAL;
+		fontBut.lfCharSet=DEFAULT_CHARSET;
+		strcpy(fontBut.lfFaceName, "Arial");
+		hFontBut=CreateFontIndirect(&fontBut);
+
+		//resize window
 		GetTextExtentPoint32(dc, "InvHyp", 6, &sz);
 		ReleaseDC(hWin, dc);
 		GetWindowRect(GetDlgItem(hWin, IDC_FIXDIGITS), &rc);
@@ -1937,11 +1957,12 @@ void dialogBox(int id, DLGPROC proc)
 //-----------------------------------------------------------------
 LRESULT CALLBACK MainWndProc(HWND hWnd, UINT mesg, WPARAM wP, LPARAM lP)
 {
-	int i, y, cmd, c;
+	int i, x, y, cmd, c;
 	Tbtn *b;
 	RECT rc;
 	DRAWITEMSTRUCT *dis;
 	HWND w;
+	HDC dc;
 	HGDIOBJ oldF;
 	char *s;
 	static const int Mbuf=256;
@@ -2049,6 +2070,15 @@ LRESULT CALLBACK MainWndProc(HWND hWnd, UINT mesg, WPARAM wP, LPARAM lP)
 			checkFractButton();
 			editProc = (WNDPROC)SetWindowLongPtrW(GetDlgItem(hWnd, IDC_IN),
 				GWLP_WNDPROC, (LONG_PTR)inProc);
+			dc = GetDC(hWnd);
+			x = GetDeviceCaps(dc, LOGPIXELSX);
+			y = GetDeviceCaps(dc, LOGPIXELSY);
+			ReleaseDC(hWnd, dc);
+			if(!width) width= 525 * x/96;
+			amin(width, 300);
+			if(!height) height= 500 * y/96;
+			amin(height, 200);
+			if(!font.lfHeight) font.lfHeight= -14 * y/96;
 			setFont();
 			return 1;
 
@@ -2200,7 +2230,7 @@ LRESULT CALLBACK MainWndProc(HWND hWnd, UINT mesg, WPARAM wP, LPARAM lP)
 					SetFocus(w);
 					break;
 				case IDC_FRACT:
-					enableFractions= !enableFractions;
+					enableFractions^=1;
 					checkFractButton();
 					pressEXE();
 					break;
@@ -2314,8 +2344,7 @@ LRESULT CALLBACK MainWndProc(HWND hWnd, UINT mesg, WPARAM wP, LPARAM lP)
 					writeini(1);
 					break;
 				case ID_DELINI:
-					if(MessageBox(hWnd, lng(736, "Do you want to delete your settings ?"),
-						title, MB_ICONQUESTION | MB_YESNO | MB_DEFBUTTON2) ==IDYES){
+					if(msg(MB_ICONQUESTION | MB_YESNO | MB_DEFBUTTON2, lng(736, "Do you want to delete your settings ?")) ==IDYES){
 						deleteini();
 					}
 					break;
@@ -2381,12 +2410,9 @@ int pascal WinMain(HINSTANCE hInstance, HINSTANCE, LPSTR, int)
 	initFuncTab();
 	ans=ALLOCC(1);
 
-	font.lfHeight=-18;
 	font.lfWeight=FW_NORMAL;
 	font.lfCharSet=DEFAULT_CHARSET;
 	strcpy(font.lfFaceName, "Arial");
-	hFontBut=CreateFontIndirect(&font);
-	font.lfHeight=-12;
 
 	readini();
 	initLang();
@@ -2396,8 +2422,8 @@ int pascal WinMain(HINSTANCE hInstance, HINSTANCE, LPSTR, int)
 	int h=GetSystemMetrics(SM_CYSCREEN);
 	aminmax(left, 0, w-100);
 	aminmax(top, 0, h-100);
-	aminmax(width, 300, w);
-	aminmax(height, 200, h-16);
+	amax(width, w);
+	amax(height, h-16);
 
 	WNDCLASSW wc;
 	wc.style=0;
