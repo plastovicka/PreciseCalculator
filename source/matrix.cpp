@@ -1931,134 +1931,157 @@ extern Complex *deref1(Complex &x);
 extern void _stdcall ASSIGNM(Complex y, const Complex a, const Complex x);
 extern Darray<Complex> numStack;
 
-
-/*
-(F[0] + 4*F[1] + F[2])/2
-(F[0] + 4*f(a+h/2) + 2*F[1] + 4*f(a+h*3/2) + F[2])/4
-*/
-void integralRecurse(Complex y, Complex *F0, Complex a, Complex h0, Complex var, const char *formula, int depth, int bits)
+struct IntegralData
 {
-	Complex t, u, *v, h, oldV, F[5];
-	const char *e;
-	int i;
+	Complex var;
+	const char *formula;
+	int bits, depth;
 
-	depth++;
-	F[1].r=F[1].i=F[3].r=F[3].i=0;
-	Tint prec=getPrecision(y);
-	t=ALLOCC(prec);
-	u=ALLOCC(prec);
-	h=ALLOCC(prec);
-	DIVIM(h, h0, 2);
-	PLUSM(t, a, h);
-	PLUSM(u, t, h0);
-	v=deref1(var);
-	oldV=*v;
-	//function values
-	for(i=1; i<=3; i+=2){
-		*v= (i==1) ? t : u;
-		if(error) goto lfree;
-		parse(formula, &e);
-		if(error)
-			goto lfree;
-		F[i]=*numStack--;
-		deref(F[i]);
-	}
-	F[0]=F0[0];
-	F[2]=F0[1];
-	F[4]=F0[2];
-	//sum5
-	PLUSM(t, F[0], F[4]);
-	DIVI1M(t, 2);
-	PLUSM(u, t, F[2]);
-	DIVI1M(u, 2);
-	PLUSM(t, u, F[1]);
-	PLUSM(y, t, F[3]);
-	//sum3
-	PLUSM(t, F[0], F[4]);
-	DIVI1M(t, 4);
-	PLUSM(u, t, F[2]);
-	MULTI1M(u, 2);
-	//difference
-	MINUSM(t, u, y);
-	LSHIM(u, y, -bits);
-	ABSM(u);
-	ABSM(t);
-	//recurse
-	if(CMPC(t, u)>0 && !error && depth<50){ ///
-		PLUSM(t, a, h0);
-		integralRecurse(u, F+2, t, h, var, formula, depth, bits);
-		integralRecurse(t, F, a, h, var, formula, depth, bits);
-		PLUSM(y, u, t);
+	/*
+	u= (F[0] + 4*F[1] + F[2])/2
+	y= (F[0] + 4*f(a+h/2) + 2*F[1] + 4*f(a+h*3/2) + F[2])/4
+	*/
+	void integralRecurse(Complex y, Complex *F0, Complex a, Complex h0, int finalDepth)
+	{
+		Complex t, u, *v, h, oldV, F[5];
+		const char *e;
+		int i;
+		const int D=3;
+
+		depth++;
+		F[1].r=F[1].i=F[3].r=F[3].i=0;
+		Tint prec=getPrecision(y);
+		Pint mem=ALLOCN(6, prec, &t.r, &t.i, &u.r, &u.i, &h.r, &h.i);
+		DIVIM(h, h0, 2);
+		PLUSM(t, a, h);
+		PLUSM(u, t, h0);
+		v=deref1(var);
+		oldV=*v;
+		//function values
+		for(i=1; i<=3; i+=2) {
+			*v= (i==1) ? t : u;
+			if(error) goto lfree;
+			parse(formula, &e);
+			if(error) goto lfree;
+			F[i]=*numStack--;
+			deref(F[i]);
+		}
+		F[0]=F0[0];
+		F[2]=F0[1];
+		F[4]=F0[2];
+		//y= F[0]/4 + F[1] + F[2]/2 + F[3] + F[4]/4
+		PLUSM(t, F[0], F[4]);
+		DIVI1M(t, 2);
+		PLUSM(y, t, F[2]);
 		DIVI1M(y, 2);
-	}
-lfree:
-	*v=oldV;
-	FREEM(F[3]);
-	FREEM(F[1]);
-	FREEM(h);
-	FREEM(u);
-	FREEM(t);
-}
+		PLUSM(u, y, F[1]);
+		PLUSM(y, u, F[3]);
+		//u= F[0]/2 + 2*F[2] + F[4]/2
+		DIVI1M(t, 2);
+		PLUSM(u, t, F[2]);
+		MULTI1M(u, 2);
 
-//integral= (b-a)/3 * integralRecurse
-void integral(Complex y, Complex a, Complex b, Complex var, const char *formula, int bits)
-{
-	Complex h, F[3];
-	int i;
-	Tint prec, oldyPrec, oldPrec;
-	const char *e;
-
-	oldPrec=precision;
-	oldyPrec=y.r[-4];
-	precision=y.r[-4]=(bits+92*(TintBits/32))/TintBits;
-	memset(F, 0, sizeof(F));
-	prec=getPrecision(y);
-	h=ALLOCC(prec);
-	PLUSM(h, a, b);
-	DIVI1M(h, 2);
-	//function values
-	for(i=0; i<3; i++){
-		ASSIGNM(y, var, (i==0 ? a : (i==1 ? h : b)));
-		parse(formula, &e);
-		if(error) goto lfree;
-		F[i]=*numStack--;
-		deref(F[i]);
+		if(finalDepth>D) finalDepth++;
+		else {
+			//difference
+			MINUSM(t, u, y);
+			LSHIM(u, y, (D-finalDepth)*4 - bits);
+			ABSM(u);
+			ABSM(t);
+			if(CMPC(t, u)<=0) finalDepth++;
+			else if(finalDepth>0) finalDepth--;
+		}
+		//recurse
+		if(finalDepth<=D && !error && depth<50) {
+			PLUSM(t, a, h0);
+			integralRecurse(u, F+2, t, h, finalDepth);
+			integralRecurse(t, F, a, h, finalDepth);
+			PLUSM(y, u, t);
+			DIVI1M(y, 2);
+		}
+	lfree:
+		*v=oldV;
+		FREEM(F[3]);
+		FREEM(F[1]);
+		FREE_ARRAYM(t);
+		FREE_ARRAYM(u);
+		FREE_ARRAYM(h);
+		FREEX(mem);
+		depth--;
 	}
-	MINUSM(h, b, a);
-	DIVI1M(h, 2);
-	integralRecurse(y, F, a, h, var, formula, 0, bits);
-	MULTI1M(h, 2);
-	if(isMatrix(h)) ABSM(h);
-	MULTM(F[0], y, h);
-	DIVIM(y, F[0], 3);
-lfree:
-	FREEM(h);
-	FREEM(F[2]);
-	FREEM(F[1]);
-	FREEM(F[0]);
-	precision=oldPrec;
-	y.r[-4]=oldyPrec;
-}
+
+	//integral= (b-a)/3 * integralRecurse
+	void integral(Complex y, Complex a, Complex b)
+	{
+		Complex h, z, F[3];
+		int i;
+		Tint oldyPrec, oldPrec;
+		const char *e;
+
+		oldPrec=precision;
+		oldyPrec=y.r[-4];
+#ifdef ARIT64
+		const int B = 39; //12 digits
+#else
+		const int B = 26; //8 digits
+#endif
+		y.r[-4]= precision= (bits<=B) ? 2 : min(oldyPrec, (bits+92*(TintBits/32))/TintBits);
+		memset(F, 0, sizeof(F));
+		h=ALLOCC(precision);
+		z=ALLOCC(precision);
+		PLUSM(h, a, b);
+		DIVI1M(h, 2);
+		//function values
+		for(i=0; i<3; i++) {
+			ASSIGNM(y, var, (i==0 ? a : (i==1 ? h : b)));
+			parse(formula, &e);
+			if(error) goto lfree;
+			F[i]=*numStack--;
+			deref(F[i]);
+		}
+		MINUSM(h, b, a);
+		DIVI1M(h, 2);
+
+		integralRecurse(y, F, a, h, 0);
+
+		MULTI1M(h, 2);
+		if(isMatrix(h)) ABSM(h);
+		MULTM(z, y, h);
+		DIVIM(y, z, 3);
+	lfree:
+		FREEM(z);
+		FREEM(h);
+		FREEM(F[2]);
+		FREEM(F[1]);
+		FREEM(F[0]);
+		precision=oldPrec;
+		y.r[-4]=oldyPrec;
+	}
+};
 
 void INTEGRALM(Complex y, Complex a, Complex b, Complex p, Complex var, const char *formula)
 {
-	int bits;
 	Tuint timeOrPrec;
 	DWORD t0, t1, t2;
+	IntegralData data;
 
 	if(isMatrix(p) || isImag(p) || !isDword(p.r)){
 		cerror(1058, "The fourth argument has to be integer");
 		return;
 	}
+	data.formula=formula;
+	data.var=var;
+	data.depth=0;
 	timeOrPrec= toDword(p.r);
 	if(timeOrPrec<100){
-		integral(y, a, b, var, formula, int(timeOrPrec*3.322));
+		data.bits=int(timeOrPrec*3.322);
+		data.integral(y, a, b);
 	}
 	else{
 		t0=t2=GetTickCount();
-		for(bits=16; bits<96; bits+=8){
+		for(data.bits=16; data.bits<96; data.bits+=8){
 			t1=t2;
-			integral(y, a, b, var, formula, bits);
+			data.integral(y, a, b);
 			t2=GetTickCount();
 			if((t2-t0)+(t2-t1)*4 >(timeOrPrec/2) || error) break;
 		}

@@ -7,6 +7,7 @@
 #include "hdr.h"
 #include "arit.h"
 #include "preccalc.h"
+#include <math.h>
 
 int
 angleMode=ANGLE_DEG,
@@ -167,6 +168,42 @@ void _stdcall RANDOMX(Pint y, const Pint x)
 	RANDX(y);
 	MULTI1(y, toDword(x));
 	TRUNCX(y);
+}
+
+double _stdcall toDouble(const Pint x) 
+{
+	double d;
+	if(isFraction(x)) 
+		d=(double)Tuint(x[0])/Tuint(x[1]);
+	else if(isZero(x) || x[-1] < -1024/TintBits) 
+		d=0;
+	else{
+		d=ldexp((double)Tuint(x[0]), int(x[-1]-1)*TintBits);
+		if(x[-3]>1) d+=ldexp((double)Tuint(x[1]), int(x[-1]-2)*TintBits);
+	}
+	return x[-2] ? -d : d;
+}
+
+void _stdcall fromDouble(Pint y, double d)
+{
+	if(d==0) { ZEROX(y); return; }
+	if(d<0) { d=-d; y[-2]=1; }
+	else y[-2]=0;
+	int e;
+	d=frexp(d, &e);
+	y[-1]=e/TintBits;
+	e%=TintBits;
+	if(e>0) y[-1]++; else e+=TintBits;
+	d=ldexp(d, e);
+	Tuint i=Tuint(d);
+	y[0]=i;
+	d=ldexp(d-i, TintBits);
+	i=Tuint(d);
+	if(i) {
+		y[1]=i;
+		y[-3]=2;
+	}
+	else y[-3]=1;
 }
 
 //-------------------------------------------------------------------
@@ -927,6 +964,11 @@ static void _stdcall _LNX(Pint y, const Pint x0, bool useAGM)
 	const int LNLIM = 50;
 #endif
 	p=y[-4];
+	if(p==2 && x0[-1]>-14 && x0[-1]<16)
+	{
+		fromDouble(y, log(toDouble(x0)));
+		return;
+	}
 	if(p<LNLIM) useAGM = false;
 	if(useAGM) {
 		p+=3;
@@ -1123,6 +1165,13 @@ void _stdcall SQRTX(Pint y, const Pint x)
 #else
 	const int SQRTLIM=5000;
 #endif
+
+	if(y[-4]==2 && x[-1]<16)
+	{
+		fromDouble(y, sqrt(toDouble(x)));
+		return;
+	}
+
 	if(y[-4] < SQRTLIM || x[-3]<=0){
 		SQRTX2(y, x);
 		return;
@@ -2024,6 +2073,15 @@ void _stdcall COSX0(Pint y, const Pint x)
 	Pint t, u;
 	Tint k, p;
 
+	if(isZero(x)) {
+		ONEX(y);
+		return;
+	}
+	if(y[-4]==2) 
+	{
+		fromDouble(y, cos(toDouble(x)));
+		return;
+	}
 	p = y[-4] + 2;
 	if(p<40) k=8;
 	else if(p<200) k=p/7;
