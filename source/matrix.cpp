@@ -44,6 +44,11 @@ void _fastcall FREE_ARRAYM(Pmatrix x)
 	delete[] x->A;
 }
 
+void _fastcall FREE_ARRAYM(Complex &x)
+{
+	if(isMatrix(x)) FREE_ARRAYM(toMatrix(x));
+}
+
 void matrixToComplex(Complex &cx)
 {
 	if(!isMatrix(cx)) return;
@@ -91,7 +96,7 @@ void prepareM(Complex cy, int cols, int rows)
 	y->len= len;
 }
 
-void prepareM(Complex& cy, Pmatrix a)
+void prepareM(Complex &cy, Pmatrix a)
 {
 	prepareM(cy, a->cols, a->rows);
 }
@@ -230,20 +235,29 @@ int _stdcall LENM(const Complex cx, int digits)
 	if(!isMatrix(cx)){
 		return LENC(cx, digits);
 	}
-	n=2;
 	Pmatrix x= toMatrix(cx);
+	n=2+x->rows;
 	p=x->A;
 	for(i=0; i<x->len; i++){
 		n+=2+LENC(*p++, digits);
+		if(n<0) return 0;
 	}
-	return n+x->rows;
+	return n;
 }
 
 char*_stdcall AWRITEM(const Complex x, int digits, int cr)
 {
-	char *buf= new char[LENM(x, digits)];
-	WRITEM(buf, x, digits, cr);
-	return buf;
+	int len=LENM(x, digits);
+	if(len<=0) {
+		char *buf= new char[1];
+		*buf=0;
+		return buf;
+	}
+	else {
+		char *buf= new char[len];
+		WRITEM(buf, x, digits, cr);
+		return buf;
+	}
 }
 
 //-------------------------------------------------------------------

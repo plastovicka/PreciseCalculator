@@ -515,7 +515,8 @@ void _stdcall WRITEX(char *buf, const Pint x0, int _digits)
 
 int _stdcall LENX(const Pint x, int _digits)
 {
-	if(isFraction(x)) return 2*_digits+90;
+	if(isFraction(x) && numFormat==MODE_NORM) return x[1]==1 ? 48 : 2*_digits+90;
+	if(isZero(x)) return 6;
 	return 24+2*int(dwordDigits[base]*(x[-4]+1));
 }
 
@@ -2128,7 +2129,7 @@ void _stdcall COSX(Pint y, const Pint x0)
 	ng=ARGPI(x, x0);
 	x[-2]=0; //cos is even function
 	MINUSX(t, pi2, x);
-	if(t[-1]<0){ //x is near PI/2
+	if(t[-1]<0 || isZero(t)){ //x is near PI/2
 		//cos(x)=sin(PI/2-x)
 		SINX0(y, t);
 	}

@@ -1511,8 +1511,9 @@ DWORD WINAPI calcThread(char *param)
 					//convert the result to a string
 					n=buf.len;
 					int digits2= (precision>=prec2) ? digits : int((precision-2)*dwordDigits[base]+1);
-					a= (buf+=LENM(y, digits2))-1;
-					if((unsigned)buf.len>MAX_OUTPUT_SIZE){
+					int len = LENM(y, digits2);
+					a= (buf+=len)-1;
+					if((unsigned)buf.len>MAX_OUTPUT_SIZE || !len){
 						buf.len=n;
 						cerror(1062, "Result is too long");
 					}
