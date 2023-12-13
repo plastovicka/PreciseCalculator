@@ -503,7 +503,6 @@ const int funcTab_size = sizeA(funcTab);
 void cerror(int id, char *txt)
 {
 	if(error) return;
-	if((id==1060 || id==1063) && precision<prec2) return; //Trigonometric or MOD function operand is too big
 	error=id;
 #ifdef CONSOLE
 	puts(lng(id, txt));
@@ -1552,8 +1551,10 @@ DWORD WINAPI calcThread(char *param)
 			if(!*e) break;
 		}
 	lout:
-		if(error == 1030 && precision < prec2) { //divisor of a big number
-			ClearError(1030);
+		if((error==1030 || error==1060 || error==1063) && precision < prec2) { 
+			//divisor, trigonometric or MOD function operand is too big
+			//discard invalid preview
+			ClearError(error);
 			cleanup();
 #ifndef CONSOLE
 			SetWindowText(hOut, "");
