@@ -914,6 +914,21 @@ void _stdcall LNC(Complex y, const Complex x)
 //log x=ln x/ln 10
 void _stdcall LOG10C(Complex y, const Complex x)
 {
+	if(isDword(x.r) && isZero(x.i) && !isZero(x.r)) {
+		//optimize log of power of 10
+		Tuint e=0;
+		Tuint d=toDword(x.r);
+		while(d % 10 == 0) 
+		{
+			d/=10;
+			e++;
+		}
+		if(d==1) {
+			SETX(y.r, e);
+			ZEROX(y.i);
+			return;
+		}
+	}
 	Complex t=ALLOCC(y.r[-4]);
 	LNC(t, x);
 	getln10(y.r[-4]);
