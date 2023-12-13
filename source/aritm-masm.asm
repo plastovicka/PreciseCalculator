@@ -430,7 +430,7 @@ round2:	mov	eax,[esi]
 	jmp	incr
 ;pokud je ještì volné místo, pak jen zvìtši délku èísla
 inclen:	inc	dword ptr [edi-12]
-	ret
+	jmp	trim
 ;-------------------------------------
 ;normalizace [edi] - mantisa nebude zaèínat ani konèit na nulu
 ;zmìní esi,edi
@@ -2823,24 +2823,6 @@ READX1	proc	uses esi edi ebx a1,buf
 	jmp	@@trim
 READX1	endp
 ;-------------------------------------
-FACTORIALI	proc 	uses esi edi ebx a0,ai
-	mov	eax,[a0]
-	call	@onex
-	mov	esi,[ai]
-	test	esi,esi
-	jz	@@ret     ;0! =1
-@@lp:	push	esi
-	mov	edi,[a0]
-	call	mult1
-	pop	esi
-	mov	eax,[error]
-	test	eax,eax
-	jnz	@@ret
-	dec	esi
-	jnz	@@lp
-@@ret:	ret
-FACTORIALI	endp
-
 FFACTI	proc 	uses esi edi ebx a0,ai
 	mov	eax,[a0]
 	call	@onex
@@ -3272,7 +3254,7 @@ public	pascal @NEGX@4,pascal @ABSX@4,pascal @SIGNX@4,pascal @TRUNCX@4,pascal @IN
 public	COPYX,WRITEX1,READX1
 public	MULTX1,MULTI,MULTIN,MULTI1,DIVX2,DIVI,MODI
 public	PLUSX,MINUSX,PLUSU,MINUSU,ANDU,ORU,XORU
-public	CMPX,CMPU,FACTORIALI,FFACTI,SQRTX2,SQRTI,ALLOCNX
+public	CMPX,CMPU,FFACTI,SQRTX2,SQRTI,ALLOCNX
 public	ALLOCN,ANDU@12,ORU@12,XORU@12
 
 	end

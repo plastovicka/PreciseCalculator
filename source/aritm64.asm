@@ -464,7 +464,7 @@ round2:	mov	rax,[rsi]
 	jmp	incr
 ;pokud je ještì volné místo, pak jen zvìtši délku èísla
 inclen:	inc	qword ptr [rdi-24]
-	ret
+	jmp	trim
 ;-------------------------------------
 ;normalizace [rdi] - mantisa nebude zaèínat ani konèit na nulu
 ;zmìní rsi,rdi
@@ -3057,25 +3057,6 @@ READX1	proc	uses rsi rdi rbx a1:qword,buf:qword
 	jmp	@@trim
 READX1	endp
 ;-------------------------------------
-FACTORIALI	proc 	uses rsi rdi rbx a0:qword,ai:qword
-	mov	[a0],rcx
-	mov	[ai],rdx
-	call	ONEX
-	mov	rsi,[ai]
-	test	rsi,rsi
-	jz	@@ret     ;0! =1
-@@lp:	push	rsi
-	mov	rdi,[a0]
-	call	mult1
-	pop	rsi
-	mov	eax,[error]
-	test	eax,eax
-	jnz	@@ret
-	dec	rsi
-	jnz	@@lp
-@@ret:	ret
-FACTORIALI	endp
-
 FFACTI	proc 	uses rsi rdi rbx a0:qword,ai:qword
 	mov	[a0],rcx
 	mov	[ai],rdx
@@ -3520,7 +3501,7 @@ public	NEGX,ABSX,SIGNX,TRUNCX,INTX,CEILX,ROUNDX,FRACX,SCALEX,ADDII
 public	COPYX,WRITEX1,READX1
 public	MULTX1,MULTI,MULTIN,MULTI1,DIVX2,DIVI,MODI
 public	PLUSX,MINUSX,PLUSU,MINUSU,ANDU,ORU,XORU
-public	CMPX,CMPU,FACTORIALI,FFACTI,SQRTX2,SQRTI,ALLOCNX
+public	CMPX,CMPU,FFACTI,SQRTX2,SQRTI,ALLOCNX
 public	ALLOCN,ANDU@12,ORU@12,XORU@12
 
 	end

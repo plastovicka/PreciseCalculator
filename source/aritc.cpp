@@ -1371,14 +1371,28 @@ void _stdcall COMBINI(Pint y, Tuint n, Tuint m)
 	}
 }
 
+static void ProductRecur(Pint y, Tuint start, Tuint n)
+{
+	if(n < 2000 || y[-4] < 100 || error) {
+		SETX(y, start);
+		for(Tuint i = start + 1; i < start + n && !error; i++)
+			MULTI1(y, i);
+		return;
+	}
+	Pint t, u, m;
+	m=ALLOCN(2, y[-4], &t, &u);
+	Tuint i = n / 2;
+	ProductRecur(t, start, i);
+	ProductRecur(u, start + i, n - i);
+	MULTX(y, t, u);
+	FREEX(m);
+}
+
 void _stdcall PERMUTI(Pint y, Tuint n, Tuint m)
 {
-	if(m>n){ ZEROX(y); return; }
-	ONEX(y);
-	while(m--){
-		MULTI1(y, n);
-		n--;
-	}
+	if(m>n) ZEROX(y);
+	else if(m==0) ONEX(y);
+	else ProductRecur(y, n-m+1, m);
 }
 
 void _stdcall LSHX(Pint y, const Pint a, const Pint b)
@@ -1423,6 +1437,11 @@ void _stdcall PERMUTX(Pint y, const Pint a, const Pint b)
 	PERMUTI(y, toDword(a), toDword(b));
 }
 
+void _stdcall FACTORIALI(Pint y, Tuint n)
+{
+	ProductRecur(y, 1, n);
+}
+
 void _stdcall FACTORIALX(Pint y, Pint x)
 {
 	if(!isDword(x)){
@@ -1431,6 +1450,66 @@ void _stdcall FACTORIALX(Pint y, Pint x)
 	}
 	FACTORIALI(y, toDword(x));
 }
+
+#if 0
+static void FactorialProduct(Pint y, Tuint n, Pint c)
+{
+	Pint t, u, m;
+	if(n<2) {
+		PLUSX(y, c, two);
+		COPYX(c, y);
+		return;
+	}
+	if(n==2) {
+		t=ALLOCX(y[-4]);
+		PLUSX(t, c, two);
+		PLUSX(c, t, two);
+		MULTX(y, t, c);
+		FREEX(t);
+	}
+	else if(!error){
+		m=ALLOCN(2, y[-4], &t, &u);
+		Tuint i = n / 2;
+		FactorialProduct(t, n-i, c);
+		FactorialProduct(u, i, c);
+		MULTX(y, t, u);
+		FREEX(m);
+	}
+}
+void _stdcall FACTORIALX(Pint y, Pint x)
+{
+	if(!isDword(x)){
+		cerror(1020, "Operand of factorial is not integer");
+		return;
+	}
+	Tuint n = toDword(x);
+	Pint p,r,c,t,m;
+	m=ALLOCN(4, y[-4], &p, &r, &c, &t);
+	ONEX(p);
+	ONEX(r);
+	ONEX(c);
+	int h = 0, shift = 0, high = 1;
+	int log2n = 0;
+	for(int i=n; i>1; i>>=1) log2n++;
+	while(h != n) {
+		shift += h;
+		h = n >> log2n--;
+		int len = high;
+		high = (h - 1) | 1;
+		len = (high - len) / 2;
+		if(len > 0)
+		{
+			FactorialProduct(t, len, c);
+			MULTX(y, p, t);
+			COPYX(p, y);
+			MULTX(t, r, p);
+			COPYX(r, t);
+		}
+	}
+	LSHI(y, r, shift);
+	FREEX(m);
+}
+#endif
 
 void _stdcall FFACTX(Pint y, Pint x)
 {
