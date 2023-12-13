@@ -1285,10 +1285,11 @@ void parse(const char *input, const char **e)
 			if(t<u || t==CMDASSIGN && u==CMDASSIGN) break;
 			doOp();
 			if(u==CMDLEFT && t==CMDRIGHT){
-				//prefix operators before parenthesis
+				//prefix operators before parenthesis have higher priority, except minus (for example -(3)^2)
 				if(opStack.len>stackBeg && !error){
-					u=opStack[opStack.len-1].op->type;
-					if(u>=8 && u<=9) doOp();
+					const Top *o=opStack[opStack.len-1].op;
+					u=o->type;
+					if(u>=8 && u<=9 && o!=&opNeg) doOp();
 				}
 				goto l2;
 			}
