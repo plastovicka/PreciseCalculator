@@ -469,7 +469,7 @@ void _stdcall WRITEX(char *buf, const Pint x0, int _digits)
 	}
 	if((numFormat==MODE_NORM || numFormat==MODE_FIX) &&
 			x[-1]>=0 && x[-1]<=x[-4] && x[-1]<=prec){
-		WRITEX1(buf, x);
+			WRITEX1(buf, x);
 	}
 	else{
 		//guess exponent
@@ -1339,7 +1339,7 @@ void _stdcall POWI(Pint y, const Pint x, __int64 n)
 
 	if(isZero(x)){
 		ZEROX(y);
-		if(n<=0) cerror(1015, "Not positive power of zero"); // 0^(-n) nebo 0^0
+		if(n<=0) cerror(1015, "Not positive power of zero"); // 0^(-n) or 0^0
 		return;
 	}
 	bool sgn= n<0;
@@ -1350,7 +1350,7 @@ void _stdcall POWI(Pint y, const Pint x, __int64 n)
 	else SETX(z, 1);
 	COPYX(u, x);
 
-	for(n>>=1; n>0; n>>=1){
+	for(n>>=1; n>0 && !error; n>>=1){
 		SQRX(t, u);
 		w=t; t=u; u=w;
 		if(n&1){
@@ -1371,6 +1371,38 @@ void _stdcall POWI(Pint y, const Pint x, __int64 n)
 	else{
 		COPYX(y, z);
 	}
+	FREEX(a);
+}
+
+// x^e mod m
+void _stdcall POWMODX(Pint y, const Pint x, const Pint e, const Pint m)
+{
+	Pint z, t, u, a;
+	Tuint n;
+
+	if(!isDword(e) || isZero(e)) {
+		t=ALLOCX(y[-4]);
+		POWX(t, x, e);
+		MODX(y, t, m);
+		FREEX(t);
+		return;
+	}
+	n=toDword(e);
+	a=ALLOCN(2, y[-4], &t, &u);
+	z=y;
+	MODX(u, x, m);
+	if(n&1) COPYX(z, u);
+	else SETX(z, 1);
+
+	for(n>>=1; n>0 && !error; n>>=1) {
+		SQRX(t, u);
+		MODX(u, t, m);
+		if(n&1) {
+			MULTX(t, z, u);
+			MODX(z, t, m);
+		}
+	}
+	COPYX(y, z);
 	FREEX(a);
 }
 //-------------------------------------------------------------------

@@ -255,6 +255,7 @@ CMDLEFT=401, CMDGOTO=402, CMDRIGHT=455, CMDEND=460, CMDVARARG=500,
 const Top opNeg={0, 9, F NEGX, F NEGC, F NEGM};
 const Top opImag={0, 2, 0, F ISUFFIXC, 0};
 const Top opTransp={0, 2, 0, 0, F TRANSP2M};
+const Top opPowMod={ 0, 121, F POWMODX, 0, 0 };
 char degSymbol[4];
 
 /*
@@ -602,7 +603,7 @@ void doOp()
 	const Top *o;
 	Tstack *t;
 	void *fr, *fc, *fm;
-	Complex a1, a2, y;
+	Complex a1, a2, a3, y;
 
 	if(error || opStack.len==0) return;
 	t= opStack--;
@@ -654,7 +655,27 @@ void doOp()
 				((Tunary0)fr)(a1.r);
 			}
 		}
-		else{
+		else if(o==&opPowMod) {
+			//ternary operator
+			if(numStack.len<3) return;
+			deref(numStack[numStack.len-2]);
+			a2=numStack[numStack.len-2];
+			numStack-=2;
+			deref(numStack[numStack.len-1]);
+			a3=numStack[numStack.len-1];
+			y=ALLOCC(precision);
+			if(isMatrix(a1) || isMatrix(a2) || isMatrix(a3))
+				errMatrix();
+			else if(isImag(a1) || isImag(a2) || isImag(a3))
+				errImag();
+			else
+				((Tternary)fr)(y.r, a3.r, a2.r, a1.r);
+			FREEM(a3);
+			FREEM(a2);
+			FREEM(a1);
+			numStack[numStack.len-1]=y;
+		}
+		else {
 			//binary operator
 			if(numStack.len<2) return;
 			numStack--;
@@ -1185,6 +1206,7 @@ void parse(const char *input, const char **e)
 	int t, u, inPar;
 	Tlen stackBeg=opStack.len;
 	Tstack stk;
+	const Top *o;
 	const char *s=input, *b;
 	Complex a;
 
@@ -1280,13 +1302,19 @@ void parse(const char *input, const char **e)
 		stk.inputPtr=0;
 		if(t!=CMDEND) stk=*opStack--;
 		while(opStack.len>stackBeg && !error){
-			u=opStack[opStack.len-1].op->type;
+			o=opStack[opStack.len-1].op;
+			u=o->type;
 			if(t<u || t==CMDASSIGN && u==CMDASSIGN) break;
+			if(o->cfunc==POWC && stk.op && stk.op->func==MODX && (opStack.len-2<stackBeg || t<opStack[opStack.len-2].op->type)) {
+				opStack--;
+				stk.op=&opPowMod;
+				break;
+			}
 			doOp();
 			if(u==CMDLEFT && t==CMDRIGHT){
 				//prefix operators before parenthesis have higher priority, except minus (for example -(3)^2)
 				if(opStack.len>stackBeg && !error){
-					const Top *o=opStack[opStack.len-1].op;
+					o=opStack[opStack.len-1].op;
 					u=o->type;
 					if(u>=8 && u<=9 && o!=&opNeg) doOp();
 				}
@@ -1372,7 +1400,7 @@ DWORD WINAPI calcThread(char *param)
 	Complex y;
 	Tlen i;
 	int baseOld;
-	int n;
+	int n, errIndex;
 	Darray<char> buf;
 
 #ifndef CONSOLE
@@ -1401,6 +1429,7 @@ DWORD WINAPI calcThread(char *param)
 	for(precision= (prec2>60) ? (8*32/TintBits+1) : prec2; ; ){
 		baseIn=baseOld;
 		input=param;
+		errIndex=-1;
 		buf.setLen(1);
 		buf[0]=0;
 		for(i=vars.len-1; i>=0; i--){
@@ -1484,9 +1513,7 @@ DWORD WINAPI calcThread(char *param)
 				}
 				else{
 					if(error){
-#ifndef CONSOLE
-						PostMessage(hWin, WM_INPUTCUR, 0, int(errPos-param));
-#endif
+						errIndex=int(errPos-param);
 						break;
 					}
 					y= *numStack--;
@@ -1592,6 +1619,7 @@ DWORD WINAPI calcThread(char *param)
 		isGrey=false;
 		outputColor(0);
 	}
+	if(errIndex>=0) PostMessage(hWin, WM_INPUTCUR, 0, errIndex);
 #endif
 
 	if(!error || error==1100){

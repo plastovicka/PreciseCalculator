@@ -105,6 +105,7 @@ extern "C"{
 	void _stdcall AGMX(Pint z, const Pint x0, const Pint y0);
 	void _stdcall POWX(Pint y, const Pint a, const Pint b); //a^b
 	void _stdcall POWI(Pint y, const Pint x, __int64 n);    //x^n
+	void _stdcall POWMODX(Pint y, const Pint x, const Pint e, const Pint m); //x^e mod m
 	void _stdcall ROOTX(Pint y, const Pint b, const Pint a); //a^(1/b)
 	void _stdcall SQRTX(Pint y, const Pint x);  //square root - iteration
 	void _stdcall SQRTX2(Pint y, const Pint x); //slow square root
@@ -257,7 +258,7 @@ inline int toInt4(const Pint x){
 }
 
 
-//is positive integer which can be converted to Tuint
+//is non-negative integer which can be converted to Tuint
 inline bool isDword(const Pint x){
 	return (x[-3]==1 && x[-1]==1 || x[-3]==-2 && x[1]==1)
 		&& x[-2]==0 || x[-3]==0;
@@ -321,6 +322,7 @@ enum{ MODE_SCI, MODE_NORM, MODE_ENG, MODE_FIX };
 typedef void(_fastcall *Tunary0)(Pint);
 typedef void(_stdcall *Tunary2)(Pint, const Pint);
 typedef void(_stdcall *Tbinary)(Pint, const Pint, const Pint);
+typedef void(_stdcall *Tternary)(Pint, const Pint, const Pint, const Pint);
 typedef void(_stdcall *Tnulary)(Pint);
 typedef void(_stdcall *Tvararg)(Pint, unsigned, const Complex*);
 typedef void(_stdcall *Tarrayarg)(Pint, const Complex*);
