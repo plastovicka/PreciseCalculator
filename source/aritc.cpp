@@ -504,12 +504,12 @@ void _stdcall WRITEX(char *buf, const Pint x0, int _digits)
 					DIVI(t, y, base);
 					w=t; t=y; y=w;
 					e++;
-					if(e==TintMin) overflow();
+					if(e==Int64Min) overflow();
 				}
 				while((y[-1]<=0 || numFormat==MODE_ENG && (e%3)) && !error){
 					MULTI1(y, base);
 					e--;
-					if(e==TintMin) overflow();
+					if(e==Int64Min) overflow();
 				}
 			}
 			WRITEX1(buf, y);
