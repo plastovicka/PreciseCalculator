@@ -1001,7 +1001,10 @@ void skipArg(const char *s, const char **e)
 			d--;
 		}
 		if(c=='[') b++;
-		if(c==']') b--;
+		if(c==']') {
+			if(!b) break;
+			b--;
+		}
 		if(c==0 || c==';' || (c==',' && !d && !b)) break;
 	}
 	*e=s;
