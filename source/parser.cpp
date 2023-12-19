@@ -6,6 +6,7 @@
 	*/
 #include "hdr.h"
 #include <ctype.h>
+#include <new>
 #include "preccalc.h"
 
 typedef long Tinterlock;
@@ -40,9 +41,15 @@ Darray<const char*> gotoPositions;
 Darray<Tfunc> funcs;
 const Top **funcTabSorted;
 
-extern "C" void *Alloc(int size)
+extern "C" void *Alloc(size_t size)
 {
-	return operator new(size);
+	try {
+		return operator new(size);
+	}
+	catch(std::bad_alloc) {
+		msg(lng(1028, "Not enough memory !!!"));
+		ExitProcess(99);
+	}
 }
 extern "C" void Free(void *s)
 {
