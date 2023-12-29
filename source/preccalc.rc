@@ -176,7 +176,7 @@ BEGIN
     PUSHBUTTON      "https://preccalc.sourceforge.net",124,5,65,104,13
     PUSHBUTTON      "https://plastovicka.github.io",123,5,83,104,13
     PUSHBUTTON      "OK",IDOK,40,102,32,14
-    CTEXT           "(C) 2004-2023  Petr Lastovicka",501,4,50,104,10
+    CTEXT           "(C) 2004-2024  Petr Lastovicka",501,4,50,104,10
     CTEXT           "Version",503,32,27,28,9
     CTEXT           "Precise Calculator",504,5,4,104,14,SS_CENTERIMAGE | 
                     SS_SUNKEN | WS_BORDER
@@ -376,7 +376,7 @@ BEGIN
             VALUE "CompanyName", "Petr Laštovièka"
             VALUE "FileDescription", "Precise Calculator"
             VALUE "FileVersion", "2, 8, 0, 0"
-            VALUE "LegalCopyright", "© 2004-2023  Petr Laštovièka"
+            VALUE "LegalCopyright", "© 2004-2024  Petr Laštovièka"
             VALUE "OriginalFilename", "preccalc.exe"
         END
     END

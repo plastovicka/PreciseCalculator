@@ -56,7 +56,7 @@ extern "C"{
 	Pint _fastcall NEWCOPYX(const Pint a); //duplicate a
 	void _stdcall COPYX(Pint dest, const Pint src); //assign
 
-	char*_stdcall READX(Pint x, const char *buf);  //read real number, base is determined by global variable baseIn, return pointer to the first character after the number
+	const char*_stdcall READX(Pint x, const char *buf);  //read real number, base is determined by global variable baseIn, return pointer to the first character after the number
 	void _stdcall WRITEX(char *buf, const Pint x, int digits); //print real number, base is determined by global variable base, buffer must be long enough
 	int _stdcall LENX(const Pint x, int digits); //guess buffer length for WRITEX
 	char*_stdcall AWRITEX(const Pint x, int digits); //allocate buffer and call WRITEX

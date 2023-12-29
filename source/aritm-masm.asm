@@ -113,8 +113,8 @@ COPYX	endp
 @@ret:	ret
 @allocx	endp
 
-ALLOCN:
-ALLOCNX	proc
+_ALLOCN:
+ALLOCN	proc
 	mov	eax,[esp+8]
 	lea	eax,[eax*4+HED+RES]	;vèetnì hlavièky a rezervovaného místa
 	push	eax
@@ -139,7 +139,7 @@ ALLOCNX	proc
 	dec	dword ptr [esp+4]
 	jnz	@@lp
 @@ret:	ret
-ALLOCNX	endp
+ALLOCN	endp
 ;-------------------------------------
 ;vytvoøí kopii operandu
 @NEWCOPYX@4:	mov	eax,ecx
@@ -3254,7 +3254,10 @@ public	pascal @NEGX@4,pascal @ABSX@4,pascal @SIGNX@4,pascal @TRUNCX@4,pascal @IN
 public	COPYX,WRITEX1,READX1
 public	MULTX1,MULTI,MULTIN,MULTI1,DIVX2,DIVI,MODI
 public	PLUSX,MINUSX,PLUSU,MINUSU,ANDU,ORU,XORU
-public	CMPX,CMPU,FFACTI,SQRTX2,SQRTI,ALLOCNX
-public	ALLOCN,ANDU@12,ORU@12,XORU@12
+public	CMPX,CMPU,FFACTI,SQRTX2,SQRTI
+public	ANDU@12,ORU@12,XORU@12
+
+;cdecl
+public	pascal _ALLOCN
 
 	end

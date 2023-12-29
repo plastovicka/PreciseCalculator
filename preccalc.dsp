@@ -188,7 +188,7 @@ SOURCE=.\source\preccalc.ico
 # End Group
 # Begin Source File
 
-SOURCE=.\source\aritm.OBJ
+SOURCE=".\tmp\Release32\aritm-masm.obj"
 # End Source File
 # End Target
 # End Project

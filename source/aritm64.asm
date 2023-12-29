@@ -125,8 +125,7 @@ ALLOCX	proc
 ALLOCX	endp
 
 ;promìnný poèet parametrù
-ALLOCN:
-ALLOCNX	proc
+ALLOCN	proc
 	mov	[rsp+8],rcx  ;n
 	mov	[rsp+16],rdx ;len
 	mov	[rsp+24],r8  ;kam se zapíše ukazatel
@@ -155,7 +154,7 @@ ALLOCNX	proc
 	dec	qword ptr [rsp+8]
 	jnz	@@lp
 @@ret:	ret
-ALLOCNX	endp
+ALLOCN	endp
 ;-------------------------------------
 ;vytvoøí kopii operandu
 NEWCOPYX	proc	uses rsi rdi
@@ -180,7 +179,7 @@ NEWCOPYX	proc	uses rsi rdi
 @@ret:	ret
 NEWCOPYX	endp
 ;-------------------------------------
-;uvolnìní pamìti alokované funkcí ALLOCX nebo ALLOCNX
+;uvolnìní pamìti alokované funkcí ALLOCX nebo ALLOCN
 FREEX	proc
 	test	rcx,rcx
 	jz	@@ret
@@ -2784,6 +2783,7 @@ WRITEX1	proc 	uses rsi rdi rbx buf:qword,a1:qword
 	mov	rax,[r11+rax*8]
 	test	rax,rax
 	jnz	@@low1
+;HEX,BIN
 	mov	rbx,[rdi]
 	add	qword ptr [rsp+8],8
 	dec	qword ptr [rsp]
@@ -3501,7 +3501,7 @@ public	NEGX,ABSX,SIGNX,TRUNCX,INTX,CEILX,ROUNDX,FRACX,SCALEX,ADDII
 public	COPYX,WRITEX1,READX1
 public	MULTX1,MULTI,MULTIN,MULTI1,DIVX2,DIVI,MODI
 public	PLUSX,MINUSX,PLUSU,MINUSU,ANDU,ORU,XORU
-public	CMPX,CMPU,FFACTI,SQRTX2,SQRTI,ALLOCNX
+public	CMPX,CMPU,FFACTI,SQRTX2,SQRTI
 public	ALLOCN,ANDU@12,ORU@12,XORU@12
 
 	end
