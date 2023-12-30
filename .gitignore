@@ -17,3 +17,7 @@
 /WapProjTemplate1/BundleArtifacts
 /source/*.aps
 /*.opt
+/source/*.ncb
+/*.iobj
+/*.ipdb
+/source/*.opt

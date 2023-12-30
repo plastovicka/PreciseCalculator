@@ -30,7 +30,6 @@
     <TargetPlatformVersion>10.0.19041.0</TargetPlatformVersion>
     <TargetPlatformMinVersion>10.0.14393.0</TargetPlatformMinVersion>
     <DefaultLanguage>en-US</DefaultLanguage>
-    <PackageCertificateKeyFile>WapProjTemplate1_StoreKey.pfx</PackageCertificateKeyFile>
     <EntryPointProjectUniqueName>..\preccalc.vcxproj</EntryPointProjectUniqueName>
     <AppxAutoIncrementPackageRevision>False</AppxAutoIncrementPackageRevision>
     <AppxBundlePlatforms>x86|x64</AppxBundlePlatforms>
@@ -39,6 +38,8 @@
     <AppxSymbolPackageEnabled>False</AppxSymbolPackageEnabled>
     <GenerateTestArtifacts>True</GenerateTestArtifacts>
     <HoursBetweenUpdateChecks>0</HoursBetweenUpdateChecks>
+    <PackageCertificateThumbprint>0C53D04F5006E7501FB973E7DDE899ECBB4BF475</PackageCertificateThumbprint>
+    <AppxPackageSigningEnabled>True</AppxPackageSigningEnabled>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <AppxBundle>Always</AppxBundle>
@@ -63,9 +64,7 @@
     <Content Include="Assets\logo50.png" />
     <None Include="WapProjTemplate1_StoreKey.pfx" />
     <None Include="Package.StoreAssociation.xml" />
-    <Content Include="preccalc\*" />
-    <Content Include="preccalc\buttons\*" />
-    <Content Include="preccalc\language\*" />
+    <Content Include="preccalc\**" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\preccalc.vcxproj" />
