@@ -47,7 +47,9 @@ extern "C" void *Alloc(size_t size)
 		return operator new(size);
 	}
 	catch(std::bad_alloc) {
+#ifndef CONSOLE
 		msg(lng(1028, "Not enough memory !!!"));
+#endif
 		ExitProcess(99);
 	}
 }
@@ -253,7 +255,7 @@ void FILTERM() {};
 
 //-------------------------------------------------------------------
 
-const int CMDBASE=3, CMDPLUS=144, CMDMINUS=143, CMDASSIGN=397,
+const int CMDBASE=3, CMDPOWER=5, CMDPLUS=144, CMDMINUS=143, CMDASSIGN=397,
 CMDLEFT=401, CMDGOTO=402, CMDRIGHT=455, CMDEND=460, CMDVARARG=500,
 	CMDFOR=550;
 
@@ -394,7 +396,7 @@ const Top funcTab[]={
 	{"<", 170, F LESSX, 0, 0, 2084, "Less"},
 	{"+", CMDPLUS, F PLUSX, F PLUSC, F PLUSM, 2066, "Addition"},
 	{"-", CMDMINUS, F MINUSX, F MINUSC, F MINUSM, 2068, "Substraction"},
-	{"**", 5, 0, F POWC, F POWM, 2038, "Power"}, {"^", 5, 0, F POWC, F POWM, 0, NULL},
+	{"**", CMDPOWER, 0, F POWC, F POWM, 2038, "Power"}, {"^", CMDPOWER, 0, F POWC, F POWM, 0, NULL},
 	{"*", 121, F MULTX, F MULTC, F MULTM, 2056, "Multiplication"},
 	{"mod", 121, F MODX, 0, 0, 2059, "Remainder after division"}, {"%", 121, F MODX, 0, 0, 0, NULL},
 	{"div", 121, F IDIVX, 0, 0, 2115, "Integer division"},
@@ -1314,7 +1316,7 @@ void parse(const char *input, const char **e)
 		while(opStack.len>stackBeg && !error){
 			o=opStack[opStack.len-1].op;
 			u=o->type;
-			if(t<u || t==CMDASSIGN && u==CMDASSIGN) break;
+			if(t<u || t==u && (t==CMDASSIGN || t==CMDPOWER)) break;
 			if(o->cfunc==POWC && stk.op && stk.op->func==MODX && (opStack.len-2<stackBeg || t<opStack[opStack.len-2].op->type)) {
 				opStack--;
 				stk.op=&opPowMod;
