@@ -983,7 +983,7 @@ void _stdcall EXPX(Pint y, const Pint x0)
 	Pint z, t, u, w, x, x1;
 
 	x=x0;
-	SETX(y, 1);
+	ONEX(y);
 	if(isZero(x)) return; //x^0=1
 
 	p = y[-4] + 2;
@@ -1187,7 +1187,7 @@ static void _stdcall _LNX(Pint y, const Pint x0, bool useAGM)
 		DIVX(x, t, v);
 
 		//ln(x)=2*(t+t^3/3+t^5/5+t^7/7+t^9/9+...), t=(x-1)/(x+1)
-		SETX(t, 1);
+		ONEX(t);
 		COPYX(z, x);
 		if(!isZero(x)){
 			COPYX(u, x);
@@ -1261,7 +1261,7 @@ void _stdcall INVERSEROOTI(Pint y, Pint x, Tuint n)
 		DIVX(r, t, x);
 	}
 	else{
-		SETX(r, 1);
+		ONEX(r);
 		DIVI1(r, 2);
 	}
 
@@ -1477,22 +1477,40 @@ void _stdcall POWI(Pint y, const Pint x, __int64 n)
 		if(n<=0) cerror(1015, "Not positive power of zero"); // 0^(-n) or 0^0
 		return;
 	}
-	bool sgn= n<0;
+	ONEX(y);
+	if(n==0) return;
+	bool sgn= n<0;	
 	if(sgn) n=-n;
-	a=ALLOCN(2, y[-4], &t, &u);
 	z=y;
+
+#if 1
+	a=t=ALLOCX(y[-4]);
+	unsigned __int64 i=(unsigned __int64)1<<63;
+	while(!(n&i)) i>>=1;
+	for(; i && !error; i>>=1) {
+		SQRX(t, z);
+		w=t; t=z; z=w;
+		if(n&i) {
+			MULTX(t, z, x);
+			w=t; t=z; z=w;
+		}
+	}
+#else
+	a=ALLOCN(2, y[-4], &t, &u);
 	if(n&1) COPYX(z, x);
 	else SETX(z, 1);
 	COPYX(u, x);
 
-	for(n>>=1; n>0 && !error; n>>=1){
+	for(n>>=1; n>0 && !error; n>>=1) {
 		SQRX(t, u);
 		w=t; t=u; u=w;
-		if(n&1){
+		if(n&1) {
 			MULTX(t, z, u);
 			w=t; t=z; z=w;
 		}
 	}
+#endif
+
 	if(sgn){
 		//y=1/z
 		if(z==y){
@@ -1527,7 +1545,7 @@ void _stdcall POWMODX(Pint y, const Pint x, const Pint e, const Pint m)
 	z=y;
 	MODX(u, x, m);
 	if(n&1) COPYX(z, u);
-	else SETX(z, 1);
+	else ONEX(z);
 
 	for(n>>=1; n>0 && !error; n>>=1) {
 		SQRX(t, u);
@@ -2726,7 +2744,7 @@ void _stdcall bitop(int op, Pint y, const Pint a0, const Pint b0)
 	Numx Ktmp;
 	Pint tmp=&Ktmp.m;
 	tmp[-4]=1;
-	SETX(tmp, 1);
+	ONEX(tmp);
 	SCALEX(tmp, max(a[-1], b[-1]));
 	if(tmp[-1]==TintMin) overflow();
 
@@ -2991,7 +3009,7 @@ c[-4]=2;
 SETX(c,26390);
 
 a=ALLOCN(5,y[-4],&r,&s,&t,&u,&v);
-SETX(t,1);
+ONEX(t);
 u1=1103;
 SETX(s,1103);
 
