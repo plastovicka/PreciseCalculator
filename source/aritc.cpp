@@ -8,7 +8,10 @@
 #include "arit.h"
 #include "preccalc.h"
 #include <math.h>
+
 #if GMP
+// The GNU Multiple Precision Arithmetic Library
+// https://github.com/BrianGladman/mpir
 #include "gmp.h"
 #endif
 
@@ -279,7 +282,9 @@ const char* _stdcall READX_GMP(Pint x, const char *buf)
 		}
 	}
 	size_t len=s-buf;
-	if(len<100 && !dot) return 0;
+	if(len<21 || !dot && len<250) return 0; //don't use GMP for small numbers
+	
+	//GMP needs null-terminated string
 	char* buf2=new char[len+1];
 	memcpy(buf2, buf, len);
 	buf2[len]=0;
@@ -302,10 +307,8 @@ mp_exp_t _stdcall WRITEX_GMP(char *buf, Pint x, int _digits)
 	mpf_t f;
 	ConvertToGMP(x, f);
 	mp_exp_t e;
-	mpf_get_str(buf+1, &e, base, _digits, f);
+	mpf_get_str(buf+1, &e, -base, _digits, f);
 	mpf_clear(f);
-
-	if(base>10 && base<=36) _strupr(buf+1); //upper case
 
 	if(e>-20 && e<=_digits && (numFormat==MODE_NORM || numFormat==MODE_FIX))
 	{

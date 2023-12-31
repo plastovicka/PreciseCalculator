@@ -592,7 +592,7 @@ int skipString(const char *&s)
 }
 
 //convert double qoutes to single quote
-//result is not nul terminated !
+//result is not null-terminated !
 void copyString(char *dest, const char *src)
 {
 	for(;;){
