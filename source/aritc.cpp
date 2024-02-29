@@ -998,7 +998,7 @@ void _stdcall EXPX(Pint y, const Pint x0)
 	else k=450;
 	if(x[-1]<0){
 		k += x[-1]*40;
-		if(k<0) k=0;
+		if(k<0 || x[-1]<-100) k=0;
 	}
 
 	ALLOCN(4, p + k/(TintBits/2), &u, &t, &z, &x1);
@@ -1473,7 +1473,7 @@ void _stdcall POWX(Pint y, const Pint a, const Pint b)
 //-------------------------------------------------------------------
 void _stdcall POWI(Pint y, const Pint x, __int64 n)
 {
-	Pint z, t, u, w, a;
+	Pint z, t, w, a;
 
 	if(isZero(x)){
 		ZEROX(y);
@@ -1499,6 +1499,7 @@ void _stdcall POWI(Pint y, const Pint x, __int64 n)
 		}
 	}
 #else
+	Pint u;
 	a=ALLOCN(2, y[-4], &t, &u);
 	if(n&1) COPYX(z, x);
 	else SETX(z, 1);
@@ -2680,15 +2681,37 @@ void _stdcall ATAN2X(Pint y, const Pint a, const Pint b)
 //sinh(x)= (exp(x)-exp(-x))/2 = x + x^3/3! + x^5/5! + ...
 void _stdcall SINHX(Pint y, const Pint x)
 {
-	COPYX(y, x);
-	SINCOS(y, x, 2, true);
+	if(x[-1]<0) {
+		COPYX(y, x);
+		SINCOS(y, x, 2, true);
+	}
+	else {
+		Pint t, u;
+		ALLOCN(2, y[-4], &t, &u);
+		EXPX(t, x);
+		DIVX(u, one, t);
+		MINUSX(y, t, u);
+		DIVI1(y, 2);
+		FREEX(t);
+	}
 }
 
 //cosh(x)= (exp(x)+exp(-x))/2 = 1 + x^2/2! + x^4/4! + ...
 void _stdcall COSHX(Pint y, const Pint x)
 {
-	ONEX(y);
-	SINCOS(y, x, 1, true);
+	if(x[-1]<0) {
+		ONEX(y);
+		SINCOS(y, x, 1, true);
+	}
+	else {
+		Pint t, u;
+		ALLOCN(2, y[-4], &t, &u);
+		EXPX(t, x);
+		DIVX(u, one, t);
+		PLUSX(y, t, u);
+		DIVI1(y, 2);
+		FREEX(t);
+	}
 }
 
 static void _stdcall TANHCOTGH(Pint y, const Pint x, bool co)
