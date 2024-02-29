@@ -1310,7 +1310,7 @@ void _stdcall SQRTX(Pint y, const Pint x)
 		return;
 	}
 
-	if(y[-4] < SQRTLIM || x[-3]<=0){
+	if(y[-4] < SQRTLIM && x[-1]<ExpMax || x[-3]<=0){
 		SQRTX2(y, x);
 		return;
 	}
@@ -1613,9 +1613,18 @@ void _stdcall COMBINI(Pint y, Tuint n, Tuint m)
 static void ProductRecur(Pint y, Tuint start, Tuint n)
 {
 	if(n < 2000 || y[-4] < 100 || error) {
+#if 1
+		ONEX(y);
+		Tuint m=start + n;
+		while(n-- && !error) {
+			MULTI1(y, --m);
+		}
+#else
 		SETX(y, start);
-		for(Tuint i = start + 1; i < start + n && !error; i++)
+		//condition i > 0 is needed if start is TuintMax or start+n-1 is TuintMax
+		for(Tuint i = start + 1; i <= start + n - 1 && i > 0 && !error; i++)
 			MULTI1(y, i);
+#endif
 		return;
 	}
 	Pint t, u, m;
