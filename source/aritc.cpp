@@ -1014,9 +1014,12 @@ void _stdcall EXPX(Pint y, const Pint x0)
 			ex=t[0];
 			if(t[-1]>1 || ex<0){
 				x[-2]=sgn;
-				overflow();
 				FREEX(u);
-				y[-1]=ExpMax;
+				if(sgn) ZEROX(y);
+				else {
+					overflow();
+					y[-1]=ExpMax;
+				}
 				return;
 			}
 			//x-=ex*ln(base)
