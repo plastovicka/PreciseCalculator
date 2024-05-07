@@ -265,7 +265,6 @@ const Top opNeg={0, 9, F NEGX, F NEGC, F NEGM};
 const Top opImag={0, 2, 0, F ISUFFIXC, 0};
 const Top opTransp={0, 2, 0, 0, F TRANSP2M};
 const Top opPowMod={ 0, 121, F POWMODX, 0, 0 };
-char degSymbol[4];
 
 /*
  0=number or variable
@@ -409,7 +408,7 @@ const Top funcTab[]={
 	{"!!", 2, F FFACTX, 0, 0, 2042, "Double factorial"},
 	{"!", 2, F FACTORIALX, 0, 0, 2003, "Factorial"},
 	{"[", 2, 0, 0, F INDEXM, 2174, "Index of matrix element"},
-	{degSymbol, 2, F DEGX, 0, 0, 2116, "Degrees symbol"},
+	{"\xc2\xb0", 2, F DEGX, 0, 0, 2116, "Degrees symbol"},
 
 	//constants
 	{"pi", 1, F PIX, 0, 0, 2024, "Pi constant"},
@@ -1761,8 +1760,6 @@ static int __cdecl cmpOp(const void *a, const void *b)
 
 void initFuncTab()
 {
-	WideCharToMultiByte(CP_ACP, WC_NO_BEST_FIT_CHARS, L"\xb0\0", 1, degSymbol, 2, "°", 0);
-
 	funcTabSorted = new const Top*[sizeA(funcTab)];
 	for(int i=0; i<sizeA(funcTab); i++){
 		funcTabSorted[i]= funcTab + i;
