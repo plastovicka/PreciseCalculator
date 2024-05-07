@@ -19,15 +19,15 @@
 
 <P>Operators in expressions without parenthesis are executed in the following order: </P>
 <OL>
-<LI>all prefix operators if their operand is in parenthesis</LI>
+<LI>prefix operators (except -) if their operand is in parenthesis</LI>
 
-<LI>all postfix operators</LI>
+<LI>postfix operators</LI>
 
 <LI>#</LI>
 
 <LI>^, **</LI>
 
-<LI>all prefix operators if their operand is not in parenthesis</LI>
+<LI>prefix operators if their operand is not in parenthesis</LI>
 
 <LI>combin, permut, nCr, nPr</LI>
 
@@ -59,5 +59,15 @@
 
 <LI><CODE>\</CODE></LI>
 </OL>
+
+<B>Examples</B>
+<P>
+sin(30)^2 = (sin 30)^2 = 0.25<BR>
+sin30^2 = sin(30^2) = sin900 = 0<BR>
+2^3^4 = 2^(3^4) = 2^81<BR>
+3*4+5*2^3 = (3*4)+(5*(2^3)) = 12+5*8<BR>
+2+5 combin 3+1 = 2+(5 combin 3)+1<BR>
+2+5 &lt;&lt; 3+1 = (2+5)&lt;&lt;(3+1)<BR>
+</P>
 </BODY>
 </HTML>
