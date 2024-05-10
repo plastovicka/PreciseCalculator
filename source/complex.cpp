@@ -268,27 +268,35 @@ void _stdcall ISUFFIXC(Complex y, const Complex x)
 //abs(a+bi)=sqrt(a^2+b^2)
 void _fastcall ABSC(Complex x)
 {
-	if(!isImag(x)){
+	if(!isImag(x)) {
+		ABSX(x.r);
+		return;
+	}
+	Tint d= x.r[-1] - x.i[-1];
+	if((x.r[-1] > x.i[-1]) != (d > 0)) //test overflow
+		d= (d < 0) ? ExpMax : -ExpMax;
+	Tint p= x.r[-4]/2+1;
+
+	if(isZero(x.r) || -d > p) {
+		ABSX(x.i);
+		COPYX(x.r, x.i);
+	}
+	else if(d > p)
+	{
 		ABSX(x.r);
 	}
-	else{
-		if(isZero(x.r)){
-			ABSX(x.i);
-			COPYX(x.r, x.i);
-		}
-		else{
-			Pint t, u;
-			t=ALLOCX(x.r[-4]);
-			u=ALLOCX(x.i[-4]);
-			SQRX(t, x.r);
-			SQRX(u, x.i);
-			PLUSX(x.i, t, u);
-			SQRTX(x.r, x.i);
-			FREEX(u);
-			FREEX(t);
-		}
-		ZEROX(x.i);
+	else {
+		Pint t, u;
+		t=ALLOCX(x.r[-4]);
+		u=ALLOCX(x.i[-4]);
+		SQRX(t, x.r);
+		SQRX(u, x.i);
+		PLUSX(x.i, t, u);
+		SQRTX(x.r, x.i);
+		FREEX(u);
+		FREEX(t);
 	}
+	ZEROX(x.i);
 }
 
 //arg(a+bi)=atan2(b,a)
@@ -979,10 +987,12 @@ void _stdcall SQRTC(Complex y, const Complex x)
 			Pint t=ALLOCX(y.r[-4]);
 			MINUSX(t, y.r, x.r);
 			DIVI1(t, 2);
-			SQRTX(y.i, t);
+			if(t[-2]) ZEROX(y.i); //it happens if x.i is near zero, for example sqrt(10000.1 + 1e-37 i)
+			else SQRTX(y.i, t);
 			PLUSX(t, y.r, x.r);
 			DIVI1(t, 2);
-			SQRTX(y.r, t);
+			if(t[-2]) ZEROX(y.r);
+			else SQRTX(y.r, t);
 			FREEX(t);
 		}
 		y.i[-2]=x.i[-2];
