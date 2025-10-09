@@ -2184,7 +2184,7 @@ void _stdcall MODX(Pint y, const Pint a, const Pint b)
 	MINUSX(y, a, u);
 	//TRUNCX sometimes rounds 0.99999 up
 	if(y[-2]!=a[-2] && !isZero(y)){
-		PLUSX(u, y, b);
+		(a[-2]==b[-2] ? PLUSX : MINUSX)(u, y, b);
 		COPYX(y, u);
 	}
 	FREEX(u);
