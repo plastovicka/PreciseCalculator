@@ -2182,6 +2182,11 @@ void _stdcall MODX(Pint y, const Pint a, const Pint b)
 	Pint u= ALLOCX(y[-4]);
 	MULTX(u, t, b);
 	MINUSX(y, a, u);
+	//TRUNCX sometimes rounds 0.99999 up
+	if(y[-2]!=a[-2] && !isZero(y)){
+		PLUSX(u, y, b);
+		COPYX(y, u);
+	}
 	FREEX(u);
 	FREEX(t);
 }

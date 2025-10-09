@@ -176,7 +176,7 @@ BEGIN
     PUSHBUTTON      "https://preccalc.sourceforge.net",124,5,65,104,13
     PUSHBUTTON      "https://plastovicka.github.io",123,5,83,104,13
     PUSHBUTTON      "OK",IDOK,40,102,32,14
-    CTEXT           "(C) 2004-2024  Petr Lastovicka",501,4,50,104,10
+    CTEXT           "(C) 2004-2025  Petr Lastovicka",501,4,50,104,10
     CTEXT           "Version",503,32,27,28,9
     CTEXT           "Precise Calculator",504,5,4,104,14,SS_CENTERIMAGE | 
                     SS_SUNKEN | WS_BORDER
@@ -212,7 +212,7 @@ BEGIN
                     WS_TABSTOP,256,49,26,10
     CONTROL         "Hyp",IDC_HYP,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,286,
                     49,29,10
-    RTEXT           "",IDC_TIME,322,48,52,12,SS_CENTERIMAGE
+    RTEXT           "---",IDC_TIME,322,48,52,12,SS_CENTERIMAGE
     CONTROL         "a/b",IDC_FRACT,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,
                     347,31,27,10
 END
@@ -357,7 +357,7 @@ END
 //
 
 VS_VERSION_INFO VERSIONINFO
- FILEVERSION 2,9,0,1
+ FILEVERSION 2,9,1,0
  PRODUCTVERSION 0,0,0,0
  FILEFLAGSMASK 0x3fL
 #ifdef _DEBUG
@@ -375,8 +375,8 @@ BEGIN
         BEGIN
             VALUE "CompanyName", "Petr Laštovièka"
             VALUE "FileDescription", "Precise Calculator"
-            VALUE "FileVersion", "2, 9, 0, 1"
-            VALUE "LegalCopyright", "© 2004-2024  Petr Laštovièka"
+            VALUE "FileVersion", "2, 9, 1, 0"
+            VALUE "LegalCopyright", "© 2004-2025  Petr Laštovièka"
             VALUE "OriginalFilename", "preccalc.exe"
         END
     END
