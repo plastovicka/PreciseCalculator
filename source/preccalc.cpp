@@ -172,7 +172,7 @@ int vmsg(HWND w, char *caption, char *text, int btn, va_list v)
 			if(s[1] == 'S') s[1] = 's';
 		}
 	}		
-	_vsnwprintf(buf, sizeof(buf), dtBuf, v);
+	_vsnwprintf(buf, sizeA(buf), dtBuf, v);
 	buf[sizeA(buf) - 1] = 0;
 	CodePageToWideChar(caption);
 	return MessageBoxW(w, buf, dtBuf, btn);
@@ -1141,8 +1141,8 @@ BOOL CALLBACK HistoryProc(HWND hWnd, UINT mesg, WPARAM wP, LPARAM lP)
 					if(item<0 || item>=vHlen) break;
 					h=vH[item];
 					if(stop()) break;
-					delete h;
 					if(h==curHistory) curHistory=0;
+					delete h;
 					initHistoryList(listBox);
 					break;
 				case 522: //remove all
@@ -1393,6 +1393,7 @@ BOOL CALLBACK ColorProc(HWND hWnd, UINT msg, WPARAM wP, LPARAM lP)
 			cmd=LOWORD(wP);
 			switch(cmd){
 				default: //color square
+					if (cmd < 100 || cmd >= 100 + Ncl) break;
 					chc.lStructSize= sizeof(CHOOSECOLOR);
 					chc.hwndOwner= hWnd;
 					chc.hInstance= 0;
