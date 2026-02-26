@@ -9,6 +9,11 @@
 
 #include "complex.h"
 
+#ifdef ARIT64
+#define MatrixMaxLen 1000000
+#else
+#define MatrixMaxLen 100000
+#endif
 
 struct Matrix {
 	Tint tag;  //-12

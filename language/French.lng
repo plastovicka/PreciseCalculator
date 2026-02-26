@@ -154,3 +154,8 @@
 1057=Le premier paramètre doit être une variable
 1058=Le quatrième argument doit être un entier
 1059=Les Paramètres de la fonction matrice doit avoir le nombre de lignes, le nombre de colonnes 
+1062=Le résultat est trop long
+1063=Le premier opérande de la fonction MOD est plus long que la précision
+1064=La matrice est vide
+1065=La fonction nécessite un paramètre
+1066=La matrice a des dimensions trop grandes

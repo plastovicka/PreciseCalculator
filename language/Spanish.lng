@@ -131,6 +131,9 @@
 1061=Parámetros deben ser variables
 1062=Resultado muy largo
 1063=Primer operando de función MOD excede precisión
+1064=La matriz está vacía
+1065=La función requiere un parámetro
+1066=La matriz tiene dimensiones demasiado grandes
 
 960=Hay una expresión numérica al lado izquierdo de una asignación
 961=Incremento o decremento de expresión

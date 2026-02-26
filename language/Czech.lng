@@ -163,6 +163,7 @@
 1063=První operand funkce MOD je větší než přesnost výpočtu
 1064=Matice je prázdná
 1065=Funkce vyžaduje jeden parametr
+1066=Matice má příliš velké rozměry
 
 ;tooltips
 291=Počítat se zlomky, pokud je to možné

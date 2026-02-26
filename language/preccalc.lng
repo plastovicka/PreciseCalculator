@@ -132,6 +132,7 @@
 1063=The first operand of MOD function is longer than precision
 1064=Matrix is empty
 1065=The function requires one parameter
+1066=Matrix has too large dimensions
 
 960=There is a numeric expression at the left side of an assignment
 961=Increment or decrement of an expression

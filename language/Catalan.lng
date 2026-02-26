@@ -129,6 +129,9 @@
 1061=Els paràmetres han de ser variables
 1062=El resultat és massa llarg
 1063=El primer operand de la funció MOD és més gran que la precisió
+1064=La matriu està buida
+1065=La funció requereix un paràmetre
+1066=La matriu té dimensions massa grans
 
 960=Hi ha una expressió numèrica a l'esquerra d'una assignació
 961=Increment o decrement d'una expressió

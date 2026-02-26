@@ -347,6 +347,10 @@ void _stdcall CONCATROWM(Complex y, Complex a, Complex b)
 			return;
 		} 
 	}
+	if (cola * rows > MatrixMaxLen) {
+		cerror(1066, "Matrix has too large dimensions");
+		return;
+	}
 	my= toMatrix(y);
 	if(isMatrix(y)){
 		FREE_ARRAYM(my);
@@ -1039,11 +1043,12 @@ void _stdcall MATRIXM(Complex y, const Complex ca, const Complex cb)
 	if(isInt(ca) && isInt(cb)){
 		Tint r = toInt(ca.r);
 		Tint c = toInt(cb.r);
-		if(r>0 && c>0 && r<100000 && c<100000 || r==0 && c==0){
-			if(Int32x32To64(r, c)<=100000){
+		if(r>0 && c>0 || r==0 && c==0){
+			if(r<=MatrixMaxLen && c<=MatrixMaxLen && Int32x32To64(r, c)<=MatrixMaxLen){
 				prepareM(y, (int)c, (int)r);
 				return;
 			}
+			cerror(1066, "Matrix has too large dimensions");
 		}
 	}
 	cerror(1059, "Function matrix must have parameters number of rows, number of columns");
