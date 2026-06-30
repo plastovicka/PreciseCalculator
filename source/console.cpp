@@ -83,8 +83,7 @@ The expression must start with a quotation mark if it contains <, >, ^, |, &.\n\
 
 int main()
 {
-	initFuncTab();
-	ans=ALLOCC(1);
+	initCalc();
 	enableFractions= useSeparator1= useSeparator2= 0;
 
 	char *s= GetCommandLine();

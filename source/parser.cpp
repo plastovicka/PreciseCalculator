@@ -1664,6 +1664,16 @@ DWORD WINAPI calcThread(char *param)
 //---------------------------------------------------------------
 #ifndef CONSOLE
 
+void tryStop()
+{
+	error=1100;
+#if GMP
+	gmp_Stop();
+#endif
+	if (!GetWindowTextLength(GetDlgItem(hWin, IDC_TIME)))
+		SetDlgItemText(hWin, IDC_TIME, "---");
+}
+
 int stop()
 {
 	static int lock=0;
@@ -1672,7 +1682,7 @@ int stop()
 		if(lock) return 1;
 		lock++;
 		//abort previous calculation
-		error=1100;
+		tryStop();
 		while(MsgWaitForMultipleObjects(1, &thread, FALSE, INFINITE, QS_ALLINPUT)==
 			WAIT_OBJECT_0+1){
 			MSG mesg;
@@ -1758,8 +1768,13 @@ static int __cdecl cmpOp(const void *a, const void *b)
 	return _stricmp((*(Top**)a)->name, (*(Top**)b)->name);
 }
 
-void initFuncTab()
+void initCalc()
 {
+#if GMP
+	gmp_Init();
+#endif
+	ans = ALLOCC(1);
+
 	funcTabSorted = new const Top*[sizeA(funcTab)];
 	for(int i=0; i<sizeA(funcTab); i++){
 		funcTabSorted[i]= funcTab + i;

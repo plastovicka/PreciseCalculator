@@ -211,6 +211,12 @@ extern "C"{
 	void getpi(Tint len);
 	void angleResult(Pint x);
 	void assign(Pint &dest, const Pint src);
+#if GMP
+	void gmp_Init();
+	void gmp_Stop();
+	const char* _stdcall READX_GMP(Pint x, const char *buf);
+	__int64 _stdcall WRITEX_GMP(char *buf, Pint x, int _digits);
+#endif
 
 	extern int error, base, baseIn, angleMode, numFormat, fixDigits;
 	extern int enableFractions, separator1, separator2, sepFreq1, sepFreq2, useSeparator1, useSeparator2, disableRounding;

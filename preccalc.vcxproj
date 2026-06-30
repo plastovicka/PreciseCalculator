@@ -496,6 +496,7 @@
     <ClCompile Include="source\console.cpp" />
     <ClCompile Include="source\aritc.cpp" />
     <ClCompile Include="source\complex.cpp" />
+    <ClCompile Include="source\gmp.cpp" />
     <ClCompile Include="source\lang.cpp" />
     <ClCompile Include="source\list2.cpp">
       <PrecompiledHeader>Create</PrecompiledHeader>

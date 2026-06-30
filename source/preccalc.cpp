@@ -2023,7 +2023,7 @@ LRESULT CALLBACK MainWndProc(HWND hWnd, UINT mesg, WPARAM wP, LPARAM lP)
 			}
 			break;
 		case WM_DESTROY:
-			error=1100;
+			tryStop();
 			PostQuitMessage(0);
 			break;
 
@@ -2281,14 +2281,14 @@ LRESULT CALLBACK MainWndProc(HWND hWnd, UINT mesg, WPARAM wP, LPARAM lP)
 					SendMessage(hOut, EM_SETSEL, (WPARAM)-1, 0);
 					break;
 				case ID_CLEAR:
-					error=1100;
+					tryStop();
 					SetWindowText(hIn, "");
 					SetFocus(hIn);
 					Sleep(10);
 					SetWindowText(hOut, "");
 					break;
 				case ID_STOP:
-					error=1100;
+					tryStop();
 					break;
 				case ID_OPEN:
 					openExpr();
@@ -2408,8 +2408,7 @@ int pascal WinMain(HINSTANCE hInstance, HINSTANCE, LPSTR, int)
 	TSetProcessDPIAware pDPIAware = (TSetProcessDPIAware)GetProcAddress(GetModuleHandleA("user32"), "SetProcessDPIAware");
 	if(pDPIAware) pDPIAware();
 
-	initFuncTab();
-	ans=ALLOCC(1);
+	initCalc();
 
 	font.lfWeight=FW_NORMAL;
 	font.lfCharSet=DEFAULT_CHARSET;

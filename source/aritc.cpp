@@ -9,12 +9,6 @@
 #include "preccalc.h"
 #include <math.h>
 
-#if GMP
-// The GNU Multiple Precision Arithmetic Library
-// https://github.com/BrianGladman/mpir
-#include "gmp.h"
-#endif
-
 int
 angleMode=ANGLE_DEG,
  numFormat=MODE_NORM,
@@ -237,124 +231,6 @@ __int64 strtoi64(const char *str, const char **end)
 }
 
 //-------------------------------------------------------------------
-#if GMP
-
-void ConvertFromGMP(Pint x, mpf_ptr f)
-{
-	x[-1]= f->_mp_exp;
-	x[-2]= f->_mp_size < 0;
-	int n = abs(f->_mp_size);
-	assert(n<=x[-4]+2);
-	x[-3]=min(n,x[-4]);
-	for(int i=--n; i>=0; i--)
-		x[i]=f->_mp_d[n-i]; //reverse
-}
-
-void ConvertToGMP(Pint x, mpf_ptr f)
-{
-	//import is safe and compatible but it is slower and needs more memory
-	//mpz_t o;
-	//mpz_init(o);
-	//mpz_import(o, x[-3], 1, sizeof(Tint), 0, 0, x);
-	//mpf_init2(f, precision*TintBits);
-	//mpf_set_z(f, o);
-	//mp_bitcnt_t b = x[-1]-x[-3];
-	//if(b) mpf_mul_2exp(f, f, b*64);
-	//mpz_clear(o);
-
-	//direct conversion to mpf_t
-	mpf_init2(f, precision*TintBits);
-	f->_mp_exp= (mp_exp_t)x[-1];
-	int n = f->_mp_size = (int)x[-3];
-	for(int i=--n; i>=0; i--)
-		f->_mp_d[i]=x[n-i]; //reverse
-}
-
-const char* _stdcall READX_GMP(Pint x, const char *buf)
-{
-	const char *s;
-	bool dot=false;
-	for(s=buf;; s++) {
-		char c=*s;
-		if(!(c>='0' && c<='9' && c<'0'+baseIn || c>='A' && c<'A'-10+baseIn || c>='a' && c<'a'-10+baseIn)) {
-			if(c=='.' && !dot) dot=true;
-			else break;
-		}
-	}
-	size_t len=s-buf;
-	if(len<21 || !dot && len<250) return 0; //don't use GMP for small numbers
-	
-	//GMP needs null-terminated string
-	char* buf2=new char[len+1];
-	memcpy(buf2, buf, len);
-	buf2[len]=0;
-
-	mpf_t f;
-	mpf_init2(f, x[-4]*TintBits);
-	int err=mpf_set_str(f, buf2, baseIn);
-	assert(!err);
-	delete[] buf2;
-	if(!err) ConvertFromGMP(x, f);
-	mpf_clear(f);
-	return err ? 0 : s;
-}
-
-//returns 32bit exponent, output buffer must be large enough
-mp_exp_t _stdcall WRITEX_GMP(char *buf, Pint x, int _digits)
-{
-	if(x[-2]) *buf++='-'; //negative number
-
-	mpf_t f;
-	ConvertToGMP(x, f);
-	mp_exp_t e;
-	mpf_get_str(buf+1, &e, -base, _digits, f);
-	mpf_clear(f);
-
-	if(e>-20 && e<=_digits && (numFormat==MODE_NORM || numFormat==MODE_FIX))
-	{
-		//number is without exponent
-		size_t len=strlen(buf+1);
-		if(e>0)
-		{
-			memmove(buf, buf+1, min(len,e));
-			//fill trailing zeros
-			if(len<e) memset(buf+len, '0', e-len);
-			buf[e]= len>e ? '.' : 0;
-		}
-		else {
-			memmove(buf+2-e, buf+1, len+1);
-			//fill leading zeros
-			memset(buf, '0', 2-e);
-			buf[1]='.';
-		}
-		return 0;
-	}
-	else {
-		//insert dot after the first digit
-		buf[0]=buf[1];
-		buf[1]= buf[2] ? '.' : 0;
-		e--;
-
-		if(numFormat==MODE_ENG) {
-			int m = e%3;
-			if(m) {
-				if(m<0) m+=3;
-				if(!buf[2]) {
-					buf[2]='0'; buf[3]=0;
-				}
-				if(!buf[3] && m==2) {
-					buf[3]='0'; buf[4]=0;
-				}
-				buf[1]=buf[2];
-				buf[2]=buf[3];
-				buf[m+1]='.';
-				e-=m;
-			}
-		}
-		return e; //exponent
-	}
-}
-#endif
 
 //x*=base^e
 void _stdcall EEX(Pint x, __int64 e, int _base)
