@@ -132,20 +132,8 @@ static void RunOnGmpThread(void (*func)())
 	WaitForSingleObject(gmpEventDone, INFINITE);
 }
 
-static const char* READX_GMP_Impl(Pint x, const char *buf)
+static int READX_GMP_Impl(Pint x, const char *buf, size_t len)
 {
-	const char *s;
-	bool dot=false;
-	for(s=buf;; s++) {
-		char c=*s;
-		if(!(c>='0' && c<='9' && c<'0'+baseIn || c>='A' && c<'A'-10+baseIn || c>='a' && c<'a'-10+baseIn)) {
-			if(c=='.' && !dot) dot=true;
-			else break;
-		}
-	}
-	size_t len=s-buf;
-	if(len<21 || !dot && len<250) return 0; //don't use GMP for small numbers
-	
 	//GMP needs null-terminated string
 	char* buf2=(char*)gmp_alloc(len+1);
 	memcpy(buf2, buf, len);
@@ -158,23 +146,35 @@ static const char* READX_GMP_Impl(Pint x, const char *buf)
 	gmp_free(buf2, len+1);
 	if(!err) ConvertFromGMP(x, f);
 	mpf_clear(f);
-	return err ? 0 : s;
+	return err;
 }
 
-struct ReadGmpParams { Pint x; const char *buf; const char *result; };
+struct ReadGmpParams { Pint x; const char *buf; size_t len; int err; };
 
 static void READX_GMP_Work()
 {
 	ReadGmpParams *params = (ReadGmpParams*)gmpParam;
-	params->result = READX_GMP_Impl(params->x, params->buf);
+	params->err = READX_GMP_Impl(params->x, params->buf, params->len);
 }
 
 const char* _stdcall READX_GMP(Pint x, const char *buf)
 {
-	ReadGmpParams params = { x, buf, 0 };
+	const char *s;
+	bool dot=false;
+	for(s=buf;; s++) {
+		char c=*s;
+		if(!(c>='0' && c<='9' && c<'0'+baseIn || c>='A' && c<'A'-10+baseIn || c>='a' && c<'a'-10+baseIn)) {
+			if(c=='.' && !dot) dot=true;
+			else break;
+		}
+	}
+	size_t len=s-buf;
+	if(len<21 || !dot && len<250) return 0; //don't use GMP for small numbers
+
+	ReadGmpParams params = { x, buf, len, 1 };
 	gmpParam = &params;
 	RunOnGmpThread(READX_GMP_Work);
-	return params.result;
+	return params.err ? 0 : s;
 }
 
 //returns 32bit exponent, output buffer must be large enough
