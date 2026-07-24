@@ -7,6 +7,7 @@
 #include "hdr.h"
 #include "matrix.h"
 #include "darray.h"
+#include "jit.h"
 
 int matrixFormat=1;
 
@@ -1234,8 +1235,12 @@ void _stdcall MAPM(Complex &cy, const Complex &ca, const Complex &cb, TbinaryC f
 
 void _stdcall COPYM(Complex dest, const Complex src)
 {
-	if(src.r==dest.r) return;
-	MAPM(dest, src, COPYC);
+	if(!isMatrix(src) && !isMatrix(dest)) {
+		COPYX(dest.r, src.r);
+		COPYX(dest.i, src.i);
+	}
+	else if(src.r!=dest.r)
+		MAPM(dest, src, COPYC);
 }
 void _stdcall PLUSM(Complex y, const Complex a, const Complex b)
 {
@@ -1940,6 +1945,9 @@ struct IntegralData
 {
 	Complex var;
 	const char *formula;
+#ifdef _M_X64
+	Tjit *jit;
+#endif
 	int bits, depth;
 
 	/*
@@ -1966,7 +1974,11 @@ struct IntegralData
 		for(i=1; i<=3; i+=2) {
 			*v= (i==1) ? t : u;
 			if(error) goto lfree;
+#ifdef _M_X64
+			jitEvalFormula(jit, formula, &e);
+#else
 			parse(formula, &e);
+#endif
 			if(error) goto lfree;
 			F[i]=*numStack--;
 			deref(F[i]);
@@ -2039,7 +2051,11 @@ struct IntegralData
 		//function values
 		for(i=0; i<3; i++) {
 			ASSIGNM(y, var, (i==0 ? a : (i==1 ? h : b)));
+#ifdef _M_X64
+			jitEvalFormula(jit, formula, &e);
+#else
 			parse(formula, &e);
+#endif
 			if(error) goto lfree;
 			F[i]=*numStack--;
 			deref(F[i]);
@@ -2064,7 +2080,11 @@ struct IntegralData
 	}
 };
 
-void INTEGRALM(Complex y, Complex a, Complex b, Complex p, Complex var, const char *formula)
+void INTEGRALM(Complex y, Complex a, Complex b, Complex p, Complex var, 
+#ifdef _M_X64
+	Tjit *jit,
+#endif
+	const char *formula)
 {
 	Tuint timeOrPrec;
 	DWORD t0, t1, t2;
@@ -2075,6 +2095,9 @@ void INTEGRALM(Complex y, Complex a, Complex b, Complex p, Complex var, const ch
 		return;
 	}
 	data.formula=formula;
+#ifdef _M_X64
+	data.jit=jit;
+#endif
 	data.var=var;
 	data.depth=0;
 	timeOrPrec= toDword(p.r);

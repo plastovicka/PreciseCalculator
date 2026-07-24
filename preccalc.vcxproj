@@ -37,7 +37,6 @@
   <PropertyGroup Label="Globals">
     <ProjectGuid>{F389CE0F-BAF0-4595-8C42-33A82B29AC5F}</ProjectGuid>
     <TargetPlatformVersion>7.0</TargetPlatformVersion>
-    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
@@ -58,7 +57,7 @@
     <ConfigurationType>Application</ConfigurationType>
     <UseOfMfc>false</UseOfMfc>
     <CharacterSet>MultiByte</CharacterSet>
-    <PlatformToolset>v141_xp</PlatformToolset>
+    <PlatformToolset>v145</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='ConsoleRelease|x64'" Label="Configuration">
@@ -438,8 +437,9 @@
       <ProgramDatabaseFile>
       </ProgramDatabaseFile>
       <SubSystem>Windows</SubSystem>
-      <GenerateDebugInformation>false</GenerateDebugInformation>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>.\source\mpir\lib\x64\Release</AdditionalLibraryDirectories>
+      <Profile>true</Profile>
     </Link>
     <Bscmake>
       <SuppressStartupBanner>true</SuppressStartupBanner>
@@ -503,6 +503,7 @@
     </ClCompile>
     <ClCompile Include="source\matrix.cpp" />
     <ClCompile Include="source\parser.cpp" />
+    <ClCompile Include="source\jit.cpp" />
     <ClCompile Include="source\preccalc.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -519,6 +520,7 @@
     <ClInclude Include="source\lang.h" />
     <ClInclude Include="source\list2.h" />
     <ClInclude Include="source\matrix.h" />
+    <ClInclude Include="source\jit.h" />
     <ClInclude Include="source\preccalc.h" />
     <ClInclude Include="source\resource.h" />
   </ItemGroup>
