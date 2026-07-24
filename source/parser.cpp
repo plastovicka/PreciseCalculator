@@ -12,8 +12,6 @@
 
 typedef long Tinterlock;
 
-const unsigned MAX_OUTPUT_SIZE=1000000000;
-
 struct Tlabel {
 	const char *name;
 	int nameLen;
@@ -790,7 +788,7 @@ void arrayIndex(const char *&s)
 			parse(s, &s);
 			if(error) return;
 			#ifdef _M_X64
-			if(jitCompileOnly) jitCompilePop();
+			if(jitRecording) jitCompilePop();
 			else
 			#endif
 			D[i][0]=D[i][1]=getIndex();
@@ -801,7 +799,7 @@ void arrayIndex(const char *&s)
 				parse(s+1, &s);
 				if(error) return;
 				#ifdef _M_X64
-				if(jitCompileOnly) jitCompilePop();
+				if(jitRecording) jitCompilePop();
 				else
 				#endif
 				D[i][1]=getIndex();
@@ -821,8 +819,9 @@ void arrayIndex(const char *&s)
 	}
 
 #ifdef _M_X64
-	if(jitRecording) jitRecArrayIndex(jitFlags, opPtr);
-	if(jitCompileOnly) return;
+	if(jitRecording) 
+		jitRecArrayIndex(jitFlags, opPtr);
+	else
 #endif
 	arrayIndexApply(D);
 }
@@ -1054,53 +1053,67 @@ void skipArg(const char *s, const char **e)
 	*e=s;
 }
 //---------------------------------------------------------------
-int argsCore(Tstack stk, const char *input, const char **end
-#ifdef _M_X64
-	, Tjit *bodyJit
-#endif
-)
+void args(const char *input, const char **end)
 {
 	unsigned i, n, ifCond=0;
-	int j, len=0;
+	int j;
 	const char *s, *e, *formula=0;
-	Complex y, t, u, w, *stackEnd, *A=0;
-	const Top *o;
-	void *fc, *fm;
-	bool isIf, isEach;
+	Complex y;
 #ifdef _M_X64
 	Tlen stackStart= numStack.len;
 #endif
 
-	o= stk.op;
-	isIf= o->func==IFX;
+	Tstack stk = *opStack--;
+	const Top *o= stk.op;
+	bool isIf= o->func==IFX;
 	s=input;
 	skipSpaces(s);
 	if(*s!='('){
 		errPos=s;
 		cerror(957, "Left parenthesis expected");
-		return -2;
+		return;
 	}
 	s++;
 
 	for(i=1;; i++){
 		if(unsigned(o->type)==CMDFOR+i){
 			formula=s;
+#ifdef _M_X64
+			if(jitRecording){
+				Tcompiled *c = jitRecFor(stk.op, stk.inputPtr);
+				jitCompileFormula(c->sub, s, &e);
+			}
+			else
+#endif
 			skipArg(s, &e);
 		}
 		else if(o->type>=CMDFOR && i==1){
 			j=token(s, true);
 			e=s;
-			if(j!=0 || !isVariable(numStack[numStack.len-1])){
+			if(j!=0 || !numStack[numStack.len-1].r || !isVariable(numStack[numStack.len-1])){
 				cerror(1057, "The first parameter has to be a variable");
 			}
 		}
 		else{
 			parse(s, &e);
 		}
-		if(error) return -1;
+		if(error) return;
 		if(*e!=',') break;
 		s=e+1;
 		if(isIf){
+#ifdef _M_X64
+			if(jitRecording){
+				//the condition and both branches are sub-traces
+				Tcompiled *c = jitRecIf(input);
+				jitCompileFormula(&c->sub[0], s, &e);
+				if(error) return;
+				if(*e!=',') break;
+				jitCompileFormula(&c->sub[1], e+1, &e);
+				if(error) return;
+				if(*e!=',') i += 2;
+				break;
+			}
+#endif
 			if(i==1){
 				deref(numStack[numStack.len-1]);
 				y= *numStack--;
@@ -1122,142 +1135,144 @@ int argsCore(Tstack stk, const char *input, const char **end
 	if(n && i!=n){
 		errPos=input;
 		cerror(958, "Wrong number of arguments");
-		return -3;
+		return;
 	}
-	if(isIf) return 0;
-
-#ifdef _M_X64
-	if(jitCompileOnly){
-		if(o->type>=CMDFOR && formula && bodyJit){
-			jitCompileFormula(bodyJit, formula, 0);
-		}
-		else if(o->type<CMDVARARG+100 && jitRecording){
-			jitRecApplyVararg(o, i, stk.inputPtr);
-		}
-		while(numStack.len>stackStart) jitCompilePop();
-		jitCompilePushDummy();
-		return 0;
-	}
-#endif
+	if(isIf) return;
 
 	if(o->type>=CMDFOR){
-		stackEnd=&numStack[numStack.len];
-		j=-1;
-		if(formula) i-=2;
-		for(; unsigned(-j)<=i; j--){
-			deref(stackEnd[j]);
-		}
-		if(formula) i++;
-
 		errPos = stk.inputPtr;
-		y=ALLOCC(precision);
-		fm=o->mfunc;
-		fc=o->cfunc;
-		if(fm==INTEGRALM){
 #ifdef _M_X64
-			((void(*)(Complex, Complex, Complex, Complex, Complex, Tjit*, const char*))o->mfunc)(y, stackEnd[-3], stackEnd[-2], stackEnd[-1], stackEnd[-4], bodyJit, formula);
-#else
-			((void(*)(Complex, Complex, Complex, Complex, Complex, const char*))o->mfunc)(y, stackEnd[-3], stackEnd[-2], stackEnd[-1], stackEnd[-4], formula);
+		if(!jitRecording)
 #endif
-		}
-		else{
-			//for cycle
-			isEach= o->type!=CMDFOR+4;
-			if(isEach){
-				//get matrix length and pointer to items
-				if(isMatrix(stackEnd[-1])){
-					Pmatrix m= toMatrix(stackEnd[-1]);
-					len= m->len;
-					A= m->A;
-				}
-				else{
-					len=1;
-					A=&stackEnd[-1];
-				}
-			}
-			else{
-				//first value and last value must be real or complex
-				if(isMatrix(stackEnd[-2]) || isMatrix(stackEnd[-1])){
-					errMatrix();
-					goto lend;
-				}
-				//assign the first value to variable
-				ASSIGNM(stackEnd[-2], stackEnd[-3], stackEnd[-2]);
-			}
-			if(fc) ((TunaryC0)fc)(y);
-			t=ALLOCC(precision);
-			u=ALLOCC(precision);
-			{
-#ifdef _M_X64
-			Tjit localJit;
-			Tjit *bj= bodyJit;
-			if(!bj){
-				jitInit(&localJit);
-				bj=&localJit;
-			}
-#endif
-			for(j=0; !error; j++){
-				if(isEach){
-					if(j>=len) break;
-					//assign matrix item to variable
-					ASSIGNM(A[j], stackEnd[-2], A[j]);
-				}
-				else{
-					//is variable greater then last value
-					if(error || CMPC(toVariable(stackEnd[-3])->newx, stackEnd[-1]) > 0) break;
-				}
-				//evaluate expression
-#ifdef _M_X64
-				jitEvalFormula(bj, formula, &e);
-#else
-				parse(formula, &e);
-#endif
-				if(error) break;
-				stackEnd=&numStack[numStack.len-1];
-				deref(*stackEnd);
-				//add item to result
-				if(fm==FILTERM) {
-					if(!isZero(*stackEnd)) {
-						CONCATM(u, y, toVariable(stackEnd[isEach ? -2 : -3])->newx);
-						w=y; y=u; u=w;
-					}
-				}
-				else if(fm) {
-					if(j) {
-						((TbinaryC)fm)(u, y, *stackEnd);
-						w=y; y=u; u=w;
-					} else {
-						w=y; y=*stackEnd; *stackEnd=w;
-					}
-				}
-				FREEM(*numStack--);
-				if(!isEach){
-					//increment variable
-					INCC(t, stackEnd[-3]);
-				}
-			}
-#ifdef _M_X64
-			if(bj==&localJit) jitFree(&localJit);
-#endif
-			}
-			FREEM(u);
-			FREEC(t);
-		}
-	lend:
-		//free arguments
-		while(i--){
-			FREEM(*numStack--);
-		}
-		//store the result
-		*numStack++= y;
+		forExecute(o, formula);
 	}
 	else{
 #ifdef _M_X64
-		if(jitRecording) jitRecApplyVararg(o, i, stk.inputPtr);
+		if(jitRecording)
+			jitRecApplyVararg(o, i, stk.inputPtr);
+		else
 #endif
 		varargApply(o, i, stk.inputPtr);
 	}
-	return 0;
+
+#ifdef _M_X64
+	if(jitRecording){
+		while(numStack.len>stackStart) jitCompilePop();
+		jitCompilePushDummy();
+	}
+#endif
+}
+//---------------------------------------------------------------
+void forExecute(const Top *o, const char *formula
+#ifdef _M_X64
+	, Tjit *bodyJit
+#endif
+)
+{
+	unsigned i;
+	int j, len=0;
+	Complex y, t, u, w, *stackEnd, *A=0;
+	void *fc, *fm;
+	bool isEach;
+
+	stackEnd=&numStack[numStack.len];
+	i = o->type-CMDFOR;
+	if(formula) i-=2;
+	for(j=-1; unsigned(-j)<=i; j--){
+		deref(stackEnd[j]);
+	}
+	if(formula) i++;
+
+	y=ALLOCC(precision);
+	fm=o->mfunc;
+	fc=o->cfunc;
+	if(fm==INTEGRALM){
+#ifdef _M_X64
+		((void(*)(Complex, Complex, Complex, Complex, Complex, Tjit*, const char*))o->mfunc)(y, stackEnd[-3], stackEnd[-2], stackEnd[-1], stackEnd[-4], bodyJit, formula);
+#else
+		((void(*)(Complex, Complex, Complex, Complex, Complex, const char*))o->mfunc)(y, stackEnd[-3], stackEnd[-2], stackEnd[-1], stackEnd[-4], formula);
+#endif
+	}
+	else{
+		//for cycle
+		isEach= o->type!=CMDFOR+4;
+		if(isEach){
+			//get matrix length and pointer to items
+			if(isMatrix(stackEnd[-1])){
+				Pmatrix m= toMatrix(stackEnd[-1]);
+				len= m->len;
+				A= m->A;
+			}
+			else{
+				len=1;
+				A=&stackEnd[-1];
+			}
+		}
+		else{
+			//first value and last value must be real or complex
+			if(isMatrix(stackEnd[-2]) || isMatrix(stackEnd[-1])){
+				errMatrix();
+				goto lend;
+			}
+			//assign the first value to variable
+			ASSIGNM(stackEnd[-2], stackEnd[-3], stackEnd[-2]);
+		}
+		if(fc) ((TunaryC0)fc)(y);
+		t=ALLOCC(precision);
+		u=ALLOCC(precision);
+		{
+		for(j=0; !error; j++){
+			if(isEach){
+				if(j>=len) break;
+				//assign matrix item to variable
+				ASSIGNM(A[j], stackEnd[-2], A[j]);
+			}
+			else{
+				//is variable greater then last value
+				if(error || CMPC(toVariable(stackEnd[-3])->newx, stackEnd[-1]) > 0) break;
+			}
+			//evaluate expression
+#ifdef _M_X64
+			if(bodyJit) jitRun(bodyJit);
+			else
+#else
+			parse(formula, end);
+#endif
+			if(error) break;
+			stackEnd=&numStack[numStack.len-1];
+			deref(*stackEnd);
+			//add item to result
+			if(fm==FILTERM) {
+				if(!isZero(*stackEnd)) {
+					CONCATM(u, y, toVariable(stackEnd[isEach ? -2 : -3])->newx);
+					w=y; y=u; u=w;
+				}
+			}
+			else if(fm) {
+				if(j) {
+					((TbinaryC)fm)(u, y, *stackEnd);
+					w=y; y=u; u=w;
+				} else {
+					w=y; y=*stackEnd; *stackEnd=w;
+				}
+			}
+			FREEM(*numStack--);
+			if(!isEach){
+				//increment variable
+				INCC(t, stackEnd[-3]);
+			}
+		}
+		}
+		FREEM(u);
+		FREEC(t);
+	}
+lend:
+	//free arguments
+	while(i--){
+		FREEM(*numStack--);
+	}
+	//store the result
+	*numStack++= y;
 }
 //---------------------------------------------------------------
 //apply a function with a fixed or variable number of arguments
@@ -1548,7 +1563,6 @@ DWORD WINAPI calcThread(char *param)
 	isGrey=false;
 #ifdef _M_X64
 	TjitScript script;
-	script.ready=false;
 #endif
 
 	for(precision= (prec2>60) ? (8*32/TintBits+1) : prec2; ; ){

@@ -1975,10 +1975,10 @@ struct IntegralData
 			*v= (i==1) ? t : u;
 			if(error) goto lfree;
 #ifdef _M_X64
-			jitEvalFormula(jit, formula, &e);
-#else
-			parse(formula, &e);
+			if(jit) jitRun(jit);
+			else
 #endif
+			parse(formula, &e);
 			if(error) goto lfree;
 			F[i]=*numStack--;
 			deref(F[i]);
@@ -2052,10 +2052,10 @@ struct IntegralData
 		for(i=0; i<3; i++) {
 			ASSIGNM(y, var, (i==0 ? a : (i==1 ? h : b)));
 #ifdef _M_X64
-			jitEvalFormula(jit, formula, &e);
-#else
-			parse(formula, &e);
+			if(jit) jitRun(jit);
+			else
 #endif
+			parse(formula, &e);
 			if(error) goto lfree;
 			F[i]=*numStack--;
 			deref(F[i]);

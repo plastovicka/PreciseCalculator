@@ -19,27 +19,13 @@
  if(cond,a,b) is compiled as a jitIf instruction whose condition and branches
  are separate sub-traces, so both branches end up compiled even
  when the condition changes between iterations. Nested for/foreach constructs
- are recorded as one jitEvalArgs instruction which re-reads the loop header,
- but their body is a persistent sub-trace compiled only once. Commands goto
- and gotor set gotoPos just like the interpreter.
+ are recorded as one jitFor instruction whose loop header expressions
+ and body are persistent sub-traces compiled only once. Commands goto and
+ gotor set gotoPos just like the interpreter.
 */
 
-const unsigned MAX_OUTPUT_SIZE=1000000000;
-
-bool jitRecording=false, jitCompileOnly=false;
+bool jitRecording=false;
 static Tjit *jitCur=0;
-
-
-static void jitIfExec(Tcompiled *c)
-{
-	jitEvalFormula(&c->sub[0], c->srcCond, 0);
-	if(error || !numStack.len) return;
-	deref(numStack[numStack.len-1]);
-	Complex y= *numStack--;
-	bool cond= !isZero(y);
-	FREEM(y);
-	jitEvalFormula(&c->sub[cond ? 1 : 2], cond ? c->srcThen : c->srcElse, 0);
-}
 
 //execute one recorded instruction
 static void jitStep(Tcompiled *ins)
@@ -65,19 +51,21 @@ static void jitStep(Tcompiled *ins)
 		case jitApplyVararg:
 			varargApply(ins->op, (unsigned)ins->varIndex, ins->inputPtr);
 			break;
-		case jitEvalArgs:{
-			//re-execute the header of a construct with repeated argument
-			//evaluation (for, foreach, integral, ...) through the interpreter
-			Tstack stk;
-			stk.op= ins->op;
-			stk.inputPtr= ins->inputPtr;
-			argsCore(stk, ins->inputPtr+strlen(ins->op->name), 0, ins->sub);
+		case jitFor:{
+			//re-execute a construct with repeated argument evaluation
+			//(for, foreach, integral, ...) using persistent compiled sub-traces
+			forExecute(ins->op, ins->inputPtr+strlen(ins->op->name), ins->sub);
 			break;
 		}
-		case jitIf:
-			errPos= ins->inputPtr;
-			jitIfExec(ins);
+		case jitIf: {
+			errPos = ins->inputPtr;
+			deref(numStack[numStack.len-1]);
+			Complex y = *numStack--;
+			bool cond = !isZero(y);
+			FREEM(y);
+			jitRun(&ins->sub[cond ? 0 : 1]);
 			break;
+		}
 		case jitArrayIdx:{
 			//pop the recorded index expressions in reverse order of evaluation
 			int D[2][2];
@@ -94,7 +82,7 @@ static void jitStep(Tcompiled *ins)
 	}
 }
 
-static void jitRun(Tjit *j)
+void jitRun(Tjit *j)
 {
 #if JIT_EMIT
 	if(j->stubMem){
@@ -105,20 +93,6 @@ static void jitRun(Tjit *j)
 #endif
 	for(Tcompiled *k=j->code.array, *e = k + j->code.len ; k<e && !error; k++){
 		jitStep(k);
-	}
-}
-
-//evaluate a formula: compile the trace first without executing it, then replay the generated code
-void jitEvalFormula(Tjit *j, const char *formula, const char **e)
-{
-	if(!j->recorded){
-		jitCompileFormula(j, formula, e);
-	}
-	if(j->ready){
-		jitRun(j);
-	}
-	else{
-		parse(formula, e);
 	}
 }
 
@@ -187,7 +161,7 @@ int jitExecuteExpression(Tjit *j, const char *input, const char *compiledEnd,
 	gotoPos=-1;
 	retValue.r=retValue.i=0;
 	inParenthesis=0;
-	if(j && j->ready){
+	if(j){
 		jitRun(j);
 	}
 	else{
@@ -253,9 +227,6 @@ int jitExecuteExpression(Tjit *j, const char *input, const char *compiledEnd,
 void jitInit(Tjit *j)
 {
 	j->code.reset();
-	j->recorded=false;
-	j->compilable=false;
-	j->ready=false;
 #if JIT_EMIT
 	j->stubMem=0;
 #endif
@@ -269,10 +240,10 @@ void jitFree(Tjit *j)
 			FREEM(c.num);
 		}
 		else if(c.kind==jitIf && c.sub){
-			for(int m=0; m<3; m++) jitFree(&c.sub[m]);
+			for(int m=0; m<2; m++) jitFree(&c.sub[m]);
 			delete[] c.sub;
 		}
-		else if(c.kind==jitEvalArgs && c.sub){
+		else if(c.kind==jitFor && c.sub){
 			jitFree(&c.sub[0]);
 			delete[] c.sub;
 		}
@@ -287,11 +258,6 @@ void jitFree(Tjit *j)
 }
 
 //---------------------------------------------------------------
-
-static void jitBail()
-{
-	if(jitRecording && jitCur) jitCur->compilable=false;
-}
 
 void jitCompilePushDummy()
 {
@@ -337,7 +303,6 @@ static void jitCompileSimOp(const Top *o)
 
 void jitRecPushNum(const Complex x)
 {
-	if(!jitCur || !jitCur->compilable) return;
 	Tcompiled *c= jitCur->code++;
 	c->kind= jitPushNum;
 	c->num= x;
@@ -346,7 +311,6 @@ void jitRecPushNum(const Complex x)
 
 void jitRecPushVar(int index)
 {
-	if(!jitCur || !jitCur->compilable) return;
 	Tcompiled *c= jitCur->code++;
 	c->kind= jitPushVar;
 	c->varIndex= index;
@@ -354,7 +318,6 @@ void jitRecPushVar(int index)
 
 void jitRecApplyOp(const Top *o, const char *inputPtr)
 {
-	if(!jitCur || !jitCur->compilable) return;
 	if(o->type==CMDBASE) return;
 	Tcompiled *c= jitCur->code++;
 	c->kind= jitApplyOp;
@@ -364,7 +327,6 @@ void jitRecApplyOp(const Top *o, const char *inputPtr)
 
 void jitRecApplyVararg(const Top *o, unsigned argCount, const char *inputPtr)
 {
-	if(!jitCur || !jitCur->compilable) return;
 	Tcompiled *c= jitCur->code++;
 	c->kind= jitApplyVararg;
 	c->op= o;
@@ -373,13 +335,12 @@ void jitRecApplyVararg(const Top *o, unsigned argCount, const char *inputPtr)
 }
 
 //record a construct whose arguments are evaluated conditionally or repeatedly
-//(for, foreach, integral, ...); the header is interpreted again on every
-//replay, the loop body is a persistent sub-trace compiled only once
-Tcompiled *jitRecEvalArgs(const Top *o, const char *inputPtr)
+//(for, foreach, integral, ...); the loop body is
+//persistent sub-trace compiled once and replayed many times
+Tcompiled *jitRecFor(const Top *o, const char *inputPtr)
 {
-	if(!jitCur || !jitCur->compilable) return 0;
 	Tcompiled *c= jitCur->code++;
-	c->kind= jitEvalArgs;
+	c->kind= jitFor;
 	c->op= o;
 	c->inputPtr= inputPtr;
 	c->sub= new Tjit[1];
@@ -389,7 +350,6 @@ Tcompiled *jitRecEvalArgs(const Top *o, const char *inputPtr)
 
 void jitRecArrayIndex(int flags, const char *inputPtr)
 {
-	if(!jitCur || !jitCur->compilable) return;
 	Tcompiled *c= jitCur->code++;
 	c->kind= jitArrayIdx;
 	c->varIndex= flags;
@@ -426,66 +386,30 @@ static void jitEmit(Tjit *j)
 //only simulated stack items are discarded afterwards
 void jitCompileFormula(Tjit *j, const char *formula, const char **e)
 {
-	if(j->recorded) return;
-	j->recorded= true;
 	bool savedRecording= jitRecording;
-	bool savedCompileOnly= jitCompileOnly;
 	Tjit *savedCur= jitCur;
 	Tlen savedNumStack= numStack.len;
 	Tlen savedOpStack= opStack.len;
 	jitCur= j;
-	j->compilable= true;
 	jitRecording= true;
-	jitCompileOnly= true;
 	parse(formula, e);
 	jitRecording= savedRecording;
-	jitCompileOnly= savedCompileOnly;
 	jitCur= savedCur;
 	jitRestoreCompileStack(savedNumStack, savedOpStack);
-	if(j->compilable && !error){
-		j->ready= true;
 #if JIT_EMIT
-		jitEmit(j);
+	if(!error) jitEmit(j);
 #endif
-	}
 }
 
-//record if(cond,a,b) as a jitIf instruction and evaluate it;
-//returns 0 when the construct does not have 3 arguments
-static Tcompiled *jitRecIf(const Tstack &stk, const char *input, const char **end)
+//record if(cond,a,b) as a jitIf instruction
+Tcompiled *jitRecIf(const char *inputPtr)
 {
-	const char *s= input, *e, *e1;
-	skipSpaces(s);
-	if(*s!='(') return 0;
-	s++;
-	const char *srcCond= s;
-	skipArg(s, &e);
-	if(*e!=',') return 0;
-	const char *srcThen= e+1;
-	skipArg(srcThen, &e);
-	if(*e!=',') return 0;
-	const char *srcElse= e+1;
-	skipArg(srcElse, &e);
-	if(*e==',') return 0; //wrong number of arguments -> interpreter reports the error
 	Tcompiled *c= jitCur->code++;
 	c->kind= jitIf;
-	c->op= stk.op;
-	c->inputPtr= stk.inputPtr;
-	c->srcCond= srcCond;
-	c->srcThen= srcThen;
-	c->srcElse= srcElse;
-	c->sub= new Tjit[3];
-	for(int m=0; m<3; m++) jitInit(&c->sub[m]);
-	if(*e==')') e++;
-	if(end) *end= e;
-	if(jitCompileOnly){
-		jitCompileFormula(&c->sub[0], c->srcCond, &e1);
-		if(!error) jitCompileFormula(&c->sub[1], c->srcThen, &e1);
-		if(!error) jitCompileFormula(&c->sub[2], c->srcElse, &e1);
-		jitCompilePushDummy();
-		return c;
-	}
-	jitIfExec(c);
+	c->inputPtr= inputPtr;
+	c->sub= new Tjit[2];
+	jitInit(&c->sub[0]);
+	jitInit(&c->sub[1]);
 	return c;
 }
 
@@ -531,7 +455,6 @@ void jitFreeScript(TjitScript *script)
 		jitDeleteCommand(script->cmds[i]);
 	}
 	script->cmds.reset();
-	script->ready=false;
 }
 
 static const char *jitSkipCommandStart(const char *s)
@@ -620,42 +543,10 @@ bool jitCompileScript(TjitScript *script)
 			if(error) return false;
 		}
 	}
-	script->ready=true;
 	return !error;
 }
 
 #endif //_M_X64
-
-int args(const char *input, const char **end)
-{
-	Tstack stk = *opStack--;
-#ifdef _M_X64
-	if(jitRecording && jitCur && jitCur->compilable){
-		if(stk.op->func==(void*)IFX){
-			//compile if(cond,a,b): the condition and both branches are sub-traces
-			if(jitRecIf(stk, input, end)) return 0;
-			//malformed arguments: let the interpreter report the error
-			jitBail();
-		}
-		if(stk.op->type>=CMDFOR){
-			//the loop header is re-read on every replay, but the loop body is a
-			//persistent sub-trace which is compiled only once; recording of the
-			//outer trace is suspended while the construct runs for the first time
-			Tcompiled *c= jitRecEvalArgs(stk.op, stk.inputPtr);
-			Tjit *savedCur= jitCur;
-			jitRecording= false;
-			jitCur= 0;
-			int r= argsCore(stk, input, end, c ? c->sub : 0);
-			jitCur= savedCur;
-			jitRecording= true;
-			return r;
-		}
-	}
-	return argsCore(stk, input, end, 0);
-#else
-	return argsCore(stk, input, end);
-#endif
-}
 
 void doOp()
 {
@@ -663,16 +554,13 @@ void doOp()
 
 	if(error || opStack.len==0) return;
 	t= opStack--;
+	errPos = t->inputPtr;
 #ifdef _M_X64
 	if(jitRecording){
 		jitRecApplyOp(t->op, t->inputPtr);
-		if(jitCompileOnly){
-			errPos = t->inputPtr;
-			jitCompileSimOp(t->op);
-			return;
-		}
+		jitCompileSimOp(t->op);
 	}
+	else
 #endif
-	errPos = t->inputPtr;
 	doOpCore(t->op);
 }
