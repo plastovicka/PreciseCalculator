@@ -110,6 +110,10 @@ SOURCE=.\source\complex.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=.\source\jit.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=.\source\lang.cpp
 # End Source File
 # Begin Source File
@@ -160,6 +164,10 @@ SOURCE=.\source\darray.h
 # Begin Source File
 
 SOURCE=.\source\hdr.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\source\jit.h
 # End Source File
 # Begin Source File
 
