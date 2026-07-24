@@ -1469,7 +1469,7 @@ void initLabels(const char *s)
 	char c;
 	bool quot=false;
 	int n=0;
-	const char *t;
+	const char *b;
 	Tlabel *a;
 
 	gotoPositions.reset();
@@ -1479,16 +1479,17 @@ void initLabels(const char *s)
 	for(;;){
 		skipSpaces(s);
 		//label
-		for(t=s; isVarLetter(*t); t++);
-		if(*t==':' && t>s){
+		for(b=s; isVarLetter(*s); s++);
+		if(*s==':' && s>b){
 			a= labels++;
 			a->ind=n;
-			a->name=s;
-			a->nameLen=int(t-s);
+			a->name=b;
+			a->nameLen=int(s-b);
 		}
 		//find semi-colon
 		for(;;){
 			c= *s;
+			if(c=='/' && !quot) skipComment(s);
 			if(c==0){
 				*gotoPositions++= s;
 				return;
