@@ -47,6 +47,7 @@ struct TjitCommand {
 	int kind;
 	const char *input;
 	const char *end;
+	bool noNewLine;
 	Tjit *expr;
 	Darray<TjitPrintPart> parts;
 };

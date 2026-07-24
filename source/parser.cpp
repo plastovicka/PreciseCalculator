@@ -1533,7 +1533,7 @@ DWORD WINAPI calcThread(char *param)
 	if(*param==0){
 		delete[] param;
 		param= new char[1000];
-		strcpy(param, "cos(pi/2");
+		strcpy(param, "integral(x,1,5000,1,sin x)");
 	}
 #endif
 	output=0;
@@ -1608,7 +1608,7 @@ DWORD WINAPI calcThread(char *param)
 				}
 				if(jumped) continue;
 				if(error) break;
-				if(!jitAppendNewLine(buf)) break;
+				if(!jc->noNewLine && !jitAppendNewLine(buf)) break;
 			}
 			if(error) break;
 		}

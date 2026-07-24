@@ -502,6 +502,7 @@ static TjitCommand *jitNewCommand()
 	c->kind= jitCmdEmpty;
 	c->input=0;
 	c->end=0;
+	c->noNewLine=false;
 	c->expr=0;
 	return c;
 }
@@ -601,6 +602,9 @@ bool jitCompileScript(TjitScript *script)
 					skipSpaces(next);
 					if(c->parts.len && *next!=';' && *next){
 						c->parts[c->parts.len-1].spaceAfter=true;
+					}
+					else if(!*next || *next==';'){
+						c->noNewLine=true;
 					}
 					input=next;
 					continue;
