@@ -119,9 +119,31 @@ void jitRun(Tjit *j)
 			errPos= ins->inputPtr;
 			doOpCore(ins->op);
 			break;
-		case jitPushNum:
-			*numStack++ = ins->num.r ? NEWCOPYC(ins->num) : Complex{0, 0};
+		case jitPushNum: {
+			Complex x;
+			if(ins->num) {
+				x = ALLOCC(precision);
+				COPYX(x.r, ins->num);
+			}
+			else x.r = x.i = 0;
+			*numStack++ = x;
 			break;
+		}
+		case jitPushInt: {
+			Complex x = ALLOCC(precision);
+			SETXN(x.r, ins->integer);
+			*numStack++ = x;
+			break;
+		}
+		case jitPushFraction: {
+			Complex x = ALLOCC(precision);
+			x.r[0]= ins->integer;
+			x.r[1]= ins->fraction;
+			x.r[-1] = (Tuint)ins->integer >= ins->fraction;
+			x.r[-3] = -2;
+			*numStack++ = x;
+			break;
+		}
 		case jitPushVar:{
 			Complex x= ALLOCC(precision);
 			x.r[0]= ins->varIndex;
@@ -219,7 +241,7 @@ void jitFree(Tjit *j)
 	for(Tlen k=0; k<j->code.len; k++){
 		Tcompiled &c= j->code.array[k];
 		if(c.kind==jitPushNum){
-			FREEM(c.num);
+			FREEX(c.num);
 		}
 		else if(c.kind==jitIf && c.sub){
 			for(int m=0; m<2; m++) jitFree(&c.sub[m]);
@@ -277,11 +299,27 @@ static void jitCompileSimOp(const Top *o)
 	}
 }
 
-void jitRecPushNum(const Complex x)
+void jitRecPushNum(const Complex x, const char *inputPtr)
 {
 	Tcompiled *c= jitCur->code++;
-	c->kind= jitPushNum;
-	c->num= x;
+	if(isInt(x)) {
+		c->kind = jitPushInt;
+		c->integer = toInt(x.r);
+		FREEM(x);
+	}
+	else if(isFraction(x.r) && !isImag(x) && x.r[-2]==0) {
+		c->kind = jitPushFraction;
+		c->integer = x.r[0];
+		c->fraction = x.r[1];
+		FREEM(x);
+	}
+	else {
+		c->kind = jitPushNum;
+		c->num = x.r;
+		c->inputPtr= inputPtr;
+		c->base = baseIn;
+		FREEX(x.i);
+	}
 	numStack[numStack.len-1] = {0, 0};
 }
 
@@ -504,6 +542,21 @@ void jitCompileScript(Tjit *j)
 			if(*exprEnd==']') cerror(963, "Unmatched right bracket");
 			if(*exprEnd==')') cerror(955, "Unmatched parenthesis");
 			if(error) errPos=exprEnd;
+		}
+	}
+}
+
+void jitUpdateNumbers(Tjit *j)
+{
+	for(Tlen k = 0; k<j->code.len; k++) {
+		Tcompiled &c = j->code.array[k];
+		if(c.kind==jitPushNum && c.num) {
+			FREEX(c.num);
+			c.num = ALLOCX(precision);
+			int oldBase = baseIn;
+			baseIn = c.base;
+			READX(c.num, c.inputPtr);
+			baseIn = oldBase;
 		}
 	}
 }

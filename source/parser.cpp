@@ -895,6 +895,7 @@ int token(const char *&s, bool isFor=false, bool isPostfix=false)
 		(c==',' && !inParenthesis)) return CMDEND;
 	//read a number
 	if(c>='0' && c<='9' || c=='.'){
+		a = s;
 		x=ALLOCC(precision);
 		s=READX(x.r, s);
 		if(*s>='0' && *s<='9'){
@@ -903,7 +904,7 @@ int token(const char *&s, bool isFor=false, bool isPostfix=false)
 		}
 		*numStack++=x;
 #ifdef _M_X64
-		if(jitRecording) jitRecPushNum(x);
+		if(jitRecording) jitRecPushNum(x, a);
 #endif
 		return 0;
 	}
@@ -1384,7 +1385,7 @@ void parse(const char *input, const char **e)
 					*numStack++= a= ALLOCC(2);
 					SETC(a, u);
 #ifdef _M_X64
-					if(jitRecording) jitRecPushNum(a);
+					if(jitRecording) jitRecPushNum(a, 0);
 #endif
 					s=b;
 					t=0;
@@ -1561,10 +1562,11 @@ DWORD WINAPI calcThread(char *param)
 	Nseed=prec2;
 	baseOld=base;
 	isGrey=false;
+	jitBuf=&buf;
+
 #ifdef _M_X64
 	Tjit script;
 #endif
-	jitBuf=&buf;
 
 	for(precision= (prec2>60) ? (8*32/TintBits+1) : prec2; ; ){
 		baseIn=baseOld;
@@ -1583,10 +1585,15 @@ DWORD WINAPI calcThread(char *param)
 
 #if defined(_M_X64) && !defined(NOJIT)
 		//DWORD time= getTickCount();
-		jitRecording = true;
-		jitCompileScript(&script);
-		jitRecording = false;
-		//msg("%d", getTickCount()-time);
+		if(script.code.len==0) {
+			jitRecording = true;
+			jitCompileScript(&script);
+			jitRecording = false;
+		}
+		else {
+			jitUpdateNumbers(&script);
+		}
+		//msg("Time %d, Length %d", getTickCount()-time, script.code.len);
 		if(!error){
 			for(i=vars.len-1; i>=0; i--){
 				v=&vars[i];

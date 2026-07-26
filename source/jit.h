@@ -15,17 +15,22 @@ struct Top;
 struct Tcompiled {
 	int kind;
 	union {
-		int varIndex;         //jitPushVar (variable index), jitApplyVararg (argument count), jitArrayIdx (index structure flags)
-		int length;           //jitPrintText (text length)
+		int varIndex;     //jitPushVar (variable index), jitApplyVararg (argument count), jitArrayIdx (index structure flags)
+		int length;       //jitPrintText (text length)
+		int base;         //jitPushNum (base)
 	};
 	union {
-		Complex num;      //jitPushNum (owned copy of a constant)
+		Pint num;         //jitPushNum (owned copy of a constant)
+		Tint integer;     //jitPushInt (integer constant), jitPushFraction (numerator)
 		const Top *op;    //jitApplyOp, jitApplyVararg, jitFor
 		int flags;        //jitCmdEnd (bit0=writeResult, bit1=isPrint), jitPrintText (doubleQuotes)
 		int cmdNum;       //jitCmdStart (command number)
 	};
 	const char *inputPtr; //value for errPos (position of the function name); jitPrintText: text pointer
-	Tjit *sub;            //jitIf (2 sub-traces), jitFor (1 sub-trace for the loop body)
+	union {
+		Tjit *sub;        //jitIf (2 sub-traces), jitFor (1 sub-trace for the loop body)
+		Tuint fraction;   //jitPushFraction (denominator)
+	};
 };
 
 struct Tjit {
@@ -37,7 +42,7 @@ struct Tstack {
 	const char *inputPtr;
 };
 
-enum { jitPushNum, jitPushVar, jitApplyOp, jitApplyVararg, jitFor, jitArrayIdx, jitIf,
+enum { jitPushNum, jitPushInt, jitPushFraction, jitPushVar, jitApplyOp, jitApplyVararg, jitFor, jitArrayIdx, jitIf,
 	jitCmdStart,    // set cmdNum
 	jitCmdEnd,      // pop result, write to buf, set ans; flags: bit0=writeResult, bit1=isPrint
 	jitPrintText,  // append literal text to buf: inputPtr=text, length=len, flags=doubleQuotes
@@ -84,6 +89,7 @@ void jitRun(Tjit *j);
 void jitInit(Tjit *j);
 void jitFree(Tjit *j);
 void jitCompileScript(Tjit *j);
+void jitUpdateNumbers(Tjit *j);
 void jitFreeScript(Tjit *j);
 void jitCompileFormula(Tjit *j, const char *formula, const char **e);
 void jitCompilePushDummy();
@@ -96,7 +102,7 @@ Tcompiled *jitRecFor(const Top *o, const char *inputPtr);
 Tcompiled *jitRecIf(const char *inputPtr);
 void jitRecArrayIndex(int flags, const char *inputPtr);
 void jitRecApplyVararg(const Top *o, unsigned argCount, const char *inputPtr);
-void jitRecPushNum(const Complex x);
+void jitRecPushNum(const Complex x, const char *inputPtr);
 void jitRecPushVar(int index);
 void doOp();
 
