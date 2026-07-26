@@ -7,51 +7,29 @@
 #ifndef JITH
 #define JITH
 
-#define JIT_EMIT 1
+//#define NOJIT
 
 struct Tjit;
 struct Top;
 
 struct Tcompiled {
 	int kind;
-	int varIndex;         //jitPushVar (variable index), jitApplyVararg (argument count), jitArrayIdx (index structure flags)
+	union {
+		int varIndex;         //jitPushVar (variable index), jitApplyVararg (argument count), jitArrayIdx (index structure flags)
+		int length;           //jitPrintText (text length)
+	};
 	union {
 		Complex num;      //jitPushNum (owned copy of a constant)
 		const Top *op;    //jitApplyOp, jitApplyVararg, jitFor
+		int flags;        //jitCmdEnd (bit0=writeResult, bit1=isPrint), jitPrintText (doubleQuotes)
+		int cmdNum;       //jitCmdStart (command number)
 	};
-	const char *inputPtr; //value for errPos (position of the function name)
+	const char *inputPtr; //value for errPos (position of the function name); jitPrintText: text pointer
 	Tjit *sub;            //jitIf (2 sub-traces), jitFor (1 sub-trace for the loop body)
 };
 
 struct Tjit {
 	Darray<Tcompiled> code;
-#if JIT_EMIT
-	unsigned char *stubMem;
-#endif
-};
-
-struct TjitPrintPart {
-	int kind;
-	const char *input;
-	const char *text;
-	int textLen;
-	int doubleQuotes;
-	bool spaceAfter;
-	Tjit *expr;
-	const char *end;
-};
-
-struct TjitCommand {
-	int kind;
-	const char *input;
-	const char *end;
-	bool noNewLine;
-	Tjit *expr;
-	Darray<TjitPrintPart> parts;
-};
-
-struct TjitScript {
-	Darray<TjitCommand*> cmds;
 };
 
 struct Tstack {
@@ -59,25 +37,29 @@ struct Tstack {
 	const char *inputPtr;
 };
 
-enum { jitExecNext, jitExecGoto, jitExecStop, jitExecError };
-enum { jitPushNum, jitPushVar, jitApplyOp, jitApplyVararg, jitFor, jitArrayIdx, jitIf };
-enum { jitCmdEmpty, jitCmdExpr, jitCmdPrint };
-enum { jitPrintText, jitPrintExpr };
+enum { jitPushNum, jitPushVar, jitApplyOp, jitApplyVararg, jitFor, jitArrayIdx, jitIf,
+	jitCmdStart,    // set cmdNum
+	jitCmdEnd,      // pop result, write to buf, set ans; flags: bit0=writeResult, bit1=isPrint
+	jitPrintText,  // append literal text to buf: inputPtr=text, length=len, flags=doubleQuotes
+	jitPrintNewLine, // append \r\n to buf
+	jitPrintSpace  // append ' ' to buf
+};
 
 const int CMDBASE=3, CMDPOWER=5, CMDPLUS=144, CMDMINUS=143, CMDASSIGN=397,
 CMDLEFT=401, CMDGOTO=402, CMDRIGHT=455, CMDEND=460, CMDVARARG=500, CMDFOR=550;
 
 extern Tint precision, prec2;
-extern Complex ans, oldAns, retValue;
+extern Complex ans, retValue;
 extern int gotoPos;
 extern int cmdNum;
-extern int inParenthesis;
 extern Darray<Complex> numStack;
 extern Darray<Tstack> opStack;
 extern Darray<const char*> gotoPositions;
 extern const Top opPowMod;
 extern const char *errPos;
-
+extern Darray<char> *jitBuf;
+extern const char *jitParam;
+extern int *jitErrIndex;
 extern bool jitRecording;
 
 void doOpCore(const Top *o);
@@ -90,27 +72,26 @@ void forExecute(const Top *o, const char *formula
 #endif
 );
 void skipSpaces(const char *&s);
-void copyString(char *dest, const char *src);
 void cleanup();
 void ClearError(int err);
 void errGoto();
-void checkInfinite(Complex &y, Tint prec);
+void checkInfinite(Complex &y);
 void deref(Complex &x);
 bool deref(Complex &y, Complex &x);
+void _fastcall GOTORELX(Pint y);
 
 void jitRun(Tjit *j);
 void jitInit(Tjit *j);
 void jitFree(Tjit *j);
-bool jitCompileScript(TjitScript *script);
-void jitFreeScript(TjitScript *script);
+void jitCompileScript(Tjit *j);
+void jitFreeScript(Tjit *j);
 void jitCompileFormula(Tjit *j, const char *formula, const char **e);
 void jitCompilePushDummy();
 void jitCompilePop();
-int jitExecuteExpression(Tjit *j, const char *input, const char *compiledEnd, 
-	Darray<char> &buf, bool isPrint, bool writeResult, const char *param, int &errIndex);
-bool jitAppendText(Darray<char> &buf, const char *text, int len, int doubleQuotes);
-bool jitAppendChar(Darray<char> &buf, char c);
-bool jitAppendNewLine(Darray<char> &buf);
+bool jitAppendValue(Complex y);
+void jitAppendText(const char *text, int len, int doubleQuotes);
+void jitAppendNewLine();
+void jitAppendSpace();
 Tcompiled *jitRecFor(const Top *o, const char *inputPtr);
 Tcompiled *jitRecIf(const char *inputPtr);
 void jitRecArrayIndex(int flags, const char *inputPtr);

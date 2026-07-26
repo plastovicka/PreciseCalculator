@@ -588,20 +588,6 @@ int skipString(const char *&s)
 	return n;
 }
 
-//convert double qoutes to single quote
-//result is not null-terminated !
-void copyString(char *dest, const char *src)
-{
-	for(;;){
-		char c = *src++;
-		if(c=='\"')
-		{
-			if(*src!='\"') break;
-			src++;
-		}
-		*dest++ = c;
-	}
-}
 //---------------------------------------------------------------
 void doOpCore(const Top *o)
 {
@@ -1236,7 +1222,7 @@ void forExecute(const Top *o, const char *formula
 			if(bodyJit) jitRun(bodyJit);
 			else
 #else
-			parse(formula, end);
+			parse(formula, 0);
 #endif
 			if(error) break;
 			stackEnd=&numStack[numStack.len-1];
@@ -1516,6 +1502,21 @@ void checkInfinite(Complex &y, Tint prec)
 		cerror(1034, "Infinite result");
 	}
 }
+
+void checkInfinite(Complex &y)
+{
+	if(precision>prec2+30) {
+		if(!isMatrix(y)) {
+			checkInfinite(y, prec2);
+		}
+		else {
+			Pmatrix ym = toMatrix(y);
+			for(int i = 0; i<ym->len; i++) {
+				checkInfinite(ym->A[i], prec2);
+			}
+		}
+	}
+}
 //---------------------------------------------------------------
 void ClearError(int err)
 {
@@ -1532,12 +1533,10 @@ DWORD WINAPI calcThread(char *param)
 	int baseOld;
 	int errIndex;
 	Darray<char> buf;
-#ifndef _M_X64
-	char *a;
+	Complex y;
+#if !defined(_M_X64) || defined(NOJIT)
 	const char *e, *s;
 	bool isPrint;
-	Complex y;
-	int n;
 #endif
 
 #ifndef CONSOLE
@@ -1563,8 +1562,9 @@ DWORD WINAPI calcThread(char *param)
 	baseOld=base;
 	isGrey=false;
 #ifdef _M_X64
-	TjitScript script;
+	Tjit script;
 #endif
+	jitBuf=&buf;
 
 	for(precision= (prec2>60) ? (8*32/TintBits+1) : prec2; ; ){
 		baseIn=baseOld;
@@ -1581,52 +1581,45 @@ DWORD WINAPI calcThread(char *param)
 		if(oldSeedx) assign(seedx, oldSeedx);
 		else if(seedx) assign(oldSeedx, seedx);
 
-#ifdef _M_X64
+#if defined(_M_X64) && !defined(NOJIT)
 		//DWORD time= getTickCount();
-		if(!jitCompileScript(&script)){
-			errIndex=int(errPos-param);
-			goto lout;
-		}
+		jitRecording = true;
+		jitCompileScript(&script);
+		jitRecording = false;
 		//msg("%d", getTickCount()-time);
+		if(!error){
+			for(i=vars.len-1; i>=0; i--){
+				v=&vars[i];
+				v->modif=false;
+			}
+			gotoPos=-1;
+			retValue.r = retValue.i = 0;
+			jitParam=param;
+			jitErrIndex=&errIndex;
+			jitRun(&script);
 
-		for(i=vars.len-1; i>=0; i--){
-			v=&vars[i];
-			v->modif=false;
-		}
-		for(cmdNum=0; cmdNum<script.cmds.len; cmdNum++){
-			TjitCommand *jc= script.cmds[cmdNum];
-			if(jc->kind==jitCmdEmpty){
-				if(!*jc->input) break;
-				continue;
-			}
-			if(jc->kind==jitCmdExpr){
-				int r= jitExecuteExpression(jc->expr, jc->input, jc->end, buf, false, *jc->end!=';', param, errIndex);
-				if(r==jitExecGoto){ cmdNum=gotoPos-1; continue; }
-				if(r==jitExecStop) goto lout;
-				if(r==jitExecError) break;
-			}
-			else{
-				bool jumped=false;
-				for(Tlen partIndex=0; partIndex<jc->parts.len; partIndex++){
-					TjitPrintPart *p=&jc->parts[partIndex];
-					if(p->kind==jitPrintText){
-						if(!jitAppendText(buf, p->text, p->textLen, p->doubleQuotes)) break;
-					}
-					else{
-						int r= jitExecuteExpression(p->expr, p->input, p->end, buf, true, true, param, errIndex);
-						if(r==jitExecGoto){ cmdNum=gotoPos-1; jumped=true; break; }
-						if(r==jitExecStop) goto lout;
-						if(r==jitExecError) break;
-					}
-					if(error) break;
-					if(p->spaceAfter && !jitAppendChar(buf, ' ')) break;
+			if(retValue.r || error==1102){
+				cleanup();
+				y=retValue;
+				if(!y.r){
+					ClearError(1102);
 				}
-				if(jumped) continue;
-				if(error) break;
-				if(!jc->noNewLine && !jitAppendNewLine(buf)) break;
+				else {
+					retValue.r = retValue.i = 0;
+					ClearError(1101);
+					checkInfinite(y);
+					if(error){
+						FREEM(y);
+					}
+					else {
+						jitAppendValue(y);
+						FREEM(ans); 
+						ans = y;
+					}
+				}
 			}
-			if(error) break;
 		}
+		if(error){ errIndex=int(errPos-param); }
 #else
 		for(cmdNum=0;; cmdNum++){ //command cycle
 			//label
@@ -1647,17 +1640,7 @@ DWORD WINAPI calcThread(char *param)
 				e=input;
 				int doubleQuotes = skipString(e) - 1;
 				input++;
-				n= int(e-input)-doubleQuotes;
-				a=(buf+=n)-1;
-				if((unsigned)buf.len > MAX_OUTPUT_SIZE){
-					buf-=n;
-					cerror(1062, "Result is too long");
-				}
-				else{
-					if(doubleQuotes>0) copyString(a, input);
-					else memcpy(a, input, n);
-					a[n]=0;
-				}
+				jitAppendText(input, int(e-input)-doubleQuotes, doubleQuotes);
 				if(*e) e++;
 				skipSpaces(e);
 			}
@@ -1706,35 +1689,14 @@ DWORD WINAPI calcThread(char *param)
 					y= *numStack--;
 				}
 				deref(y);
-				if(precision>prec2+30){
-					if(!isMatrix(y)){
-						checkInfinite(y, prec2);
-					}
-					else{
-						Pmatrix ym= toMatrix(y);
-						for(i=0; i<ym->len; i++){
-							checkInfinite(ym->A[i], prec2);
-						}
-					}
-				}
+				checkInfinite(y);
 				if(error){
 					FREEM(y);
 					break;
 				}
 				if(*e!=';' || isPrint){
 					//convert the result to a string
-					n=buf.len;
-					int digits2= (precision>=prec2) ? digits : int((precision-2)*dwordDigits[base]+1);
-					int len = LENM(y, digits2);
-					a= (buf+=len)-1;
-					if((unsigned)buf.len>MAX_OUTPUT_SIZE || !len){
-						buf.len=n;
-						cerror(1062, "Result is too long");
-					}
-					else{
-						WRITEM(a, y, digits2, matrixFormat);
-						buf.setLen(n+strleni(a));
-					}
+					jitAppendValue(y);
 				}
 				//set Ans
 				FREEM(ans);
@@ -1746,26 +1708,19 @@ DWORD WINAPI calcThread(char *param)
 				if(*e==','){
 					skipSpaces(input);
 					if(*input!=';' && *input){
-						//space
-						a=(buf++);
-						a[-1]=' ';
-						a[0]=0;
+						jitAppendSpace();
 						goto lcmd;
 					}
 					e=input++;
 				}
 				else{
-					//new line
-					a=(buf+=2);
-					a[-1]='\r';
-					a[0]='\n';
-					a[1]=0;
+					jitAppendNewLine();
 				}
 			}
 			if(!*e) break;
 		}
-#endif
 	lout:
+#endif
 		if((error==1030 || error==1060 || error==1063) && precision < prec2) { 
 			//divisor, trigonometric or MOD function operand is too big
 			//discard invalid preview

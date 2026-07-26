@@ -8,14 +8,13 @@
 #include "preccalc.h"
 #include "jit.h"
 
-#ifdef _M_X64
 /*
  Just-in-time compiler
  The first iteration runs the interpreter with recording enabled and
  captures the linear sequence of stack operations (push number, push variable,
  apply operator, apply function to counted arguments, array index). That
  trace is emitted as a call-sequence which invokes the existing
- math routines through jitStep.
+ math routines through jitRun.
  if(cond,a,b) is compiled as a jitIf instruction whose condition and branches
  are separate sub-traces, so both branches end up compiled even
  when the condition changes between iterations. Nested for/foreach constructs
@@ -24,16 +23,98 @@
  gotor set gotoPos just like the interpreter.
 */
 
-bool jitRecording=false;
-static Tjit *jitCur=0;
+Darray<char> *jitBuf;
 
-//execute one recorded instruction
-static void jitStep(Tcompiled *ins)
+bool jitAppendValue(Complex y)
+{
+	Darray<char> &buf = *jitBuf;
+	int n=buf.len;
+	int digits2= (precision>=prec2) ? digits : int((precision-2)*dwordDigits[base]+1);
+	int len = LENM(y, digits2);
+	char *a= (buf+=len)-1;
+	if((unsigned)buf.len>MAX_OUTPUT_SIZE || !len){
+		buf.len=n;
+		cerror(1062, "Result is too long");
+		return false;
+	}
+	WRITEM(a, y, digits2, matrixFormat);
+	buf.setLen(n+strleni(a));
+	return true;
+}
+
+//convert double qoutes to single quote
+//result is not null-terminated !
+static void copyString(char *dest, const char *src)
+{
+	for(;;){
+		char c = *src++;
+		if(c=='\"')
+		{
+			if(*src!='\"') break;
+			src++;
+		}
+		*dest++ = c;
+	}
+}
+
+void jitAppendText(const char *text, int len, int doubleQuotes)
+{
+	Darray<char> &buf = *jitBuf;
+	char *a=(buf+=len)-1;
+	if((unsigned)buf.len > MAX_OUTPUT_SIZE){
+		buf-=len;
+		cerror(1062, "Result is too long");
+		return;
+	}
+	if(doubleQuotes>0) copyString(a, text);
+	else memcpy(a, text, len);
+	a[len]=0;
+}
+
+void jitAppendSpace()
+{
+	Darray<char> &buf = *jitBuf;
+	char *a=(buf++);
+	if((unsigned)buf.len > MAX_OUTPUT_SIZE){
+		buf--;
+		cerror(1062, "Result is too long");
+		return;
+	}
+	a[-1]=' ';
+	a[0]=0;
+}
+
+void jitAppendNewLine()
+{
+	Darray<char> &buf = *jitBuf;
+	char *a=(buf+=2);
+	if((unsigned)buf.len > MAX_OUTPUT_SIZE){
+		buf-=2;
+		cerror(1062, "Result is too long");
+		return;
+	}
+	a[-1]='\r';
+	a[0]='\n';
+	a[1]=0;
+}
+//---------------------------------------------------------------
+#ifdef _M_X64
+bool jitRecording=false;
+static Tjit *jitCur;
+static Darray<Tlen> cmdStart;
+const char *jitParam=0;
+int *jitErrIndex=0;
+
+void jitRun(Tjit *j)
 {
 #if JIT_EMIT
-	if(error) return;
+	if(jitEmit(j)) return;
+	//fallback when executable memory could not be allocated
 #endif
-	switch(ins->kind){
+	for(Tcompiled *ins=j->code.array, *e = ins + j->code.len; ins < e && !error; )
+	{
+		//execute one instruction
+		switch(ins->kind){
 		case jitApplyOp:
 			errPos= ins->inputPtr;
 			doOpCore(ins->op);
@@ -53,7 +134,7 @@ static void jitStep(Tcompiled *ins)
 			break;
 		case jitFor:{
 			//re-execute a construct with repeated argument evaluation
-			//(for, foreach, integral, ...) using persistent compiled sub-traces
+			//(for, foreach, integral, ...) using persistent compiled sub-trace
 			forExecute(ins->op, ins->inputPtr+strlen(ins->op->name), ins->sub);
 			break;
 		}
@@ -79,157 +160,58 @@ static void jitStep(Tcompiled *ins)
 			arrayIndexApply(D);
 			break;
 		}
-	}
-}
-
-void jitRun(Tjit *j)
-{
-#if JIT_EMIT
-	if(j->stubMem){
-		((void (*)())j->stubMem)();
-		return;
-	}
-	//fallback when executable memory could not be allocated
-#endif
-	for(Tcompiled *k=j->code.array, *e = k + j->code.len ; k<e && !error; k++){
-		jitStep(k);
-	}
-}
-
-static bool jitAppendValue(Darray<char> &buf, Complex y)
-{
-	int n=buf.len;
-	int digits2= (precision>=prec2) ? digits : int((precision-2)*dwordDigits[base]+1);
-	int len = LENM(y, digits2);
-	char *a= (buf+=len)-1;
-	if((unsigned)buf.len>MAX_OUTPUT_SIZE || !len){
-		buf.len=n;
-		cerror(1062, "Result is too long");
-		return false;
-	}
-	WRITEM(a, y, digits2, matrixFormat);
-	buf.setLen(n+strleni(a));
-	return true;
-}
-
-bool jitAppendText(Darray<char> &buf, const char *text, int len, int doubleQuotes)
-{
-	char *a=(buf+=len)-1;
-	if((unsigned)buf.len > MAX_OUTPUT_SIZE){
-		buf-=len;
-		cerror(1062, "Result is too long");
-		return false;
-	}
-	if(doubleQuotes>0) copyString(a, text);
-	else memcpy(a, text, len);
-	a[len]=0;
-	return true;
-}
-
-bool jitAppendChar(Darray<char> &buf, char c)
-{
-	char *a=(buf++);
-	if((unsigned)buf.len > MAX_OUTPUT_SIZE){
-		buf--;
-		cerror(1062, "Result is too long");
-		return false;
-	}
-	a[-1]=c;
-	a[0]=0;
-	return true;
-}
-
-bool jitAppendNewLine(Darray<char> &buf)
-{
-	char *a=(buf+=2);
-	if((unsigned)buf.len > MAX_OUTPUT_SIZE){
-		buf-=2;
-		cerror(1062, "Result is too long");
-		return false;
-	}
-	a[-1]='\r';
-	a[0]='\n';
-	a[1]=0;
-	return true;
-}
-
-int jitExecuteExpression(Tjit *j, const char *input, const char *compiledEnd,
-	Darray<char> &buf, bool isPrint, bool writeResult, const char *param, int &errIndex)
-{
-	const char *e= compiledEnd;
-	Complex y;
-	gotoPos=-1;
-	retValue.r=retValue.i=0;
-	inParenthesis=0;
-	if(j){
-		jitRun(j);
-	}
-	else{
-		parse(input, &e);
-	}
-	if(numStack.len!=1) cerror(1029, "Fatal error");
-	if(!error){
-		if(*e==',' && !isPrint) cerror(956, "Unmatched comma");
-		if(*e==']') cerror(963, "Unmatched right bracket");
-		if(*e==')') cerror(955, "Unmatched parenthesis");
-		if(error) errPos=e;
-	}
-	if(gotoPos>=0){
-		cleanup();
-		if(gotoPos>=gotoPositions.len){
-			errGoto();
-			return jitExecError;
-		}
-		return jitExecGoto;
-	}
-	if(retValue.r || error==1102){
-		cleanup();
-		y=retValue;
-		if(!y.r){
-			ClearError(1102);
-			return jitExecStop;
-		}
-		ClearError(1101);
-		writeResult = true;
-	}
-	else{
-		if(error){
-			errIndex=int(errPos-param);
-			return jitExecError;
-		}
-		y= *numStack--;
-	}
-	deref(y);
-	if(precision>prec2+30){
-		if(!isMatrix(y)){
-			checkInfinite(y, prec2);
-		}
-		else{
-			Pmatrix ym= toMatrix(y);
-			for(Tlen i=0; i<ym->len; i++){
-				checkInfinite(ym->A[i], prec2);
+		case jitCmdStart:
+			// set current command number for gotor
+			cmdNum= ins->cmdNum;
+			break;
+		case jitCmdEnd:{
+			// finish an expression command: check errors, write result, set ans
+			// flags: bit0=writeResult
+			if(numStack.len!=1){ cerror(1029, "Fatal error"); break; }
+			if(gotoPos>=0){
+				cleanup();
+				if(gotoPos>=cmdStart.len){
+					errGoto();
+				}
+				else{
+					// goto: find the target command's start index
+					ins= j->code.array + cmdStart[gotoPos];
+					gotoPos=-1;
+					continue;
+				}
 			}
+			if(error){
+				if(jitErrIndex) *jitErrIndex=int(errPos-jitParam);
+				break;
+			}
+			Complex y2= *numStack--;
+			deref(y2);
+			checkInfinite(y2);
+			if(error){ FREEM(y2); break; }
+			if((ins->flags & 1) != 0 && !jitAppendValue(y2)){
+				FREEM(y2); break;
+			}
+			FREEM(ans);
+			ans=y2;
+			break;
 		}
+		case jitPrintText:
+			jitAppendText(ins->inputPtr, ins->length, ins->flags);
+			break;
+		case jitPrintNewLine:
+			jitAppendNewLine();
+			break;
+		case jitPrintSpace:
+			jitAppendSpace();
+			break;
+		}
+		ins++;
 	}
-	if(error){
-		FREEM(y);
-		return jitExecError;
-	}
-	if(writeResult && !jitAppendValue(buf, y)){
-		FREEM(y);
-		return jitExecError;
-	}
-	FREEM(ans);
-	ans=y;
-	return retValue.r ? jitExecStop : jitExecNext;
 }
 
 void jitInit(Tjit *j)
 {
 	j->code.reset();
-#if JIT_EMIT
-	j->stubMem=0;
-#endif
 }
 
 void jitFree(Tjit *j)
@@ -249,12 +231,6 @@ void jitFree(Tjit *j)
 		}
 	}
 	j->code.reset();
-#if JIT_EMIT
-	if(j->stubMem){
-		VirtualFree(j->stubMem, 0, MEM_RELEASE);
-		j->stubMem=0;
-	}
-#endif
 }
 
 //---------------------------------------------------------------
@@ -319,6 +295,12 @@ void jitRecPushVar(int index)
 void jitRecApplyOp(const Top *o, const char *inputPtr)
 {
 	if(o->type==CMDBASE) return;
+	if(o->func==GOTORELX) {
+		//relative goto, record the current command number
+		Tcompiled *c = jitCur->code++;
+		c->kind = jitCmdStart;
+		c->cmdNum = cmdNum;
+	}
 	Tcompiled *c= jitCur->code++;
 	c->kind= jitApplyOp;
 	c->op= o;
@@ -357,14 +339,15 @@ void jitRecArrayIndex(int flags, const char *inputPtr)
 }
 
 #if JIT_EMIT
+#error goto not implemented in jitEmit yet
 //emit a native x64 stub that calls jitStep once per recorded instruction
-static void jitEmit(Tjit *j)
+static bool jitEmit(Tjit *j)
 {
 	Tlen n= j->code.len;
 	Tcompiled *codeBase= j->code.array;
 	SIZE_T size= 15 + (SIZE_T)12*n + 6;
 	unsigned char *code= (unsigned char*)VirtualAlloc(0, size, MEM_COMMIT|MEM_RESERVE, PAGE_EXECUTE_READWRITE);
-	if(!code) return;
+	if(!code) return false;
 	unsigned char *p= code;
 	*p++=0x53;                                   //push rbx
 	*p++=0x48; *p++=0x83; *p++=0xEC; *p++=0x20;  //sub rsp,20h (shadow space)
@@ -378,7 +361,10 @@ static void jitEmit(Tjit *j)
 	*p++=0x48; *p++=0x83; *p++=0xC4; *p++=0x20;  //add rsp,20h
 	*p++=0x5B;                                    //pop rbx
 	*p++=0xC3;                                    //ret
-	j->stubMem= code;
+
+	((void (*)())code)();
+	VirtualFree(code, 0, MEM_RELEASE);
+	return true;
 }
 #endif
 
@@ -386,19 +372,13 @@ static void jitEmit(Tjit *j)
 //only simulated stack items are discarded afterwards
 void jitCompileFormula(Tjit *j, const char *formula, const char **e)
 {
-	bool savedRecording= jitRecording;
 	Tjit *savedCur= jitCur;
 	Tlen savedNumStack= numStack.len;
 	Tlen savedOpStack= opStack.len;
 	jitCur= j;
-	jitRecording= true;
 	parse(formula, e);
-	jitRecording= savedRecording;
 	jitCur= savedCur;
 	jitRestoreCompileStack(savedNumStack, savedOpStack);
-#if JIT_EMIT
-	if(!error) jitEmit(j);
-#endif
 }
 
 //record if(cond,a,b) as a jitIf instruction
@@ -413,48 +393,10 @@ Tcompiled *jitRecIf(const char *inputPtr)
 	return c;
 }
 
-static Tjit *jitNewTrace()
+void jitFreeScript(Tjit *j)
 {
-	Tjit *j= new Tjit;
-	jitInit(j);
-	return j;
-}
-
-static TjitCommand *jitNewCommand()
-{
-	TjitCommand *c= new TjitCommand;
-	c->kind= jitCmdEmpty;
-	c->input=0;
-	c->end=0;
-	c->noNewLine=false;
-	c->expr=0;
-	return c;
-}
-
-static void jitDeleteTrace(Tjit *j)
-{
-	if(j){
-		jitFree(j);
-		delete j;
-	}
-}
-
-static void jitDeleteCommand(TjitCommand *c)
-{
-	if(!c) return;
-	jitDeleteTrace(c->expr);
-	for(Tlen i=0; i<c->parts.len; i++){
-		jitDeleteTrace(c->parts[i].expr);
-	}
-	delete c;
-}
-
-void jitFreeScript(TjitScript *script)
-{
-	for(Tlen i=0; i<script->cmds.len; i++){
-		jitDeleteCommand(script->cmds[i]);
-	}
-	script->cmds.reset();
+	jitFree(j);
+	cmdStart.reset();
 }
 
 static const char *jitSkipCommandStart(const char *s)
@@ -469,81 +411,101 @@ static const char *jitSkipCommandStart(const char *s)
 	return s;
 }
 
-bool jitCompileScript(TjitScript *script)
+// emit one script-level instruction into the flat trace
+static Tcompiled *jitScriptEmit(int kind)
 {
-	jitFreeScript(script);
-	for(Tlen cmd=0; cmd<gotoPositions.len; cmd++){
-		TjitCommand *c= jitNewCommand();
-		*script->cmds++= c;
+	Tcompiled *c= jitCur->code++;
+	c->kind= kind;
+	return c;
+}
+
+void jitCompileScript(Tjit *j)
+{
+	jitFreeScript(j);
+	jitInit(j);
+	jitCur = j;
+
+	for(Tlen cmd=0; cmd<gotoPositions.len; cmd++)
+	{
 		const char *input= jitSkipCommandStart(gotoPositions[cmd]);
-		c->input= input;
+		cmdNum = (int)cmd;
+
+		// record where this command begins in the flat trace
+		*cmdStart++= j->code.len;
+
 		if(!*input || *input==';'){
-			c->end= input;
+			// empty command — nothing more needed
 			continue;
 		}
+		const char *exprEnd;
+
 		if(!_strnicmp(input, "print", 5)){
-			c->kind= jitCmdPrint;
 			input+=5;
 			skipSpaces(input);
+			bool pendingSpace=false;
+			bool noNewLine=false;
 			for(;;){
 				if(*input=='\"'){
-					const char *e=input;
-					int doubleQuotes= skipString(e)-1;
-					if(error) return false;
-					TjitPrintPart *p= c->parts++;
-					p->kind= jitPrintText;
-					p->input= input;
-					p->text= input+1;
-					p->textLen= int(e-input-1)-doubleQuotes;
-					p->doubleQuotes= doubleQuotes;
-					p->spaceAfter=false;
-					p->expr=0;
-					p->end=e;
-					if(*e) e++;
-					skipSpaces(e);
-					input=e;
+					exprEnd=input;
+					int doubleQuotes= skipString(exprEnd)-1;
+					if(error) return;
+					if(pendingSpace){
+						jitScriptEmit(jitPrintSpace);
+						pendingSpace=false;
+					}
+					Tcompiled *p= jitScriptEmit(jitPrintText);
+					p->inputPtr= input+1;
+					p->length= int(exprEnd-input-1)-doubleQuotes;
+					p->flags= doubleQuotes;
+					if(*exprEnd) exprEnd++;
+					skipSpaces(exprEnd);
+					input=exprEnd;
 				}
 				else if(!*input || *input==';'){
-					c->end= input;
+					exprEnd = input;
 					break;
 				}
 				else{
-					TjitPrintPart *p= c->parts++;
-					p->kind= jitPrintExpr;
-					p->input= input;
-					p->text=0;
-					p->textLen=0;
-					p->doubleQuotes=0;
-					p->spaceAfter=false;
-					p->expr= jitNewTrace();
-					jitCompileFormula(p->expr, input, &p->end);
-					if(error) return false;
-					input=p->end;
-				}
-				if(*input==','){
-					const char *next=input+1;
-					skipSpaces(next);
-					if(c->parts.len && *next!=';' && *next){
-						c->parts[c->parts.len-1].spaceAfter=true;
+					// expression part
+					if(pendingSpace){
+						jitScriptEmit(jitPrintSpace);
+						pendingSpace=false;
 					}
-					else if(!*next || *next==';'){
-						c->noNewLine=true;
-					}
-					input=next;
-					continue;
+					jitCompileFormula(j, input, &exprEnd);
+					if(error) return;
+					// jitCmdEnd: isPrint=true, writeResult=true
+					Tcompiled *c= jitScriptEmit(jitCmdEnd);
+					c->flags= 1|2; // writeResult | isPrint
+					input=exprEnd;
 				}
-				c->end= input;
-				break;
+				if(*input!=',') break;
+				input++;
+				skipSpaces(input);
+				if(!*input || *input==';'){
+					// trailing comma = suppress newline
+					noNewLine=true;
+					exprEnd = input;
+					break;
+				}
+				pendingSpace=true;
 			}
+			if(!noNewLine) jitScriptEmit(jitPrintNewLine);
 		}
 		else{
-			c->kind= jitCmdExpr;
-			c->expr= jitNewTrace();
-			jitCompileFormula(c->expr, input, &c->end);
-			if(error) return false;
+			// expression command
+			jitCompileFormula(j, input, &exprEnd);
+			if(error) return;
+			// jitCmdEnd: writeResult when not ending with ';', isPrint=false
+			Tcompiled *c= jitScriptEmit(jitCmdEnd);
+			c->flags= (*exprEnd!=';') ? 1 : 0; // writeResult
+		}
+		if(!error){
+			if(*exprEnd==',') cerror(956, "Unmatched comma");
+			if(*exprEnd==']') cerror(963, "Unmatched right bracket");
+			if(*exprEnd==')') cerror(955, "Unmatched parenthesis");
+			if(error) errPos=exprEnd;
 		}
 	}
-	return !error;
 }
 
 #endif //_M_X64
