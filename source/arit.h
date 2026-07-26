@@ -281,7 +281,7 @@ inline unsigned toDword4(const Pint x){
 
 #ifdef ARIT64
 inline bool isDword4(const Pint x){
-	return isDword(x) && Tuint(x[0])<=0xffffffff;
+	return isDword(x) && (Tuint(x[0])<=0xffffffff || x[-3]==0);
 }
 
 inline bool is32bit(const Pint x){
