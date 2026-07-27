@@ -9,25 +9,359 @@
 #include "jit.h"
 
 /*
- Just-in-time compiler
- The first iteration runs the interpreter with recording enabled and
- captures the linear sequence of stack operations (push number, push variable,
- apply operator, apply function to counted arguments, array index). That
- trace is emitted as a call-sequence which invokes the existing
- math routines through jitRun.
- if(cond,a,b) is compiled as a jitIf instruction whose condition and branches
- are separate sub-traces, so both branches end up compiled even
- when the condition changes between iterations. Nested for/foreach constructs
- are recorded as one jitFor instruction whose loop header expressions
- and body are persistent sub-traces compiled only once. Commands goto and
- gotor set gotoPos just like the interpreter.
+ Just-in-time compiler captures the linear sequence of stack operations (push number, push variable,
+ apply operator, apply function to counted arguments, array index). 
+ That trace is emitted as a call-sequence which invokes the existing math routines through jitRun.
+ if(cond,a,b) is compiled as a jitIf instruction whose branches are compiled as separate sub-traces.
+ for/foreach constructs are recorded as a jitFor instruction whose loop body are persistent sub-traces.
+ Commands goto and gotor set gotoPos.
 */
 
-Darray<char> *jitBuf;
+static Tjit *jitCur;
+static Darray<Tlen> cmdStart;
+Darray<char> outBuf;
+const unsigned MAX_OUTPUT_SIZE=1000000000;
 
-bool jitAppendValue(Complex y)
+//---------------------------------------------------------------
+void checkInfinite(Complex &y, Tint prec)
 {
-	Darray<char> &buf = *jitBuf;
+	if(y.r[-1]<-prec)
+		ZEROX(y.r);
+	if(y.i[-1]<-prec)
+		ZEROX(y.i);
+	if(y.r[-1]>prec && !isZero(y.r) || y.i[-1]>prec && !isZero(y.i)){
+		cerror(1034, "Infinite result");
+	}
+}
+
+void checkInfinite(Complex &y)
+{
+	if(precision>prec2+30) {
+		if(!isMatrix(y)) {
+			checkInfinite(y, prec2);
+		}
+		else {
+			Pmatrix ym = toMatrix(y);
+			for(int i = 0; i<ym->len; i++) {
+				checkInfinite(ym->A[i], prec2);
+			}
+		}
+	}
+}
+//---------------------------------------------------------------
+void forExecute(const Top *o, const char *formula, Tjit *bodyJit)
+{
+	unsigned i;
+	int j, len=0;
+	Complex y, t, u, w, *stackEnd, *A=0;
+	void *fc, *fm;
+	bool isEach;
+
+	stackEnd=&numStack[numStack.len];
+	i = o->type-CMDFOR;
+	if(formula) i-=2;
+	for(j=-1; unsigned(-j)<=i; j--){
+		deref(stackEnd[j]);
+	}
+	if(formula) i++;
+
+	y=ALLOCC(precision);
+	fm=o->mfunc;
+	fc=o->cfunc;
+	if(fm==INTEGRALM){
+		((void(*)(Complex, Complex, Complex, Complex, Complex, Tjit*, const char*))o->mfunc)(y, stackEnd[-3], stackEnd[-2], stackEnd[-1], stackEnd[-4], bodyJit, formula);
+	}
+	else{
+		//for cycle
+		isEach= o->type!=CMDFOR+4;
+		if(isEach){
+			//get matrix length and pointer to items
+			if(isMatrix(stackEnd[-1])){
+				Pmatrix m= toMatrix(stackEnd[-1]);
+				len= m->len;
+				A= m->A;
+			}
+			else{
+				len=1;
+				A=&stackEnd[-1];
+			}
+		}
+		else{
+			//first value and last value must be real or complex
+			if(isMatrix(stackEnd[-2]) || isMatrix(stackEnd[-1])){
+				errMatrix();
+				goto lend;
+			}
+			//assign the first value to variable
+			ASSIGNM(stackEnd[-2], stackEnd[-3], stackEnd[-2]);
+		}
+		if(fc) ((TunaryC0)fc)(y);
+		t=ALLOCC(precision);
+		u=ALLOCC(precision);
+		{
+		for(j=0; !error; j++){
+			if(isEach){
+				if(j>=len) break;
+				//assign matrix item to variable
+				ASSIGNM(A[j], stackEnd[-2], A[j]);
+			}
+			else{
+				//is variable greater then last value
+				if(error || CMPC(toVariable(stackEnd[-3])->newx, stackEnd[-1]) > 0) break;
+			}
+			//evaluate expression
+			if(bodyJit) jitRun(bodyJit);
+			if(error) break;
+			stackEnd=&numStack[numStack.len-1];
+			deref(*stackEnd);
+			//add item to result
+			if(fm==FILTERM) {
+				if(!isZero(*stackEnd)) {
+					CONCATM(u, y, toVariable(stackEnd[isEach ? -2 : -3])->newx);
+					w=y; y=u; u=w;
+				}
+			}
+			else if(fm) {
+				if(j) {
+					((TbinaryC)fm)(u, y, *stackEnd);
+					w=y; y=u; u=w;
+				} else {
+					w=y; y=*stackEnd; *stackEnd=w;
+				}
+			}
+			FREEM(*numStack--);
+			if(!isEach){
+				//increment variable
+				INCC(t, stackEnd[-3]);
+			}
+		}
+		}
+		FREEM(u);
+		FREEC(t);
+	}
+lend:
+	//free arguments
+	while(i--){
+		FREEM(*numStack--);
+	}
+	//store the result
+	*numStack++= y;
+}
+//---------------------------------------------------------------
+//apply a function with a fixed or variable number of arguments
+//to the top i values of the stack, the arguments are replaced by the result
+void applyVararg(const Top *o, unsigned i, const char *opInputPtr)
+{
+	unsigned n;
+	int j;
+	Complex y, *stackEnd;
+	void *fr, *fc, *fm;
+	bool imag, matrix;
+
+	imag=matrix=false;
+	stackEnd=&numStack[numStack.len];
+	for(j=-1; unsigned(-j)<=i; j--){
+		Complex &v= stackEnd[j];
+		if(o->mfunc!=SWAPM) deref(v);
+		if(isMatrix(v)) matrix=true;
+		if(isImag(v)) imag=true;
+	}
+	errPos = opInputPtr;
+	y=ALLOCC(precision);
+	n= o->type-CMDVARARG;
+	fm=o->mfunc;
+	fc=o->cfunc;
+	//call the function
+	fr=o->func;
+	if(!fr){
+		imag=true;
+		if(!fc) matrix=true;
+	}
+	if(matrix){
+		fc=fm;
+		imag=true;
+	}
+	if(matrix && !fm){
+		errMatrix();
+	}
+	else if(imag && !fc){
+		errImag();
+	}
+	else if(n==2){
+		if(imag) ((TbinaryC)fc)(y, stackEnd[-2], stackEnd[-1]);
+		else ((Tbinary)fr)(y.r, stackEnd[-2].r, stackEnd[-1].r);
+	}
+	else if(n){
+		if(imag) ((TarrayargC)fc)(y, stackEnd-i);
+		else ((Tarrayarg)fr)(y.r, stackEnd-i);
+	}
+	else{
+		if(imag) ((TvarargC)fc)(y, i, stackEnd-i);
+		else ((Tvararg)fr)(y.r, i, stackEnd-i);
+	}
+	//free arguments
+	while(i--){
+		FREEM(*numStack--);
+	}
+	//store the result
+	*numStack++= y;
+}
+//---------------------------------------------------------------
+static int getIndex()
+{
+	int result=0;
+	if(numStack.len){
+		Complex &x= *numStack--;
+		deref(x);
+		if(isImag(x)){
+			errImag();
+		}
+		else if(!isInt4(x.r)){
+			cerror(1052, "Index is not integer");
+		}
+		else{
+			result=toInt4(x.r);
+			if(result<0){
+				cerror(1051, "Index is less than zero");
+			}
+		}
+		FREEM(x);
+	}
+	return result;
+}
+
+//apply parsed indexes to the value or variable at the stack top:
+//variables become ranges, other values are indexed immediately
+void applyArrayIndex(int f)
+{
+	//pop the recorded index expressions in reverse order of evaluation
+	int D[2][2];
+	D[0][0]=D[0][1]=D[1][0]=D[1][1]=-1;
+	if(f&8) D[1][1]= getIndex();
+	if(f&4){ D[1][0]= getIndex(); if(!(f&8)) D[1][1]= D[1][0]; }
+	if(f&2) D[0][1]= getIndex();
+	if(f&1){ D[0][0]= getIndex(); if(!(f&2)) D[0][1]= D[0][0]; }
+	if(!numStack.len) return;
+	Complex &x= numStack[numStack.len-1];
+	if(x.r && isVariable(x)){
+		//create range
+		x.r[-3] = -5;
+		int *xD = (int*)&x.r[1];
+		xD[0] = D[0][0];
+		xD[1] = D[0][1];
+		xD[2] = D[1][0];
+		xD[3] = D[1][1];
+	}
+	else{
+		Complex y, x1;
+		deref(x1, x);
+		y= ALLOCC(precision);
+		INDEXM(y, x1, &D[0][0]);
+		FREEM(x);
+		x=y;
+	}
+}
+//---------------------------------------------------------------
+void applyOp(const Top *o)
+{
+	int i;
+	void *fr, *fc, *fm;
+	Complex a1, a2, a3, y;
+
+	fr=o->func;
+	fc=o->cfunc;
+	fm=o->mfunc;
+	i=o->type;
+	if(i==1){
+		//const function
+		y=ALLOCC(precision);
+		if(fm) ((TnularyC)fm)(y);
+		else if(fr) ((Tnulary)fr)(y.r);
+		else ((TnularyC)fc)(y);
+		*numStack++=y;
+	}
+	else if(numStack.len>0 && (fr || fc || fm)){
+		if(fc!=DECC && fc!=INCC) deref(numStack[numStack.len-1]);
+		a1=numStack[numStack.len-1];
+		if(i==8 || i==2){
+			//unary _stdcall operator
+			y=ALLOCC(precision);
+			if(isMatrix(a1) || !fc && !fr){
+				if(!fm) cerror(1065, "The function requires one parameter");
+				else ((TunaryC2)fm)(y, a1);
+			}
+			else if(isImag(a1) || !fr){
+				if(!fc) errImag();
+				else ((TunaryC2)fc)(y, a1);
+			}
+			else{
+				((Tunary2)fr)(y.r, a1.r);
+			}
+			FREEM(a1);
+			numStack[numStack.len-1]=y;
+		}
+		else if(i==9 || i>=400){
+			//unary _fastcall operator
+			if(isMatrix(a1) || !fc && !fr){
+				if(!fm) errMatrix();
+				else ((TunaryC0)fm)(a1);
+			}
+			else if(isImag(a1) || !fr){
+				if(!fc) errImag();
+				else ((TunaryC0)fc)(a1);
+			}
+			else{
+				((Tunary0)fr)(a1.r);
+			}
+		}
+		else if(o==&opPowMod) {
+			//ternary operator
+			if(numStack.len<3) return;
+			deref(numStack[numStack.len-2]);
+			a2=numStack[numStack.len-2];
+			numStack-=2;
+			deref(numStack[numStack.len-1]);
+			a3=numStack[numStack.len-1];
+			y=ALLOCC(precision);
+			if(isMatrix(a1) || isMatrix(a2) || isMatrix(a3))
+				errMatrix();
+			else if(isImag(a1) || isImag(a2) || isImag(a3))
+				errImag();
+			else
+				((Tternary)fr)(y.r, a3.r, a2.r, a1.r);
+			FREEM(a3);
+			FREEM(a2);
+			FREEM(a1);
+			numStack[numStack.len-1]=y;
+		}
+		else {
+			//binary operator
+			if(numStack.len<2) return;
+			numStack--;
+			if(fm!=ASSIGNM) deref(numStack[numStack.len-1]);
+			a2=numStack[numStack.len-1];
+			y=ALLOCC(precision);
+			if(isMatrix(a1) || isMatrix(a2) || !fc && !fr){
+				if(!fm) errMatrix();
+				else ((TbinaryC)fm)(y, a2, a1);
+			}
+			else if(isImag(a1) || isImag(a2) || !fr){
+				if(!fc) errImag();
+				else ((TbinaryC)fc)(y, a2, a1);
+			}
+			else{
+				((Tbinary)fr)(y.r, a2.r, a1.r);
+			}
+			FREEM(a2);
+			FREEM(a1);
+			numStack[numStack.len-1]=y;
+		}
+	}
+}
+//---------------------------------------------------------------
+bool printValue(Complex y)
+{
+	Darray<char> &buf = outBuf;
 	int n=buf.len;
 	int digits2= (precision>=prec2) ? digits : int((precision-2)*dwordDigits[base]+1);
 	int len = LENM(y, digits2);
@@ -57,9 +391,9 @@ static void copyString(char *dest, const char *src)
 	}
 }
 
-void jitAppendText(const char *text, int len, int doubleQuotes)
+void printText(const char *text, int len, int doubleQuotes)
 {
-	Darray<char> &buf = *jitBuf;
+	Darray<char> &buf = outBuf;
 	char *a=(buf+=len)-1;
 	if((unsigned)buf.len > MAX_OUTPUT_SIZE){
 		buf-=len;
@@ -71,9 +405,9 @@ void jitAppendText(const char *text, int len, int doubleQuotes)
 	a[len]=0;
 }
 
-void jitAppendSpace()
+void printSpace()
 {
-	Darray<char> &buf = *jitBuf;
+	Darray<char> &buf = outBuf;
 	char *a=(buf++);
 	if((unsigned)buf.len > MAX_OUTPUT_SIZE){
 		buf--;
@@ -84,9 +418,9 @@ void jitAppendSpace()
 	a[0]=0;
 }
 
-void jitAppendNewLine()
+void printNewLine()
 {
-	Darray<char> &buf = *jitBuf;
+	Darray<char> &buf = outBuf;
 	char *a=(buf+=2);
 	if((unsigned)buf.len > MAX_OUTPUT_SIZE){
 		buf-=2;
@@ -98,27 +432,13 @@ void jitAppendNewLine()
 	a[1]=0;
 }
 //---------------------------------------------------------------
-#ifdef _M_X64
-bool jitRecording=false;
-static Tjit *jitCur;
-static Darray<Tlen> cmdStart;
-const char *jitParam=0;
-int *jitErrIndex=0;
 
 void jitRun(Tjit *j)
 {
-#if JIT_EMIT
-	if(jitEmit(j)) return;
-	//fallback when executable memory could not be allocated
-#endif
 	for(Tcompiled *ins=j->code.array, *e = ins + j->code.len; ins < e && !error; )
 	{
 		//execute one instruction
 		switch(ins->kind){
-		case jitApplyOp:
-			errPos= ins->inputPtr;
-			doOpCore(ins->op);
-			break;
 		case jitPushNum: {
 			Complex x;
 			if(ins->num) {
@@ -145,21 +465,23 @@ void jitRun(Tjit *j)
 			break;
 		}
 		case jitPushVar:{
-			Complex x= ALLOCC(precision);
-			x.r[0]= ins->varIndex;
+			Complex x= ALLOCC(precision); //deref needs this precision
+			x.r[0]= ins->variable;
 			x.r[-3]= -1;
 			*numStack++= x;
 			break;
 		}
-		case jitApplyVararg:
-			varargApply(ins->op, (unsigned)ins->varIndex, ins->inputPtr);
+		case jitApplyOp:
+			errPos= ins->inputPtr;
+			applyOp(ins->op);
 			break;
-		case jitFor:{
-			//re-execute a construct with repeated argument evaluation
-			//(for, foreach, integral, ...) using persistent compiled sub-trace
+		case jitApplyVararg:
+			applyVararg(ins->op, ins->argCount, ins->inputPtr);
+			break;
+		case jitFor:
+			//execute a construct with repeated argument evaluation (for, foreach, integral, ...) using compiled sub-trace
 			forExecute(ins->op, ins->inputPtr+strlen(ins->op->name), ins->sub);
 			break;
-		}
 		case jitIf: {
 			errPos = ins->inputPtr;
 			deref(numStack[numStack.len-1]);
@@ -170,16 +492,8 @@ void jitRun(Tjit *j)
 			break;
 		}
 		case jitArrayIdx:{
-			//pop the recorded index expressions in reverse order of evaluation
-			int D[2][2];
-			int f= ins->varIndex;
 			errPos= ins->inputPtr;
-			D[0][0]=D[0][1]=D[1][0]=D[1][1]=-1;
-			if(f&8) D[1][1]= getIndex();
-			if(f&4){ D[1][0]= getIndex(); if(!(f&8)) D[1][1]= D[1][0]; }
-			if(f&2) D[0][1]= getIndex();
-			if(f&1){ D[0][0]= getIndex(); if(!(f&2)) D[0][1]= D[0][0]; }
-			arrayIndexApply(D);
+			applyArrayIndex(ins->indexes);
 			break;
 		}
 		case jitCmdStart:
@@ -188,7 +502,6 @@ void jitRun(Tjit *j)
 			break;
 		case jitCmdEnd:{
 			// finish an expression command: check errors, write result, set ans
-			// flags: bit0=writeResult
 			if(numStack.len!=1){ cerror(1029, "Fatal error"); break; }
 			if(gotoPos>=0){
 				cleanup();
@@ -202,15 +515,12 @@ void jitRun(Tjit *j)
 					continue;
 				}
 			}
-			if(error){
-				if(jitErrIndex) *jitErrIndex=int(errPos-jitParam);
-				break;
-			}
+			if(error) break;
 			Complex y2= *numStack--;
 			deref(y2);
 			checkInfinite(y2);
 			if(error){ FREEM(y2); break; }
-			if((ins->flags & 1) != 0 && !jitAppendValue(y2)){
+			if(ins->flags && !printValue(y2)){
 				FREEM(y2); break;
 			}
 			FREEM(ans);
@@ -218,22 +528,47 @@ void jitRun(Tjit *j)
 			break;
 		}
 		case jitPrintText:
-			jitAppendText(ins->inputPtr, ins->length, ins->flags);
+			printText(ins->inputPtr, ins->length, ins->flags);
 			break;
 		case jitPrintNewLine:
-			jitAppendNewLine();
+			printNewLine();
 			break;
 		case jitPrintSpace:
-			jitAppendSpace();
+			printSpace();
 			break;
 		}
 		ins++;
 	}
 }
 
-void jitInit(Tjit *j)
+void jitScriptRun(Tjit *j)
 {
-	j->code.reset();
+	gotoPos=-1;
+	retValue.r = retValue.i = 0;
+
+	jitRun(j);
+
+	//command "return"
+	if(retValue.r || error==1102){
+		cleanup();
+		Complex y=retValue;
+		if(!y.r){
+			ClearError(1102);
+		}
+		else {
+			retValue.r = retValue.i = 0;
+			ClearError(1101);
+			checkInfinite(y);
+			if(error){
+				FREEM(y);
+			}
+			else {
+				printValue(y);
+				FREEM(ans); 
+				ans = y;
+			}
+		}
+	}
 }
 
 void jitFree(Tjit *j)
@@ -244,7 +579,8 @@ void jitFree(Tjit *j)
 			FREEX(c.num);
 		}
 		else if(c.kind==jitIf && c.sub){
-			for(int m=0; m<2; m++) jitFree(&c.sub[m]);
+			jitFree(&c.sub[0]);
+			jitFree(&c.sub[1]);
 			delete[] c.sub;
 		}
 		else if(c.kind==jitFor && c.sub){
@@ -254,9 +590,7 @@ void jitFree(Tjit *j)
 	}
 	j->code.reset();
 }
-
 //---------------------------------------------------------------
-
 void jitCompilePushDummy()
 {
 	*numStack++ = {0, 0};
@@ -277,8 +611,24 @@ static void jitRestoreCompileStack(Tlen savedNumStack, Tlen savedOpStack)
 	opStack.len=savedOpStack;
 }
 
-static void jitCompileSimOp(const Top *o)
+void doOp()
 {
+	Tstack *t;
+
+	if(error || opStack.len==0) return;
+	t= opStack--;
+	errPos = t->inputPtr;
+	const Top *o=t->op;
+	if(o->type!=CMDBASE) {
+		if(o->func==GOTORELX) {
+			//relative goto, record the current command number
+			Tcompiled *c = jitEmit(jitCmdStart);
+			c->cmdNum = cmdNum;
+		}
+		Tcompiled *c = jitEmit(jitApplyOp);
+		c->op = o;
+		c->inputPtr = t->inputPtr;
+	}
 	int i=o->type;
 	if(i==1){
 		jitCompilePushDummy();
@@ -298,84 +648,7 @@ static void jitCompileSimOp(const Top *o)
 		}
 	}
 }
-
-void jitRecPushNum(const Complex x, const char *inputPtr)
-{
-	Tcompiled *c= jitCur->code++;
-	if(isInt(x)) {
-		c->kind = jitPushInt;
-		c->integer = toInt(x.r);
-		FREEM(x);
-	}
-	else if(isFraction(x.r) && !isImag(x) && x.r[-2]==0) {
-		c->kind = jitPushFraction;
-		c->integer = x.r[0];
-		c->fraction = x.r[1];
-		FREEM(x);
-	}
-	else {
-		c->kind = jitPushNum;
-		c->num = x.r;
-		c->inputPtr= inputPtr;
-		c->base = baseIn;
-		FREEX(x.i);
-	}
-	numStack[numStack.len-1] = {0, 0};
-}
-
-void jitRecPushVar(int index)
-{
-	Tcompiled *c= jitCur->code++;
-	c->kind= jitPushVar;
-	c->varIndex= index;
-}
-
-void jitRecApplyOp(const Top *o, const char *inputPtr)
-{
-	if(o->type==CMDBASE) return;
-	if(o->func==GOTORELX) {
-		//relative goto, record the current command number
-		Tcompiled *c = jitCur->code++;
-		c->kind = jitCmdStart;
-		c->cmdNum = cmdNum;
-	}
-	Tcompiled *c= jitCur->code++;
-	c->kind= jitApplyOp;
-	c->op= o;
-	c->inputPtr= inputPtr;
-}
-
-void jitRecApplyVararg(const Top *o, unsigned argCount, const char *inputPtr)
-{
-	Tcompiled *c= jitCur->code++;
-	c->kind= jitApplyVararg;
-	c->op= o;
-	c->varIndex= (int)argCount;
-	c->inputPtr= inputPtr;
-}
-
-//record a construct whose arguments are evaluated conditionally or repeatedly
-//(for, foreach, integral, ...); the loop body is
-//persistent sub-trace compiled once and replayed many times
-Tcompiled *jitRecFor(const Top *o, const char *inputPtr)
-{
-	Tcompiled *c= jitCur->code++;
-	c->kind= jitFor;
-	c->op= o;
-	c->inputPtr= inputPtr;
-	c->sub= new Tjit[1];
-	jitInit(&c->sub[0]);
-	return c;
-}
-
-void jitRecArrayIndex(int flags, const char *inputPtr)
-{
-	Tcompiled *c= jitCur->code++;
-	c->kind= jitArrayIdx;
-	c->varIndex= flags;
-	c->inputPtr= inputPtr;
-}
-
+//---------------------------------------------------------------
 #if JIT_EMIT
 #error goto not implemented in jitEmit yet
 //emit a native x64 stub that calls jitStep once per recorded instruction
@@ -405,6 +678,14 @@ static bool jitEmit(Tjit *j)
 	return true;
 }
 #endif
+//---------------------------------------------------------------
+// emit one script-level instruction into the flat trace
+Tcompiled *jitEmit(int kind)
+{
+	Tcompiled *c= jitCur->code++;
+	c->kind= kind;
+	return c;
+}
 
 //compile a formula without evaluating it; the parser records instructions and
 //only simulated stack items are discarded afterwards
@@ -419,63 +700,26 @@ void jitCompileFormula(Tjit *j, const char *formula, const char **e)
 	jitRestoreCompileStack(savedNumStack, savedOpStack);
 }
 
-//record if(cond,a,b) as a jitIf instruction
-Tcompiled *jitRecIf(const char *inputPtr)
+void jitCompileScript(Tjit *j, const char *input)
 {
-	Tcompiled *c= jitCur->code++;
-	c->kind= jitIf;
-	c->inputPtr= inputPtr;
-	c->sub= new Tjit[2];
-	jitInit(&c->sub[0]);
-	jitInit(&c->sub[1]);
-	return c;
-}
+	const char *e;
 
-void jitFreeScript(Tjit *j)
-{
-	jitFree(j);
-	cmdStart.reset();
-}
-
-static const char *jitSkipCommandStart(const char *s)
-{
-	const char *t;
-	skipSpaces(s);
-	for(t=s; isVarLetter(*t); t++);
-	if(*t==':'){
-		s=t+1;
-		skipSpaces(s);
-	}
-	return s;
-}
-
-// emit one script-level instruction into the flat trace
-static Tcompiled *jitScriptEmit(int kind)
-{
-	Tcompiled *c= jitCur->code++;
-	c->kind= kind;
-	return c;
-}
-
-void jitCompileScript(Tjit *j)
-{
-	jitFreeScript(j);
-	jitInit(j);
 	jitCur = j;
+	cmdStart.reset();
 
-	for(Tlen cmd=0; cmd<gotoPositions.len; cmd++)
+	for(cmdNum=0; !error; cmdNum++)
 	{
-		const char *input= jitSkipCommandStart(gotoPositions[cmd]);
-		cmdNum = (int)cmd;
-
-		// record where this command begins in the flat trace
+		// record where this command begins
 		*cmdStart++= j->code.len;
-
-		if(!*input || *input==';'){
-			// empty command — nothing more needed
-			continue;
+		//skip label
+		skipSpaces(input);
+		for(e=input; isVarLetter(*e); e++);
+		if(*e==':'){
+			input=e+1;
+			skipSpaces(input);
 		}
-		const char *exprEnd;
+		if(!*input) break; // end of script
+		if(*input==';') continue; // empty command
 
 		if(!_strnicmp(input, "print", 5)){
 			input+=5;
@@ -484,37 +728,37 @@ void jitCompileScript(Tjit *j)
 			bool noNewLine=false;
 			for(;;){
 				if(*input=='\"'){
-					exprEnd=input;
-					int doubleQuotes= skipString(exprEnd)-1;
+					e=input;
+					int doubleQuotes= skipString(e)-1;
 					if(error) return;
 					if(pendingSpace){
-						jitScriptEmit(jitPrintSpace);
+						jitEmit(jitPrintSpace);
 						pendingSpace=false;
 					}
-					Tcompiled *p= jitScriptEmit(jitPrintText);
-					p->inputPtr= input+1;
-					p->length= int(exprEnd-input-1)-doubleQuotes;
+					Tcompiled *p= jitEmit(jitPrintText);
+					p->inputPtr= ++input;
+					p->length= int(e-input)-doubleQuotes;
 					p->flags= doubleQuotes;
-					if(*exprEnd) exprEnd++;
-					skipSpaces(exprEnd);
-					input=exprEnd;
+					if(*e) e++;
+					skipSpaces(e);
+					input=e;
 				}
 				else if(!*input || *input==';'){
-					exprEnd = input;
+					e = input;
 					break;
 				}
 				else{
 					// expression part
 					if(pendingSpace){
-						jitScriptEmit(jitPrintSpace);
+						jitEmit(jitPrintSpace);
 						pendingSpace=false;
 					}
-					jitCompileFormula(j, input, &exprEnd);
+					jitCompileFormula(j, input, &e);
 					if(error) return;
 					// jitCmdEnd: isPrint=true, writeResult=true
-					Tcompiled *c= jitScriptEmit(jitCmdEnd);
-					c->flags= 1|2; // writeResult | isPrint
-					input=exprEnd;
+					Tcompiled *c= jitEmit(jitCmdEnd);
+					c->flags= 1; // writeResult
+					input=e;
 				}
 				if(*input!=',') break;
 				input++;
@@ -522,27 +766,27 @@ void jitCompileScript(Tjit *j)
 				if(!*input || *input==';'){
 					// trailing comma = suppress newline
 					noNewLine=true;
-					exprEnd = input;
+					e = input;
 					break;
 				}
 				pendingSpace=true;
 			}
-			if(!noNewLine) jitScriptEmit(jitPrintNewLine);
+			if(!noNewLine) jitEmit(jitPrintNewLine);
 		}
 		else{
 			// expression command
-			jitCompileFormula(j, input, &exprEnd);
+			jitCompileFormula(j, input, &e);
 			if(error) return;
-			// jitCmdEnd: writeResult when not ending with ';', isPrint=false
-			Tcompiled *c= jitScriptEmit(jitCmdEnd);
-			c->flags= (*exprEnd!=';') ? 1 : 0; // writeResult
+			// writeResult when not ending with ';'
+			Tcompiled *c= jitEmit(jitCmdEnd);
+			c->flags= (*e!=';');
 		}
-		if(!error){
-			if(*exprEnd==',') cerror(956, "Unmatched comma");
-			if(*exprEnd==']') cerror(963, "Unmatched right bracket");
-			if(*exprEnd==')') cerror(955, "Unmatched parenthesis");
-			if(error) errPos=exprEnd;
-		}
+		if(!error) errPos = e;
+		if(*e==',') cerror(956, "Unmatched comma");
+		if(*e==']') cerror(963, "Unmatched right bracket");
+		if(*e==')') cerror(955, "Unmatched parenthesis");
+		if(*e) e++;
+		input=e;
 	}
 }
 
@@ -559,23 +803,4 @@ void jitUpdateNumbers(Tjit *j)
 			baseIn = oldBase;
 		}
 	}
-}
-
-#endif //_M_X64
-
-void doOp()
-{
-	Tstack *t;
-
-	if(error || opStack.len==0) return;
-	t= opStack--;
-	errPos = t->inputPtr;
-#ifdef _M_X64
-	if(jitRecording){
-		jitRecApplyOp(t->op, t->inputPtr);
-		jitCompileSimOp(t->op);
-	}
-	else
-#endif
-	doOpCore(t->op);
 }

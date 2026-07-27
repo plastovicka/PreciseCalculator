@@ -31,7 +31,6 @@ Darray<Complex> numStack;
 Darray<Tstack> opStack;
 Darray<Tvar> vars;
 Darray<Tlabel> labels;
-Darray<const char*> gotoPositions;
 Darray<Tfunc> funcs;
 const Top **funcTabSorted;
 
@@ -589,103 +588,6 @@ int skipString(const char *&s)
 }
 
 //---------------------------------------------------------------
-void doOpCore(const Top *o)
-{
-	int i;
-	void *fr, *fc, *fm;
-	Complex a1, a2, a3, y;
-
-	fr=o->func;
-	fc=o->cfunc;
-	fm=o->mfunc;
-	i=o->type;
-	if(i==1){
-		//const function
-		y=ALLOCC(precision);
-		if(fm) ((TnularyC)fm)(y);
-		else if(fr) ((Tnulary)fr)(y.r);
-		else ((TnularyC)fc)(y);
-		*numStack++=y;
-	}
-	else if(numStack.len>0 && (fr || fc || fm)){
-		if(fc!=DECC && fc!=INCC) deref(numStack[numStack.len-1]);
-		a1=numStack[numStack.len-1];
-		if(i==8 || i==2){
-			//unary _stdcall operator
-			y=ALLOCC(precision);
-			if(isMatrix(a1) || !fc && !fr){
-				if(!fm) cerror(1065, "The function requires one parameter");
-				else ((TunaryC2)fm)(y, a1);
-			}
-			else if(isImag(a1) || !fr){
-				if(!fc) errImag();
-				else ((TunaryC2)fc)(y, a1);
-			}
-			else{
-				((Tunary2)fr)(y.r, a1.r);
-			}
-			FREEM(a1);
-			numStack[numStack.len-1]=y;
-		}
-		else if(i==9 || i>=400){
-			//unary _fastcall operator
-			if(isMatrix(a1) || !fc && !fr){
-				if(!fm) errMatrix();
-				else ((TunaryC0)fm)(a1);
-			}
-			else if(isImag(a1) || !fr){
-				if(!fc) errImag();
-				else ((TunaryC0)fc)(a1);
-			}
-			else{
-				((Tunary0)fr)(a1.r);
-			}
-		}
-		else if(o==&opPowMod) {
-			//ternary operator
-			if(numStack.len<3) return;
-			deref(numStack[numStack.len-2]);
-			a2=numStack[numStack.len-2];
-			numStack-=2;
-			deref(numStack[numStack.len-1]);
-			a3=numStack[numStack.len-1];
-			y=ALLOCC(precision);
-			if(isMatrix(a1) || isMatrix(a2) || isMatrix(a3))
-				errMatrix();
-			else if(isImag(a1) || isImag(a2) || isImag(a3))
-				errImag();
-			else
-				((Tternary)fr)(y.r, a3.r, a2.r, a1.r);
-			FREEM(a3);
-			FREEM(a2);
-			FREEM(a1);
-			numStack[numStack.len-1]=y;
-		}
-		else {
-			//binary operator
-			if(numStack.len<2) return;
-			numStack--;
-			if(fm!=ASSIGNM) deref(numStack[numStack.len-1]);
-			a2=numStack[numStack.len-1];
-			y=ALLOCC(precision);
-			if(isMatrix(a1) || isMatrix(a2) || !fc && !fr){
-				if(!fm) errMatrix();
-				else ((TbinaryC)fm)(y, a2, a1);
-			}
-			else if(isImag(a1) || isImag(a2) || !fr){
-				if(!fc) errImag();
-				else ((TbinaryC)fc)(y, a2, a1);
-			}
-			else{
-				((Tbinary)fr)(y.r, a2.r, a1.r);
-			}
-			FREEM(a2);
-			FREEM(a1);
-			numStack[numStack.len-1]=y;
-		}
-	}
-}
-//---------------------------------------------------------------
 bool isLetter(char c)
 {
 	return c>='a' && c<='z' || c>='A' && c<='Z';
@@ -733,38 +635,12 @@ int findLabel(const char *s, int len)
 	return -1;
 }
 //---------------------------------------------------------------
-int getIndex()
-{
-	int result=0;
-	if(numStack.len){
-		Complex &x= *numStack--;
-		deref(x);
-		if(isImag(x)){
-			errImag();
-		}
-		else if(!isInt4(x.r)){
-			cerror(1052, "Index is not integer");
-		}
-		else{
-			result=toInt4(x.r);
-			if(result<0){
-				cerror(1051, "Index is less than zero");
-			}
-		}
-		FREEM(x);
-	}
-	return result;
-}
-
-
 void arrayIndex(const char *&s)
 {
 	int D[2][2];
 	int i;
-#ifdef _M_X64
 	const char *opPtr= opStack[opStack.len-1].inputPtr;
 	int jitFlags=0;
-#endif
 
 	opStack--;
 	D[0][0]=D[0][1]=D[1][0]=D[1][1]=-1;
@@ -773,25 +649,13 @@ void arrayIndex(const char *&s)
 		if(*s!=']'){
 			parse(s, &s);
 			if(error) return;
-			#ifdef _M_X64
-			if(jitRecording) jitCompilePop();
-			else
-			#endif
-			D[i][0]=D[i][1]=getIndex();
-#ifdef _M_X64
+			jitCompilePop();
 			jitFlags|= 1<<(2*i);
-#endif
 			if(*s==','){
 				parse(s+1, &s);
 				if(error) return;
-				#ifdef _M_X64
-				if(jitRecording) jitCompilePop();
-				else
-				#endif
-				D[i][1]=getIndex();
-#ifdef _M_X64
+				jitCompilePop();
 				jitFlags|= 2<<(2*i);
-#endif
 			}
 			if(*s!=']'){
 				cerror(962, "] expected");
@@ -804,38 +668,9 @@ void arrayIndex(const char *&s)
 		s++;
 	}
 
-#ifdef _M_X64
-	if(jitRecording) 
-		jitRecArrayIndex(jitFlags, opPtr);
-	else
-#endif
-	arrayIndexApply(D);
-}
-
-//apply parsed indexes to the value or variable at the stack top:
-//variables become ranges, other values are indexed immediately
-void arrayIndexApply(int (*D)[2])
-{
-	Complex y, x1;
-
-	if(!numStack.len) return;
-	Complex &x= numStack[numStack.len-1];
-	if(x.r && isVariable(x)){
-		//create range
-		x.r[-3] = -5;
-		int *xD = (int*)&x.r[1];
-		xD[0] = D[0][0];
-		xD[1] = D[0][1];
-		xD[2] = D[1][0];
-		xD[3] = D[1][1];
-	}
-	else{
-		deref(x1, x);
-		y= ALLOCC(precision);
-		INDEXM(y, x1, &D[0][0]);
-		FREEM(x);
-		x=y;
-	}
+	Tcompiled *c= jitEmit(jitArrayIdx);
+	c->indexes= jitFlags;
+	c->inputPtr= opPtr;
 }
 //---------------------------------------------------------------
 static const Top **opLastCompared;
@@ -902,12 +737,28 @@ int token(const char *&s, bool isFor=false, bool isPostfix=false)
 			errPos=s;
 			cerror(954, "The digit is outside the selected base");
 		}
-		*numStack++=x;
-#ifdef _M_X64
-		if(jitRecording) jitRecPushNum(x, a);
-#endif
+		Tcompiled *ins= jitEmit(jitPushNum);
+		if(isInt(x.r)) {
+			ins->kind = jitPushInt;
+			ins->integer = toInt(x.r);
+			FREEC(x);
+		}
+		else if(isFraction(x.r) && x.r[-2]==0) {
+			ins->kind = jitPushFraction;
+			ins->integer = x.r[0];
+			ins->fraction = x.r[1];
+			FREEC(x);
+		}
+		else {
+			ins->num = x.r;
+			ins->inputPtr= a;
+			ins->base = baseIn;
+			FREEX(x.i);
+		}
+		jitCompilePushDummy();
 		return 0;
 	}
+
 	if(c=='(' && s[1]!=')') inParenthesis++;
 	if(c==')') inParenthesis--;
 
@@ -993,12 +844,11 @@ int token(const char *&s, bool isFor=false, bool isPostfix=false)
 		}
 		if(v){
 			s=a;
-			*numStack++= x= ALLOCC(precision); //deref needs this precision
+			*numStack++= x= ALLOCC(precision);
 			x.r[0]= int(v-vars);
 			x.r[-3]= -1;
-#ifdef _M_X64
-			if(jitRecording) jitRecPushVar(int(v-vars));
-#endif
+			Tcompiled *ins= jitEmit(jitPushVar);
+			ins->variable= int(v-vars);
 			return 0;
 		}
 	}
@@ -1042,13 +892,10 @@ void skipArg(const char *s, const char **e)
 //---------------------------------------------------------------
 void args(const char *input, const char **end)
 {
-	unsigned i, n, ifCond=0;
+	unsigned i, n;
 	int j;
 	const char *s, *e, *formula=0;
-	Complex y;
-#ifdef _M_X64
 	Tlen stackStart= numStack.len;
-#endif
 
 	Tstack stk = *opStack--;
 	const Top *o= stk.op;
@@ -1065,14 +912,11 @@ void args(const char *input, const char **end)
 	for(i=1;; i++){
 		if(unsigned(o->type)==CMDFOR+i){
 			formula=s;
-#ifdef _M_X64
-			if(jitRecording){
-				Tcompiled *c = jitRecFor(stk.op, stk.inputPtr);
-				jitCompileFormula(c->sub, s, &e);
-			}
-			else
-#endif
-			skipArg(s, &e);
+			Tcompiled *c= jitEmit(jitFor);
+			c->op= o;
+			c->inputPtr= stk.inputPtr;
+			c->sub= new Tjit[1];
+			jitCompileFormula(c->sub, s, &e);
 		}
 		else if(o->type>=CMDFOR && i==1){
 			j=token(s, true);
@@ -1088,31 +932,17 @@ void args(const char *input, const char **end)
 		if(*e!=',') break;
 		s=e+1;
 		if(isIf){
-#ifdef _M_X64
-			if(jitRecording){
-				//the condition and both branches are sub-traces
-				Tcompiled *c = jitRecIf(input);
-				jitCompileFormula(&c->sub[0], s, &e);
-				if(error) return;
-				if(*e!=',') break;
-				jitCompileFormula(&c->sub[1], e+1, &e);
-				if(error) return;
-				if(*e!=',') i += 2;
-				break;
-			}
-#endif
-			if(i==1){
-				deref(numStack[numStack.len-1]);
-				y= *numStack--;
-				ifCond= !isZero(y);
-				FREEM(y);
-			}
-			if(i==1+ifCond){
-				skipArg(s, &e);
-				i++;
-				if(*e!=',') break;
-				s=e+1;
-			}
+			//the condition and both branches are sub-traces
+			Tcompiled *c= jitEmit(jitIf);
+			c->inputPtr= input;
+			c->sub= new Tjit[2];
+			jitCompileFormula(&c->sub[0], s, &e);
+			if(error) return;
+			if(*e!=',') break;
+			jitCompileFormula(&c->sub[1], e+1, &e);
+			if(error) return;
+			if(*e!=',') i += 2;
+			break;
 		}
 	}
 	if(*e==')') e++;
@@ -1128,197 +958,16 @@ void args(const char *input, const char **end)
 
 	if(o->type>=CMDFOR){
 		errPos = stk.inputPtr;
-#ifdef _M_X64
-		if(!jitRecording)
-#endif
-		forExecute(o, formula);
 	}
 	else{
-#ifdef _M_X64
-		if(jitRecording)
-			jitRecApplyVararg(o, i, stk.inputPtr);
-		else
-#endif
-		varargApply(o, i, stk.inputPtr);
+		Tcompiled *c= jitEmit(jitApplyVararg);
+		c->op= o;
+		c->argCount= i;
+		c->inputPtr= stk.inputPtr;
 	}
 
-#ifdef _M_X64
-	if(jitRecording){
-		while(numStack.len>stackStart) jitCompilePop();
-		jitCompilePushDummy();
-	}
-#endif
-}
-//---------------------------------------------------------------
-void forExecute(const Top *o, const char *formula
-#ifdef _M_X64
-	, Tjit *bodyJit
-#endif
-)
-{
-	unsigned i;
-	int j, len=0;
-	Complex y, t, u, w, *stackEnd, *A=0;
-	void *fc, *fm;
-	bool isEach;
-
-	stackEnd=&numStack[numStack.len];
-	i = o->type-CMDFOR;
-	if(formula) i-=2;
-	for(j=-1; unsigned(-j)<=i; j--){
-		deref(stackEnd[j]);
-	}
-	if(formula) i++;
-
-	y=ALLOCC(precision);
-	fm=o->mfunc;
-	fc=o->cfunc;
-	if(fm==INTEGRALM){
-#ifdef _M_X64
-		((void(*)(Complex, Complex, Complex, Complex, Complex, Tjit*, const char*))o->mfunc)(y, stackEnd[-3], stackEnd[-2], stackEnd[-1], stackEnd[-4], bodyJit, formula);
-#else
-		((void(*)(Complex, Complex, Complex, Complex, Complex, const char*))o->mfunc)(y, stackEnd[-3], stackEnd[-2], stackEnd[-1], stackEnd[-4], formula);
-#endif
-	}
-	else{
-		//for cycle
-		isEach= o->type!=CMDFOR+4;
-		if(isEach){
-			//get matrix length and pointer to items
-			if(isMatrix(stackEnd[-1])){
-				Pmatrix m= toMatrix(stackEnd[-1]);
-				len= m->len;
-				A= m->A;
-			}
-			else{
-				len=1;
-				A=&stackEnd[-1];
-			}
-		}
-		else{
-			//first value and last value must be real or complex
-			if(isMatrix(stackEnd[-2]) || isMatrix(stackEnd[-1])){
-				errMatrix();
-				goto lend;
-			}
-			//assign the first value to variable
-			ASSIGNM(stackEnd[-2], stackEnd[-3], stackEnd[-2]);
-		}
-		if(fc) ((TunaryC0)fc)(y);
-		t=ALLOCC(precision);
-		u=ALLOCC(precision);
-		{
-		for(j=0; !error; j++){
-			if(isEach){
-				if(j>=len) break;
-				//assign matrix item to variable
-				ASSIGNM(A[j], stackEnd[-2], A[j]);
-			}
-			else{
-				//is variable greater then last value
-				if(error || CMPC(toVariable(stackEnd[-3])->newx, stackEnd[-1]) > 0) break;
-			}
-			//evaluate expression
-#ifdef _M_X64
-			if(bodyJit) jitRun(bodyJit);
-			else
-#else
-			parse(formula, 0);
-#endif
-			if(error) break;
-			stackEnd=&numStack[numStack.len-1];
-			deref(*stackEnd);
-			//add item to result
-			if(fm==FILTERM) {
-				if(!isZero(*stackEnd)) {
-					CONCATM(u, y, toVariable(stackEnd[isEach ? -2 : -3])->newx);
-					w=y; y=u; u=w;
-				}
-			}
-			else if(fm) {
-				if(j) {
-					((TbinaryC)fm)(u, y, *stackEnd);
-					w=y; y=u; u=w;
-				} else {
-					w=y; y=*stackEnd; *stackEnd=w;
-				}
-			}
-			FREEM(*numStack--);
-			if(!isEach){
-				//increment variable
-				INCC(t, stackEnd[-3]);
-			}
-		}
-		}
-		FREEM(u);
-		FREEC(t);
-	}
-lend:
-	//free arguments
-	while(i--){
-		FREEM(*numStack--);
-	}
-	//store the result
-	*numStack++= y;
-}
-//---------------------------------------------------------------
-//apply a function with a fixed or variable number of arguments
-//to the top i values of the stack, the arguments are replaced by the result
-void varargApply(const Top *o, unsigned i, const char *opInputPtr)
-{
-	unsigned n;
-	int j;
-	Complex y, *stackEnd;
-	void *fr, *fc, *fm;
-	bool imag, matrix;
-
-	imag=matrix=false;
-	stackEnd=&numStack[numStack.len];
-	for(j=-1; unsigned(-j)<=i; j--){
-		Complex &v= stackEnd[j];
-		if(o->mfunc!=SWAPM) deref(v);
-		if(isMatrix(v)) matrix=true;
-		if(isImag(v)) imag=true;
-	}
-	errPos = opInputPtr;
-	y=ALLOCC(precision);
-	n= o->type-CMDVARARG;
-	fm=o->mfunc;
-	fc=o->cfunc;
-	//call the function
-	fr=o->func;
-	if(!fr){
-		imag=true;
-		if(!fc) matrix=true;
-	}
-	if(matrix){
-		fc=fm;
-		imag=true;
-	}
-	if(matrix && !fm){
-		errMatrix();
-	}
-	else if(imag && !fc){
-		errImag();
-	}
-	else if(n==2){
-		if(imag) ((TbinaryC)fc)(y, stackEnd[-2], stackEnd[-1]);
-		else ((Tbinary)fr)(y.r, stackEnd[-2].r, stackEnd[-1].r);
-	}
-	else if(n){
-		if(imag) ((TarrayargC)fc)(y, stackEnd-i);
-		else ((Tarrayarg)fr)(y.r, stackEnd-i);
-	}
-	else{
-		if(imag) ((TvarargC)fc)(y, i, stackEnd-i);
-		else ((Tvararg)fr)(y.r, i, stackEnd-i);
-	}
-	//free arguments
-	while(i--){
-		FREEM(*numStack--);
-	}
-	//store the result
-	*numStack++= y;
+	while(numStack.len>stackStart) jitCompilePop();
+	jitCompilePushDummy();
 }
 //---------------------------------------------------------------
 void parse(const char *input, const char **e)
@@ -1382,11 +1031,9 @@ void parse(const char *input, const char **e)
 				for(b=s; isVarLetter(*b); b++);
 				u=findLabel(s, int(b-s));
 				if(u>=0){
-					*numStack++= a= ALLOCC(2);
-					SETC(a, u);
-#ifdef _M_X64
-					if(jitRecording) jitRecPushNum(a, 0);
-#endif
+					Tcompiled *ins= jitEmit(jitPushInt);
+					ins->integer = u;
+					jitCompilePushDummy();
 					s=b;
 					t=0;
 				}
@@ -1453,68 +1100,33 @@ void parse(const char *input, const char **e)
 //---------------------------------------------------------------
 void initLabels(const char *s)
 {
-	char c;
 	bool quot=false;
 	int n=0;
-	const char *b;
-	Tlabel *a;
-
-	gotoPositions.reset();
-	*gotoPositions++= s;
 	labels.reset();
 
 	for(;;){
 		skipSpaces(s);
 		//label
+		const char *b;
 		for(b=s; isVarLetter(*s); s++);
 		if(*s==':' && s>b){
-			a= labels++;
+			Tlabel *a= labels++;
 			a->ind=n;
 			a->name=b;
 			a->nameLen=int(s-b);
 		}
 		//find semi-colon
 		for(;;){
-			c= *s;
+			char c= *s;
 			if(c=='/' && !quot) skipComment(s);
-			if(c==0){
-				*gotoPositions++= s;
-				return;
-			}
+			if(c==0) return;
 			s++;
 			if(c==';' && !quot){
-				*gotoPositions++= s;
 				n++;
 				if(*s==0) return;
 				break;
 			}
 			if(c=='\"') quot=!quot;
-		}
-	}
-}
-//---------------------------------------------------------------
-void checkInfinite(Complex &y, Tint prec)
-{
-	if(y.r[-1]<-prec)
-		ZEROX(y.r);
-	if(y.i[-1]<-prec)
-		ZEROX(y.i);
-	if(y.r[-1]>prec && !isZero(y.r) || y.i[-1]>prec && !isZero(y.i)){
-		cerror(1034, "Infinite result");
-	}
-}
-
-void checkInfinite(Complex &y)
-{
-	if(precision>prec2+30) {
-		if(!isMatrix(y)) {
-			checkInfinite(y, prec2);
-		}
-		else {
-			Pmatrix ym = toMatrix(y);
-			for(int i = 0; i<ym->len; i++) {
-				checkInfinite(ym->A[i], prec2);
-			}
 		}
 	}
 }
@@ -1527,18 +1139,12 @@ void ClearError(int err)
 DWORD WINAPI calcThread(char *param)
 {
 	char *output;
-	const char *input;
 	bool b, isGrey;
 	Tvar *v;
 	Tlen i;
 	int baseOld;
 	int errIndex;
-	Darray<char> buf;
-	Complex y;
-#if !defined(_M_X64) || defined(NOJIT)
-	const char *e, *s;
-	bool isPrint;
-#endif
+	Tjit script;
 
 #ifndef CONSOLE
 	DWORD time= getTickCount();
@@ -1562,18 +1168,12 @@ DWORD WINAPI calcThread(char *param)
 	Nseed=prec2;
 	baseOld=base;
 	isGrey=false;
-	jitBuf=&buf;
-
-#ifdef _M_X64
-	Tjit script;
-#endif
 
 	for(precision= (prec2>60) ? (8*32/TintBits+1) : prec2; ; ){
 		baseIn=baseOld;
-		input=param;
 		errIndex=-1;
-		buf.setLen(1);
-		buf[0]=0;
+		outBuf.setLen(1);
+		outBuf[0]=0;
 		for(i=vars.len-1; i>=0; i--){
 			v=&vars[i];
 			v->modif=false;
@@ -1583,151 +1183,18 @@ DWORD WINAPI calcThread(char *param)
 		if(oldSeedx) assign(seedx, oldSeedx);
 		else if(seedx) assign(oldSeedx, seedx);
 
-#if defined(_M_X64) && !defined(NOJIT)
 		//DWORD time= getTickCount();
 		if(script.code.len==0) {
-			jitRecording = true;
-			jitCompileScript(&script);
-			jitRecording = false;
+			jitCompileScript(&script, param);
 		}
 		else {
+			//increase precision of real numbers in the script
 			jitUpdateNumbers(&script);
 		}
 		//msg("Time %d, Length %d", getTickCount()-time, script.code.len);
-		if(!error){
-			for(i=vars.len-1; i>=0; i--){
-				v=&vars[i];
-				v->modif=false;
-			}
-			gotoPos=-1;
-			retValue.r = retValue.i = 0;
-			jitParam=param;
-			jitErrIndex=&errIndex;
-			jitRun(&script);
 
-			if(retValue.r || error==1102){
-				cleanup();
-				y=retValue;
-				if(!y.r){
-					ClearError(1102);
-				}
-				else {
-					retValue.r = retValue.i = 0;
-					ClearError(1101);
-					checkInfinite(y);
-					if(error){
-						FREEM(y);
-					}
-					else {
-						jitAppendValue(y);
-						FREEM(ans); 
-						ans = y;
-					}
-				}
-			}
-		}
-		if(error){ errIndex=int(errPos-param); }
-#else
-		for(cmdNum=0;; cmdNum++){ //command cycle
-			//label
-			skipSpaces(input);
-			for(s=input; isVarLetter(*s); s++);
-			if(*s==':'){
-				input=s+1;
-				skipSpaces(input);
-			}
-			//print command
-			isPrint= !_strnicmp(input, "print", 5);
-			if(isPrint){
-				input+=5;
-				skipSpaces(input);
-			}
-		lcmd:
-			if(*input=='\"' && isPrint){
-				e=input;
-				int doubleQuotes = skipString(e) - 1;
-				input++;
-				jitAppendText(input, int(e-input)-doubleQuotes, doubleQuotes);
-				if(*e) e++;
-				skipSpaces(e);
-			}
-			else if(!*input || *input==';'){
-				//empty command
-				e=input;
-			}
-			else{
-				gotoPos=-1;
-				retValue.r=retValue.i=0;
-				inParenthesis=0;
-				parse(input, &e);
-				if(numStack.len!=1) cerror(1029, "Fatal error");
-				if(!error){
-					if(*e==',' && !isPrint) cerror(956, "Unmatched comma");
-					if(*e==']') cerror(963, "Unmatched right bracket");
-					if(*e==')') cerror(955, "Unmatched parenthesis");
-					if(error) errPos=e;
-				}
-				if(gotoPos>=0){
-					cleanup();
-					if(gotoPos>=gotoPositions.len){
-						errGoto();
-					}
-					else{
-						input= gotoPositions[gotoPos];
-						cmdNum=gotoPos-1;
-						continue;
-					}
-				}
-				if(retValue.r || error==1102){
-					cleanup();
-					y=retValue;
-					e=strchr(input, 0);
-					if(!y.r){
-						ClearError(1102);
-						goto lout;
-					}
-					ClearError(1101);
-				}
-				else{
-					if(error){
-						errIndex=int(errPos-param);
-						break;
-					}
-					y= *numStack--;
-				}
-				deref(y);
-				checkInfinite(y);
-				if(error){
-					FREEM(y);
-					break;
-				}
-				if(*e!=';' || isPrint){
-					//convert the result to a string
-					jitAppendValue(y);
-				}
-				//set Ans
-				FREEM(ans);
-				ans=y;
-			}
-			if(error) break;
-			input=e+1;
-			if(isPrint){
-				if(*e==','){
-					skipSpaces(input);
-					if(*input!=';' && *input){
-						jitAppendSpace();
-						goto lcmd;
-					}
-					e=input++;
-				}
-				else{
-					jitAppendNewLine();
-				}
-			}
-			if(!*e) break;
-		}
-	lout:
-#endif
+		jitScriptRun(&script);
+
 		if((error==1030 || error==1060 || error==1063) && precision < prec2) { 
 			//divisor, trigonometric or MOD function operand is too big
 			//discard invalid preview
@@ -1738,12 +1205,12 @@ DWORD WINAPI calcThread(char *param)
 #endif
 		}
 		else {
-			if(error) break;
+			if(error){ errIndex=int(errPos-param); break; } 
 			//compare with the previous result
-			b= output && !strcmp(output, buf);
+			b= output && !strcmp(output, outBuf);
 			delete[] output;
-			output=buf.array;
-			buf.array= new char[buf.capacity];
+			output=outBuf.array;
+			outBuf.array= new char[outBuf.capacity];
 			if(b) break;
 #ifndef CONSOLE
 			if(precision < prec2) {
@@ -1764,9 +1231,8 @@ DWORD WINAPI calcThread(char *param)
 			precision=prec2;
 		}
 	}
-#ifdef _M_X64
-	jitFreeScript(&script);
-#endif
+
+	jitFree(&script);
 #ifndef CONSOLE
 	if(isGrey) {
 		isGrey=false;
@@ -1926,12 +1392,12 @@ void initCalc()
 	//FILE *f=fopen("C:\\a\\fnc.txt", "wt");
 	//char H=' ';
 	//for(int i=0; i<sizeA(funcTab); i++){
-	// char c=funcTabSorted[i]->name[0];
-	// if(c!=H){
-	//  H=c;
-	//  if(c>='a' && c<='z'){
+	// char ins=funcTabSorted[i]->name[0];
+	// if(ins!=H){
+	//  H=ins;
+	//  if(ins>='a' && ins<='z'){
 
-	//	fprintf(f,"<b>%c</b><br>\n",c + 'A'-'a');
+	//	fprintf(f,"<b>%ins</b><br>\n",ins + 'A'-'a');
 	//  }
 	// }
 	// fprintf(f,"<a href=\"#%s\">%s</a><br>\n", funcTabSorted[i]->name, funcTabSorted[i]->name);

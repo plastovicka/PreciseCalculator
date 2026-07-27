@@ -1935,7 +1935,6 @@ void _stdcall MODEM(Complex y, Complex cx)
 
 //-------------------------------------------------------------------
 
-extern void parse(const char *input, const char **e);
 extern void deref(Complex &x);
 extern Complex *deref1(Complex &x);
 extern void _stdcall ASSIGNM(Complex y, const Complex a, const Complex x);
@@ -1944,10 +1943,7 @@ extern Darray<Complex> numStack;
 struct IntegralData
 {
 	Complex var;
-	const char *formula;
-#ifdef _M_X64
 	Tjit *jit;
-#endif
 	int bits, depth;
 
 	/*
@@ -1957,7 +1953,6 @@ struct IntegralData
 	void integralRecurse(Complex y, Complex *F0, Complex a, Complex h0, int finalDepth)
 	{
 		Complex t, u, *v, h, oldV, F[5];
-		const char *e;
 		int i;
 		const int D=3;
 
@@ -1974,11 +1969,7 @@ struct IntegralData
 		for(i=1; i<=3; i+=2) {
 			*v= (i==1) ? t : u;
 			if(error) goto lfree;
-#ifdef _M_X64
-			if(jit) jitRun(jit);
-			else
-#endif
-			parse(formula, &e);
+			jitRun(jit);
 			if(error) goto lfree;
 			F[i]=*numStack--;
 			deref(F[i]);
@@ -2033,7 +2024,6 @@ struct IntegralData
 		Complex h, z, F[3];
 		int i;
 		Tint oldyPrec, oldPrec;
-		const char *e;
 
 		oldPrec=precision;
 		oldyPrec=y.r[-4];
@@ -2051,11 +2041,7 @@ struct IntegralData
 		//function values
 		for(i=0; i<3; i++) {
 			ASSIGNM(y, var, (i==0 ? a : (i==1 ? h : b)));
-#ifdef _M_X64
-			if(jit) jitRun(jit);
-			else
-#endif
-			parse(formula, &e);
+			jitRun(jit);
 			if(error) goto lfree;
 			F[i]=*numStack--;
 			deref(F[i]);
@@ -2080,11 +2066,7 @@ struct IntegralData
 	}
 };
 
-void INTEGRALM(Complex y, Complex a, Complex b, Complex p, Complex var, 
-#ifdef _M_X64
-	Tjit *jit,
-#endif
-	const char *formula)
+void INTEGRALM(Complex y, Complex a, Complex b, Complex p, Complex var, Tjit *jit)
 {
 	Tuint timeOrPrec;
 	DWORD t0, t1, t2;
@@ -2094,10 +2076,7 @@ void INTEGRALM(Complex y, Complex a, Complex b, Complex p, Complex var,
 		cerror(1058, "The fourth argument has to be integer");
 		return;
 	}
-	data.formula=formula;
-#ifdef _M_X64
 	data.jit=jit;
-#endif
 	data.var=var;
 	data.depth=0;
 	timeOrPrec= toDword(p.r);
