@@ -52,7 +52,7 @@ enum { jitPushNum, jitPushInt, jitPushFraction, jitPushVar,
 };
 
 const int CMDBASE=3, CMDPOWER=5, CMDPLUS=144, CMDMINUS=143, CMDASSIGN=397,
-CMDLEFT=401, CMDGOTO=402, CMDRIGHT=455, CMDEND=460, CMDVARARG=500, CMDFOR=550;
+CMDLEFT=401, CMDGOTO=402, CMDRIGHT=455, CMDEND=460, CMDVARARG=500, CMDFOR=550, CMDFORVAR=900;
 
 extern Tint precision, prec2;
 extern Complex ans, retValue;
@@ -75,15 +75,12 @@ void jitRun(Tjit *j);
 void jitFree(Tjit *j);
 void jitCompileScript(Tjit *j, const char *input);
 void jitUpdateNumbers(Tjit *j);
-void jitCompileFormula(Tjit *j, const char *formula, const char **e);
-void jitCompilePushDummy();
-void jitCompilePop();
+void parse(Tjit *j, const char *formula, const char **e);
 Tcompiled *jitEmit(int kind);
 void doOp();
 
 void _stdcall INCC(Complex y, const Complex a);
 void _stdcall DECC(Complex y, const Complex a);
-void _fastcall GOTORELX(Pint y);
 void FILTERM();
 
 #endif

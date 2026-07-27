@@ -78,8 +78,8 @@ template <class T> void Darray<T>::setCapacity(Tlen m)
 template <class T> void Darray<T>::setLen(Tlen n)
 {
 	if(n>capacity){
-		if(capacity<0) setCapacity((-capacity<n) ? n : -capacity);
-		else setCapacity(n+(n>>2));
+		if(capacity>=0) setCapacity(n+(n>>2));
+		else if(n>0) setCapacity((-capacity<n) ? n : -capacity);
 	}
 	len=n;
 }

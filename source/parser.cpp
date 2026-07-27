@@ -28,6 +28,7 @@ int gotoPos;
 int cmdNum;
 int inParenthesis;
 Darray<Complex> numStack;
+Darray<int> baseInStack;
 Darray<Tstack> opStack;
 Darray<Tvar> vars;
 Darray<Tlabel> labels;
@@ -522,8 +523,9 @@ void cleanup()
 	for(int i=0; i<numStack.len; i++){
 		FREEM(numStack[i]);
 	}
-	numStack.len=0;
-	opStack.len=0;
+	numStack.reset();
+	opStack.reset();
+	baseInStack.reset();
 }
 
 void Tvar::destroy()
@@ -649,12 +651,10 @@ void arrayIndex(const char *&s)
 		if(*s!=']'){
 			parse(s, &s);
 			if(error) return;
-			jitCompilePop();
 			jitFlags|= 1<<(2*i);
 			if(*s==','){
 				parse(s+1, &s);
 				if(error) return;
-				jitCompilePop();
 				jitFlags|= 2<<(2*i);
 			}
 			if(*s!=']'){
@@ -714,7 +714,6 @@ int token(const char *&s, bool isFor=false, bool isPostfix=false)
 {
 	char c;
 	const char *a;
-	Complex x;
 	const Top *o, **po, **po1;
 	Tstack *t;
 	Tvar *v;
@@ -731,31 +730,30 @@ int token(const char *&s, bool isFor=false, bool isPostfix=false)
 	//read a number
 	if(c>='0' && c<='9' || c=='.'){
 		a = s;
-		x=ALLOCC(precision);
-		s=READX(x.r, s);
+		Pint x=ALLOCX(precision);
+		s=READX(x, s);
 		if(*s>='0' && *s<='9'){
 			errPos=s;
 			cerror(954, "The digit is outside the selected base");
 		}
 		Tcompiled *ins= jitEmit(jitPushNum);
-		if(isInt(x.r)) {
+		if(isInt(x)) {
 			ins->kind = jitPushInt;
-			ins->integer = toInt(x.r);
-			FREEC(x);
+			ins->integer = toInt(x);
+			FREEX(x);
 		}
-		else if(isFraction(x.r) && x.r[-2]==0) {
+		else if(isFraction(x) && x[-2]==0) {
 			ins->kind = jitPushFraction;
-			ins->integer = x.r[0];
-			ins->fraction = x.r[1];
-			FREEC(x);
+			ins->integer = x[0];
+			ins->fraction = x[1];
+			FREEX(x);
 		}
 		else {
-			ins->num = x.r;
+			ins->num = x;
+			//source string and base are needed for jitUpdateNumbers
 			ins->inputPtr= a;
 			ins->base = baseIn;
-			FREEX(x.i);
 		}
-		jitCompilePushDummy();
 		return 0;
 	}
 
@@ -844,12 +842,8 @@ int token(const char *&s, bool isFor=false, bool isPostfix=false)
 		}
 		if(v){
 			s=a;
-			*numStack++= x= ALLOCC(precision);
-			x.r[0]= int(v-vars);
-			x.r[-3]= -1;
-			Tcompiled *ins= jitEmit(jitPushVar);
-			ins->variable= int(v-vars);
-			return 0;
+			jitEmit(jitPushVar)->variable= int(v-vars);
+			return isFor ? CMDFORVAR : 0;
 		}
 	}
 	//identifier not found
@@ -893,9 +887,7 @@ void skipArg(const char *s, const char **e)
 void args(const char *input, const char **end)
 {
 	unsigned i, n;
-	int j;
-	const char *s, *e, *formula=0;
-	Tlen stackStart= numStack.len;
+	const char *s, *e;
 
 	Tstack stk = *opStack--;
 	const Top *o= stk.op;
@@ -911,19 +903,16 @@ void args(const char *input, const char **end)
 
 	for(i=1;; i++){
 		if(unsigned(o->type)==CMDFOR+i){
-			formula=s;
 			Tcompiled *c= jitEmit(jitFor);
 			c->op= o;
 			c->inputPtr= stk.inputPtr;
 			c->sub= new Tjit[1];
-			jitCompileFormula(c->sub, s, &e);
+			parse(c->sub, s, &e);
 		}
 		else if(o->type>=CMDFOR && i==1){
-			j=token(s, true);
+			int j=token(s, true);
 			e=s;
-			if(j!=0 || !numStack[numStack.len-1].r || !isVariable(numStack[numStack.len-1])){
-				cerror(1057, "The first parameter has to be a variable");
-			}
+			if(j!=CMDFORVAR) cerror(1057, "The first parameter has to be a variable");
 		}
 		else{
 			parse(s, &e);
@@ -936,10 +925,10 @@ void args(const char *input, const char **end)
 			Tcompiled *c= jitEmit(jitIf);
 			c->inputPtr= input;
 			c->sub= new Tjit[2];
-			jitCompileFormula(&c->sub[0], s, &e);
+			parse(&c->sub[0], s, &e);
 			if(error) return;
 			if(*e!=',') break;
-			jitCompileFormula(&c->sub[1], e+1, &e);
+			parse(&c->sub[1], e+1, &e);
 			if(error) return;
 			if(*e!=',') i += 2;
 			break;
@@ -965,9 +954,25 @@ void args(const char *input, const char **end)
 		c->argCount= i;
 		c->inputPtr= stk.inputPtr;
 	}
-
-	while(numStack.len>stackStart) jitCompilePop();
-	jitCompilePushDummy();
+}
+//---------------------------------------------------------------
+void doOp()
+{
+	if(error || opStack.len==0) return;
+	Tstack *t= opStack--;
+	errPos = t->inputPtr;
+	const Top *o=t->op;
+	if(o->type == CMDBASE) 
+		baseIn = *baseInStack--;
+	else {
+		if(o->func==GOTORELX) {
+			//relative goto, record the current command number
+			jitEmit(jitCmdStart)->cmdNum = cmdNum;
+		}
+		Tcompiled *c = jitEmit(jitApplyOp);
+		c->op = o;
+		c->inputPtr = t->inputPtr;
+	}
 }
 //---------------------------------------------------------------
 void parse(const char *input, const char **e)
@@ -977,7 +982,6 @@ void parse(const char *input, const char **e)
 	Tstack stk;
 	const Top *o;
 	const char *s=input, *b;
-	Complex a;
 
 	inPar=inParenthesis;
 	inParenthesis=0;
@@ -996,8 +1000,7 @@ void parse(const char *input, const char **e)
 			}
 			if(t==CMDBASE){
 				//save current base
-				*numStack++= a= ALLOCC(1);
-				a.r[0]=baseIn;
+				*baseInStack++= baseIn;
 				//set new base
 				switch(errPos[2]){
 					default:
@@ -1016,12 +1019,13 @@ void parse(const char *input, const char **e)
 				else{
 					skipSpaces(s);
 					if(*s==';' || *s==0){
+						//change base for rest of the script and return previous base
 						t=0;
 						opStack--;
-						a.r[1]=1;
-						a.r[-3]=-2;
+						jitEmit(jitPushInt)->integer = *baseInStack--;
 					}
 					else{
+						//change base of next number (or expression in parentheses)
 						t=8;
 					}
 				}
@@ -1031,9 +1035,7 @@ void parse(const char *input, const char **e)
 				for(b=s; isVarLetter(*b); b++);
 				u=findLabel(s, int(b-s));
 				if(u>=0){
-					Tcompiled *ins= jitEmit(jitPushInt);
-					ins->integer = u;
-					jitCompilePushDummy();
+					jitEmit(jitPushInt)->integer = u;
 					s=b;
 					t=0;
 				}

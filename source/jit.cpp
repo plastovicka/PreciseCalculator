@@ -49,7 +49,7 @@ void checkInfinite(Complex &y)
 	}
 }
 //---------------------------------------------------------------
-void forExecute(const Top *o, const char *formula, Tjit *bodyJit)
+void forExecute(const Top *o, Tjit *bodyJit)
 {
 	unsigned i;
 	int j, len=0;
@@ -58,18 +58,17 @@ void forExecute(const Top *o, const char *formula, Tjit *bodyJit)
 	bool isEach;
 
 	stackEnd=&numStack[numStack.len];
-	i = o->type-CMDFOR;
-	if(formula) i-=2;
+	i = o->type-CMDFOR - 2;
 	for(j=-1; unsigned(-j)<=i; j--){
 		deref(stackEnd[j]);
 	}
-	if(formula) i++;
+	i++;
 
 	y=ALLOCC(precision);
 	fm=o->mfunc;
 	fc=o->cfunc;
 	if(fm==INTEGRALM){
-		((void(*)(Complex, Complex, Complex, Complex, Complex, Tjit*, const char*))o->mfunc)(y, stackEnd[-3], stackEnd[-2], stackEnd[-1], stackEnd[-4], bodyJit, formula);
+		INTEGRALM(y, stackEnd[-3], stackEnd[-2], stackEnd[-1], stackEnd[-4], bodyJit);
 	}
 	else{
 		//for cycle
@@ -98,7 +97,6 @@ void forExecute(const Top *o, const char *formula, Tjit *bodyJit)
 		if(fc) ((TunaryC0)fc)(y);
 		t=ALLOCC(precision);
 		u=ALLOCC(precision);
-		{
 		for(j=0; !error; j++){
 			if(isEach){
 				if(j>=len) break;
@@ -110,7 +108,7 @@ void forExecute(const Top *o, const char *formula, Tjit *bodyJit)
 				if(error || CMPC(toVariable(stackEnd[-3])->newx, stackEnd[-1]) > 0) break;
 			}
 			//evaluate expression
-			if(bodyJit) jitRun(bodyJit);
+			jitRun(bodyJit);
 			if(error) break;
 			stackEnd=&numStack[numStack.len-1];
 			deref(*stackEnd);
@@ -134,7 +132,6 @@ void forExecute(const Top *o, const char *formula, Tjit *bodyJit)
 				//increment variable
 				INCC(t, stackEnd[-3]);
 			}
-		}
 		}
 		FREEM(u);
 		FREEC(t);
@@ -171,8 +168,8 @@ void applyVararg(const Top *o, unsigned i, const char *opInputPtr)
 	n= o->type-CMDVARARG;
 	fm=o->mfunc;
 	fc=o->cfunc;
-	//call the function
 	fr=o->func;
+	//call the function
 	if(!fr){
 		imag=true;
 		if(!fc) matrix=true;
@@ -480,7 +477,7 @@ void jitRun(Tjit *j)
 			break;
 		case jitFor:
 			//execute a construct with repeated argument evaluation (for, foreach, integral, ...) using compiled sub-trace
-			forExecute(ins->op, ins->inputPtr+strlen(ins->op->name), ins->sub);
+			forExecute(ins->op, ins->sub);
 			break;
 		case jitIf: {
 			errPos = ins->inputPtr;
@@ -578,75 +575,17 @@ void jitFree(Tjit *j)
 		if(c.kind==jitPushNum){
 			FREEX(c.num);
 		}
-		else if(c.kind==jitIf && c.sub){
+		else if(c.kind==jitIf){
 			jitFree(&c.sub[0]);
 			jitFree(&c.sub[1]);
 			delete[] c.sub;
 		}
-		else if(c.kind==jitFor && c.sub){
+		else if(c.kind==jitFor){
 			jitFree(&c.sub[0]);
 			delete[] c.sub;
 		}
 	}
 	j->code.reset();
-}
-//---------------------------------------------------------------
-void jitCompilePushDummy()
-{
-	*numStack++ = {0, 0};
-}
-
-void jitCompilePop()
-{
-	if(numStack.len){
-		FREEM(*numStack--);
-	}
-}
-
-static void jitRestoreCompileStack(Tlen savedNumStack, Tlen savedOpStack)
-{
-	while(numStack.len>savedNumStack){
-		FREEM(*numStack--);
-	}
-	opStack.len=savedOpStack;
-}
-
-void doOp()
-{
-	Tstack *t;
-
-	if(error || opStack.len==0) return;
-	t= opStack--;
-	errPos = t->inputPtr;
-	const Top *o=t->op;
-	if(o->type!=CMDBASE) {
-		if(o->func==GOTORELX) {
-			//relative goto, record the current command number
-			Tcompiled *c = jitEmit(jitCmdStart);
-			c->cmdNum = cmdNum;
-		}
-		Tcompiled *c = jitEmit(jitApplyOp);
-		c->op = o;
-		c->inputPtr = t->inputPtr;
-	}
-	int i=o->type;
-	if(i==1){
-		jitCompilePushDummy();
-	}
-	else if(numStack.len>0 && (o->func || o->cfunc || o->mfunc)){
-		if(i==8 || i==2 || i==9 || i>=400){
-			//unary operators update the stack item in place
-		}
-		else if(o==&opPowMod){
-			jitCompilePop();
-			jitCompilePop();
-		}
-		else{
-			//binary operator
-			jitCompilePop();
-			if(i == CMDBASE) baseIn = (int)numStack[numStack.len-1].r[0];
-		}
-	}
 }
 //---------------------------------------------------------------
 #if JIT_EMIT
@@ -687,17 +626,12 @@ Tcompiled *jitEmit(int kind)
 	return c;
 }
 
-//compile a formula without evaluating it; the parser records instructions and
-//only simulated stack items are discarded afterwards
-void jitCompileFormula(Tjit *j, const char *formula, const char **e)
+void parse(Tjit *j, const char *formula, const char **e)
 {
 	Tjit *savedCur= jitCur;
-	Tlen savedNumStack= numStack.len;
-	Tlen savedOpStack= opStack.len;
 	jitCur= j;
 	parse(formula, e);
 	jitCur= savedCur;
-	jitRestoreCompileStack(savedNumStack, savedOpStack);
 }
 
 void jitCompileScript(Tjit *j, const char *input)
@@ -728,6 +662,7 @@ void jitCompileScript(Tjit *j, const char *input)
 			bool noNewLine=false;
 			for(;;){
 				if(*input=='\"'){
+					//literal text
 					e=input;
 					int doubleQuotes= skipString(e)-1;
 					if(error) return;
@@ -748,16 +683,14 @@ void jitCompileScript(Tjit *j, const char *input)
 					break;
 				}
 				else{
-					// expression part
+					// print expression
 					if(pendingSpace){
 						jitEmit(jitPrintSpace);
 						pendingSpace=false;
 					}
-					jitCompileFormula(j, input, &e);
+					parse(j, input, &e);
 					if(error) return;
-					// jitCmdEnd: isPrint=true, writeResult=true
-					Tcompiled *c= jitEmit(jitCmdEnd);
-					c->flags= 1; // writeResult
+					jitEmit(jitCmdEnd)->flags= 1; // writeResult
 					input=e;
 				}
 				if(*input!=',') break;
@@ -774,12 +707,11 @@ void jitCompileScript(Tjit *j, const char *input)
 			if(!noNewLine) jitEmit(jitPrintNewLine);
 		}
 		else{
-			// expression command
-			jitCompileFormula(j, input, &e);
+			// expression
+			parse(j, input, &e);
 			if(error) return;
 			// writeResult when not ending with ';'
-			Tcompiled *c= jitEmit(jitCmdEnd);
-			c->flags= (*e!=';');
+			jitEmit(jitCmdEnd)->flags= (*e!=';');
 		}
 		if(!error) errPos = e;
 		if(*e==',') cerror(956, "Unmatched comma");
