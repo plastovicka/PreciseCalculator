@@ -35,23 +35,59 @@ Darray<Tlabel> labels;
 Darray<Tfunc> funcs;
 const Top **funcTabSorted;
 
+//-------------------------------------------------------------------
+const int RecyclerCount = 14;
+static void *recycler[RecyclerCount];
+static size_t recyclerSizes[RecyclerCount];
+static int recyclerIndex = 0;
+
 extern "C" void *Alloc(size_t size)
 {
-	try {
-		return operator new(size);
+	for(int i = 0; i<RecyclerCount; i++) {
+		if(recyclerSizes[i]-size<=24) {
+			recyclerSizes[i] = 0;
+			return recycler[i];
+		}
 	}
-	catch(std::bad_alloc) {
+	try {
+		void*p = operator new(size+sizeof(size_t));
+		*static_cast<size_t*>(p) = size;
+		return static_cast<size_t*>(p)+1;
+	}
+	catch(std::bad_alloc)
+	{
 #ifndef CONSOLE
 		msg(lng(1028, "Not enough memory !!!"));
 #endif
 		ExitProcess(99);
 	}
 }
-extern "C" void Free(void *s)
+
+extern "C" void Free(void *p)
 {
-	operator delete(s);
+	for(int i = 0; i<RecyclerCount; i++) {
+		if(!recyclerSizes[i]) {
+			recyclerSizes[i] = static_cast<size_t*>(p)[-1];
+			recycler[i] = p;
+			return;
+		}
+	}
+	operator delete(static_cast<size_t*>(recycler[recyclerIndex])-1);
+	recyclerSizes[recyclerIndex] = static_cast<size_t*>(p)[-1];
+	recycler[recyclerIndex] = p;
+	recyclerIndex = (recyclerIndex+1)%RecyclerCount;
 }
 
+void freeRecycler()
+{
+	for(int i = 0; i<RecyclerCount; i++) {
+		if(recyclerSizes[i]) {
+			recyclerSizes[i] = 0;
+			operator delete(static_cast<size_t*>(recycler[i])-1);
+		}
+	}
+}
+//-------------------------------------------------------------------
 int strleni(char *s)
 {
 	size_t len = strlen(s);
@@ -1276,6 +1312,7 @@ DWORD WINAPI calcThread(char *param)
 #ifndef CONSOLE
 	delete[] param;
 #endif
+	freeRecycler();
 	return 0;
 }
 //---------------------------------------------------------------
