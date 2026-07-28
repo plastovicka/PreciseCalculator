@@ -906,8 +906,11 @@ void args(const char *input, const char **end)
 			Tcompiled *c= jitEmit(jitFor);
 			c->op= o;
 			c->inputPtr= stk.inputPtr;
-			c->sub= new Tjit[1];
-			parse(c->sub, s, &e);
+			Tlen bodyStart= jitCodeLen();
+			parse(s, &e);
+			jitEmit(jitEnd);
+			c= jitCurGet(bodyStart-1); //re-fetch: array may have been reallocated
+			c->subLen= jitCodeLen() - bodyStart;
 		}
 		else if(o->type>=CMDFOR && i==1){
 			int j=token(s, true);
@@ -921,15 +924,20 @@ void args(const char *input, const char **end)
 		if(*e!=',') break;
 		s=e+1;
 		if(isIf){
-			//the condition and both branches are sub-traces
+			//the condition and both branches are sub-traces emitted inline
 			Tcompiled *c= jitEmit(jitIf);
 			c->inputPtr= input;
-			c->sub= new Tjit[2];
-			parse(&c->sub[0], s, &e);
+			Tlen branch0Start= jitCodeLen();
+			parse(s, &e);
 			if(error) return;
+			jitEmit(jitEnd);
 			if(*e!=',') break;
-			parse(&c->sub[1], e+1, &e);
+			Tlen branch1Start= jitCodeLen();
+			parse(e+1, &e);
 			if(error) return;
+			c= jitCurGet(branch0Start-1); //re-fetch: array may have been reallocated
+			c->subLen= (int)(branch1Start - branch0Start);
+			c->length = (int)(jitCodeLen() - branch0Start);
 			if(*e!=',') i += 2;
 			break;
 		}
@@ -1146,7 +1154,6 @@ DWORD WINAPI calcThread(char *param)
 	Tlen i;
 	int baseOld;
 	int errIndex;
-	Tjit script;
 
 #ifndef CONSOLE
 	DWORD time= getTickCount();
@@ -1186,16 +1193,16 @@ DWORD WINAPI calcThread(char *param)
 		else if(seedx) assign(oldSeedx, seedx);
 
 		//DWORD time= getTickCount();
-		if(script.code.len==0) {
-			jitCompileScript(&script, param);
+		if(jitCodeLen()==0) {
+			jitCompileScript(param);
 		}
 		else {
 			//increase precision of real numbers in the script
-			jitUpdateNumbers(&script);
+			jitUpdateNumbers();
 		}
-		//msg("Time %d, Length %d", getTickCount()-time, script.code.len);
+		//msg("Time %d, Length %d", getTickCount()-time, jitCodeLen());
 
-		jitScriptRun(&script);
+		jitScriptRun();
 
 		if((error==1030 || error==1060 || error==1063) && precision < prec2) { 
 			//divisor, trigonometric or MOD function operand is too big
@@ -1211,7 +1218,7 @@ DWORD WINAPI calcThread(char *param)
 			//compare with the previous result
 			b= output && !strcmp(output, outBuf);
 			delete[] output;
-			output=outBuf.array;
+			output=outBuf;
 			outBuf.array= new char[outBuf.capacity];
 			if(b) break;
 #ifndef CONSOLE
@@ -1234,7 +1241,7 @@ DWORD WINAPI calcThread(char *param)
 		}
 	}
 
-	jitFree(&script);
+	jitFree();
 #ifndef CONSOLE
 	if(isGrey) {
 		isGrey=false;

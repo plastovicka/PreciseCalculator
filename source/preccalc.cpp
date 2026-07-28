@@ -286,9 +286,11 @@ void logs(char *fmt, ...)
 }
 
 
-void logx(char *msg, Pint x)
+void logx(char *msg, Pint x, ...)
 {
 	if(logLock) return;
+	va_list ap;
+	va_start(ap, x);
 	logLock++;
 	FILE *f = fopen(logfile, "a");
 	if(!x)
@@ -298,10 +300,12 @@ void logx(char *msg, Pint x)
 		digits+=d;
 		char *buf= AWRITEX(x, digits);
 		digits-=d;
-		fprintf(f, "%s=%s;\n", msg, buf);
+		vfprintf(f, msg, ap);
+		fprintf(f, "=%s;\n", buf);
 		delete[] buf;
 	}
 	fclose(f);
+	va_end(ap);
 	logLock--;
 }
 #endif

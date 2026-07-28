@@ -1943,7 +1943,7 @@ extern Darray<Complex> numStack;
 struct IntegralData
 {
 	Complex var;
-	Tjit *jit;
+	Tcompiled *jit;
 	int bits, depth;
 
 	/*
@@ -1973,6 +1973,8 @@ struct IntegralData
 			if(error) goto lfree;
 			F[i]=*numStack--;
 			deref(F[i]);
+			//logx("integral x", v->r);
+			//logx("integral depth %d: F[%d]", F[i].r, depth, i);
 		}
 		F[0]=F0[0];
 		F[2]=F0[1];
@@ -2066,7 +2068,7 @@ struct IntegralData
 	}
 };
 
-void INTEGRALM(Complex y, Complex a, Complex b, Complex p, Complex var, Tjit *jit)
+void INTEGRALM(Complex y, Complex a, Complex b, Complex p, Complex var, Tcompiled *jit)
 {
 	Tuint timeOrPrec;
 	DWORD t0, t1, t2;

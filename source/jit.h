@@ -7,7 +7,6 @@
 #ifndef JITH
 #define JITH
 
-struct Tjit;
 struct Top;
 
 struct Tcompiled {
@@ -16,7 +15,7 @@ struct Tcompiled {
 		int variable;     //jitPushVar (variable index)
 		int indexes;	  //jitArrayIdx (index structure flags)
 		unsigned argCount;//jitApplyVararg (argument count)
-		int length;       //jitPrintText (text length)
+		int length;       //jitPrintText (text length), jitIf (length of both branches)
 		int base;         //jitPushNum (base)
 	};
 	union {
@@ -26,15 +25,11 @@ struct Tcompiled {
 		int flags;        //jitCmdEnd (writeResult), jitPrintText (doubleQuotes)
 		int cmdNum;       //jitCmdStart (command number)
 	};
-	const char *inputPtr; //value for errPos (position of the function name); jitPrintText: text pointer
 	union {
-		Tjit *sub;        //jitIf (2 sub-traces), jitFor (1 sub-trace for the loop body)
+		int subLen;       //jitFor (length of inline body including jitEnd), jitIf (length of branch-0 including jitEnd)
 		Tuint fraction;   //jitPushFraction (denominator)
 	};
-};
-
-struct Tjit {
-	Darray<Tcompiled> code;
+	const char *inputPtr; //value for errPos (position of the function name); jitPrintText: text pointer
 };
 
 struct Tstack {
@@ -48,7 +43,8 @@ enum { jitPushNum, jitPushInt, jitPushFraction, jitPushVar,
 	jitCmdEnd,      // pop result, write to buf, set ans; flags: writeResult
 	jitPrintText,  // append literal text to buf: inputPtr=text, length=len, flags=doubleQuotes
 	jitPrintNewLine, // append \r\n to buf
-	jitPrintSpace  // append ' ' to buf
+	jitPrintSpace,  // append ' ' to buf
+	jitEnd //end of script, body of for/integral, first branch of if
 };
 
 const int CMDBASE=3, CMDPOWER=5, CMDPLUS=144, CMDMINUS=143, CMDASSIGN=397,
@@ -70,13 +66,14 @@ void errGoto();
 void deref(Complex &x);
 bool deref(Complex &y, Complex &x);
 
-void jitScriptRun(Tjit *j);
-void jitRun(Tjit *j);
-void jitFree(Tjit *j);
-void jitCompileScript(Tjit *j, const char *input);
-void jitUpdateNumbers(Tjit *j);
-void parse(Tjit *j, const char *formula, const char **e);
+void jitScriptRun();
+void jitRun(Tcompiled *j);
+void jitFree();
+void jitCompileScript(const char *input);
+void jitUpdateNumbers();
 Tcompiled *jitEmit(int kind);
+Tlen jitCodeLen();
+Tcompiled *jitCurGet(Tlen idx);
 void doOp();
 
 void _stdcall INCC(Complex y, const Complex a);

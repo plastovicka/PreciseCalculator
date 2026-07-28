@@ -54,8 +54,8 @@ extern "C"{
 	void _fastcall ABSM(Complex x);
 	void _stdcall POLYNOMM(Complex y, const Complex cx, const Complex cp);
 
-	struct Tjit;
-	void INTEGRALM(Complex y, Complex a, Complex b, Complex p, Complex var, Tjit *jit);
+	struct Tcompiled;
+	void INTEGRALM(Complex y, Complex a, Complex b, Complex p, Complex var, Tcompiled *jit);
 	void _stdcall SWAPM(Complex y, Complex ca, Complex cb);
 
 	void _stdcall PLUSM(Complex y, const Complex a, const Complex b);

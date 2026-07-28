@@ -12,12 +12,9 @@
  Just-in-time compiler captures the linear sequence of stack operations (push number, push variable,
  apply operator, apply function to counted arguments, array index). 
  That trace is emitted as a call-sequence which invokes the existing math routines through jitRun.
- if(cond,a,b) is compiled as a jitIf instruction whose branches are compiled as separate sub-traces.
- for/foreach constructs are recorded as a jitFor instruction whose loop body are persistent sub-traces.
- Commands goto and gotor set gotoPos.
 */
 
-static Tjit *jitCur;
+static Darray<Tcompiled> code;
 static Darray<Tlen> cmdStart;
 Darray<char> outBuf;
 const unsigned MAX_OUTPUT_SIZE=1000000000;
@@ -49,7 +46,7 @@ void checkInfinite(Complex &y)
 	}
 }
 //---------------------------------------------------------------
-void forExecute(const Top *o, Tjit *bodyJit)
+void forExecute(const Top *o, Tcompiled *bodyJit)
 {
 	unsigned i;
 	int j, len=0;
@@ -430,9 +427,9 @@ void printNewLine()
 }
 //---------------------------------------------------------------
 
-void jitRun(Tjit *j)
+void jitRun(Tcompiled *j)
 {
-	for(Tcompiled *ins=j->code.array, *e = ins + j->code.len; ins < e && !error; )
+	for(Tcompiled *ins = j; !error; )
 	{
 		//execute one instruction
 		switch(ins->kind){
@@ -477,7 +474,8 @@ void jitRun(Tjit *j)
 			break;
 		case jitFor:
 			//execute a construct with repeated argument evaluation (for, foreach, integral, ...) using compiled sub-trace
-			forExecute(ins->op, ins->sub);
+			forExecute(ins->op, ins+1);
+			ins += ins->subLen;
 			break;
 		case jitIf: {
 			errPos = ins->inputPtr;
@@ -485,7 +483,12 @@ void jitRun(Tjit *j)
 			Complex y = *numStack--;
 			bool cond = !isZero(y);
 			FREEM(y);
-			jitRun(&ins->sub[cond ? 0 : 1]);
+			if(cond) {
+				jitRun(ins+1);
+				ins += ins->length;
+			}
+			else
+				ins += ins->subLen;
 			break;
 		}
 		case jitArrayIdx:{
@@ -507,7 +510,7 @@ void jitRun(Tjit *j)
 				}
 				else{
 					// goto: find the target command's start index
-					ins= j->code.array + cmdStart[gotoPos];
+					ins= j + cmdStart[gotoPos];
 					gotoPos=-1;
 					continue;
 				}
@@ -533,17 +536,19 @@ void jitRun(Tjit *j)
 		case jitPrintSpace:
 			printSpace();
 			break;
+		case jitEnd:
+			return;
 		}
 		ins++;
 	}
 }
 
-void jitScriptRun(Tjit *j)
+void jitScriptRun()
 {
 	gotoPos=-1;
 	retValue.r = retValue.i = 0;
 
-	jitRun(j);
+	jitRun(code);
 
 	//command "return"
 	if(retValue.r || error==1102){
@@ -568,33 +573,24 @@ void jitScriptRun(Tjit *j)
 	}
 }
 
-void jitFree(Tjit *j)
+void jitFree()
 {
-	for(Tlen k=0; k<j->code.len; k++){
-		Tcompiled &c= j->code.array[k];
+	for(Tlen k=0; k<code.len; k++){
+		Tcompiled &c= code[k];
 		if(c.kind==jitPushNum){
 			FREEX(c.num);
 		}
-		else if(c.kind==jitIf){
-			jitFree(&c.sub[0]);
-			jitFree(&c.sub[1]);
-			delete[] c.sub;
-		}
-		else if(c.kind==jitFor){
-			jitFree(&c.sub[0]);
-			delete[] c.sub;
-		}
 	}
-	j->code.reset();
+	code.reset();
 }
 //---------------------------------------------------------------
 #if JIT_EMIT
 #error goto not implemented in jitEmit yet
 //emit a native x64 stub that calls jitStep once per recorded instruction
-static bool jitEmit(Tjit *j)
+static bool jitEmit()
 {
-	Tlen n= j->code.len;
-	Tcompiled *codeBase= j->code.array;
+	Tlen n= jitCodeLen();
+	Tcompiled *codeBase= code;
 	SIZE_T size= 15 + (SIZE_T)12*n + 6;
 	unsigned char *code= (unsigned char*)VirtualAlloc(0, size, MEM_COMMIT|MEM_RESERVE, PAGE_EXECUTE_READWRITE);
 	if(!code) return false;
@@ -618,33 +614,34 @@ static bool jitEmit(Tjit *j)
 }
 #endif
 //---------------------------------------------------------------
-// emit one script-level instruction into the flat trace
+// emit one instruction into the flat trace
 Tcompiled *jitEmit(int kind)
 {
-	Tcompiled *c= jitCur->code++;
+	Tcompiled *c= code++;
 	c->kind= kind;
 	return c;
 }
 
-void parse(Tjit *j, const char *formula, const char **e)
+Tlen jitCodeLen()
 {
-	Tjit *savedCur= jitCur;
-	jitCur= j;
-	parse(formula, e);
-	jitCur= savedCur;
+	return code.len;
 }
 
-void jitCompileScript(Tjit *j, const char *input)
+Tcompiled *jitCurGet(Tlen idx)
+{
+	return &code[idx];
+}
+
+void jitCompileScript(const char *input)
 {
 	const char *e;
 
-	jitCur = j;
 	cmdStart.reset();
 
 	for(cmdNum=0; !error; cmdNum++)
 	{
 		// record where this command begins
-		*cmdStart++= j->code.len;
+		*cmdStart++= code.len;
 		//skip label
 		skipSpaces(input);
 		for(e=input; isVarLetter(*e); e++);
@@ -688,7 +685,7 @@ void jitCompileScript(Tjit *j, const char *input)
 						jitEmit(jitPrintSpace);
 						pendingSpace=false;
 					}
-					parse(j, input, &e);
+					parse(input, &e);
 					if(error) return;
 					jitEmit(jitCmdEnd)->flags= 1; // writeResult
 					input=e;
@@ -708,7 +705,7 @@ void jitCompileScript(Tjit *j, const char *input)
 		}
 		else{
 			// expression
-			parse(j, input, &e);
+			parse(input, &e);
 			if(error) return;
 			// writeResult when not ending with ';'
 			jitEmit(jitCmdEnd)->flags= (*e!=';');
@@ -720,12 +717,13 @@ void jitCompileScript(Tjit *j, const char *input)
 		if(*e) e++;
 		input=e;
 	}
+	jitEmit(jitEnd);
 }
 
-void jitUpdateNumbers(Tjit *j)
+void jitUpdateNumbers()
 {
-	for(Tlen k = 0; k<j->code.len; k++) {
-		Tcompiled &c = j->code.array[k];
+	for(Tlen k = 0; k<code.len; k++) {
+		Tcompiled &c = code[k];
 		if(c.kind==jitPushNum && c.num) {
 			FREEX(c.num);
 			c.num = ALLOCX(precision);

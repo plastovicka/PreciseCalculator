@@ -335,7 +335,7 @@ typedef void(_stdcall *Tarrayarg)(Pint, const Complex*);
 
 #ifndef NDEBUG
 extern void showx(Pint x);
-extern void logx(char *msg, Pint x);
+extern void logx(char *msg, Pint x, ...);
 void logs(char *fmt, ...);
 #else 
 inline void showx(Pint){};
