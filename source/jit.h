@@ -38,7 +38,8 @@ struct Tstack {
 };
 
 enum { jitPushNum, jitPushInt, jitPushFraction, jitPushVar,
-	jitApplyOp, jitApplyVararg, jitFor, jitArrayIdx, jitIf,
+	jitUnaryOp, jitUnaryFastOp, jitBinaryOp, jitTernaryOp, jitConst,
+	jitApplyVararg, jitFor, jitArrayIdx, jitIf,
 	jitCmdStart,    // set cmdNum
 	jitCmdEnd,      // pop result, write to buf, set ans; flags: writeResult
 	jitPrintText,  // append literal text to buf: inputPtr=text, length=len, flags=doubleQuotes

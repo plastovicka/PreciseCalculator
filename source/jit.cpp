@@ -256,101 +256,122 @@ void applyArrayIndex(int f)
 	}
 }
 //---------------------------------------------------------------
-void applyOp(const Top *o)
+void UnaryOp(const Top *o)
 {
-	int i;
+	if(numStack.len==0) return;
 	void *fr, *fc, *fm;
-	Complex a1, a2, a3, y;
-
+	Complex a1, y;
 	fr=o->func;
 	fc=o->cfunc;
-	fm=o->mfunc;
-	i=o->type;
-	if(i==1){
-		//const function
-		y=ALLOCC(precision);
-		if(fm) ((TnularyC)fm)(y);
-		else if(fr) ((Tnulary)fr)(y.r);
-		else ((TnularyC)fc)(y);
-		*numStack++=y;
+	if(fc!=DECC && fc!=INCC) deref(numStack[numStack.len-1]);
+	a1=numStack[numStack.len-1];
+	y=ALLOCC(precision);
+	if(isMatrix(a1) || !fc && !fr){
+		fm=o->mfunc;
+		if(!fm) cerror(1065, "The function requires one parameter");
+		else ((TunaryC2)fm)(y, a1);
 	}
-	else if(numStack.len>0 && (fr || fc || fm)){
-		if(fc!=DECC && fc!=INCC) deref(numStack[numStack.len-1]);
-		a1=numStack[numStack.len-1];
-		if(i==8 || i==2){
-			//unary _stdcall operator
-			y=ALLOCC(precision);
-			if(isMatrix(a1) || !fc && !fr){
-				if(!fm) cerror(1065, "The function requires one parameter");
-				else ((TunaryC2)fm)(y, a1);
-			}
-			else if(isImag(a1) || !fr){
-				if(!fc) errImag();
-				else ((TunaryC2)fc)(y, a1);
-			}
-			else{
-				((Tunary2)fr)(y.r, a1.r);
-			}
-			FREEM(a1);
-			numStack[numStack.len-1]=y;
-		}
-		else if(i==9 || i>=400){
-			//unary _fastcall operator
-			if(isMatrix(a1) || !fc && !fr){
-				if(!fm) errMatrix();
-				else ((TunaryC0)fm)(a1);
-			}
-			else if(isImag(a1) || !fr){
-				if(!fc) errImag();
-				else ((TunaryC0)fc)(a1);
-			}
-			else{
-				((Tunary0)fr)(a1.r);
-			}
-		}
-		else if(o==&opPowMod) {
-			//ternary operator
-			if(numStack.len<3) return;
-			deref(numStack[numStack.len-2]);
-			a2=numStack[numStack.len-2];
-			numStack-=2;
-			deref(numStack[numStack.len-1]);
-			a3=numStack[numStack.len-1];
-			y=ALLOCC(precision);
-			if(isMatrix(a1) || isMatrix(a2) || isMatrix(a3))
-				errMatrix();
-			else if(isImag(a1) || isImag(a2) || isImag(a3))
-				errImag();
-			else
-				((Tternary)fr)(y.r, a3.r, a2.r, a1.r);
-			FREEM(a3);
-			FREEM(a2);
-			FREEM(a1);
-			numStack[numStack.len-1]=y;
-		}
-		else {
-			//binary operator
-			if(numStack.len<2) return;
-			numStack--;
-			if(fm!=ASSIGNM) deref(numStack[numStack.len-1]);
-			a2=numStack[numStack.len-1];
-			y=ALLOCC(precision);
-			if(isMatrix(a1) || isMatrix(a2) || !fc && !fr){
-				if(!fm) errMatrix();
-				else ((TbinaryC)fm)(y, a2, a1);
-			}
-			else if(isImag(a1) || isImag(a2) || !fr){
-				if(!fc) errImag();
-				else ((TbinaryC)fc)(y, a2, a1);
-			}
-			else{
-				((Tbinary)fr)(y.r, a2.r, a1.r);
-			}
-			FREEM(a2);
-			FREEM(a1);
-			numStack[numStack.len-1]=y;
-		}
+	else if(isImag(a1) || !fr){
+		if(!fc) errImag();
+		else ((TunaryC2)fc)(y, a1);
 	}
+	else{
+		((Tunary2)fr)(y.r, a1.r);
+	}
+	FREEM(a1);
+	numStack[numStack.len-1]=y;
+}
+
+void UnaryFastOp(const Top *o)
+{
+	if(numStack.len==0) return;
+	void *fr, *fc, *fm;
+	fr = o->func;
+	fc = o->cfunc;
+	deref(numStack[numStack.len-1]);
+	Complex a1=numStack[numStack.len-1];
+	if(isMatrix(a1) || !fc && !fr) {
+		fm = o->mfunc;
+		if(!fm) errMatrix();
+		else ((TunaryC0)fm)(a1);
+	}
+	else if(isImag(a1) || !fr) {
+		if(!fc) errImag();
+		else ((TunaryC0)fc)(a1);
+	}
+	else {
+		((Tunary0)fr)(a1.r);
+	}
+}
+
+void BinaryOp(const Top *o)
+{
+	if(numStack.len<2) return;
+	void *fr, *fc, *fm;
+	Complex a1, a2, y;
+	deref(numStack[numStack.len-1]);
+	a1 = numStack[numStack.len-1];
+	numStack--;
+	fr = o->func;
+	fc = o->cfunc;
+	fm = o->mfunc;
+	if(fm!=ASSIGNM) deref(numStack[numStack.len-1]);
+	a2 = numStack[numStack.len-1];
+	y = ALLOCC(precision);
+	if(isMatrix(a1) || isMatrix(a2) || !fc && !fr) {
+		if(!fm) errMatrix();
+		else ((TbinaryC)fm)(y, a2, a1);
+	}
+	else if(isImag(a1) || isImag(a2) || !fr) {
+		if(!fc) errImag();
+		else ((TbinaryC)fc)(y, a2, a1);
+	}
+	else {
+		((Tbinary)fr)(y.r, a2.r, a1.r);
+	}
+	FREEM(a2);
+	FREEM(a1);
+	numStack[numStack.len-1] = y;
+}
+
+void TernaryOp(const Top *o)
+{
+	if(numStack.len<3) return;
+	Complex a1, a2, a3, y;
+	deref(numStack[numStack.len-1]);
+	a1 = numStack[numStack.len-1];
+	deref(numStack[numStack.len-2]);
+	a2 = numStack[numStack.len-2];
+	numStack -= 2;
+	deref(numStack[numStack.len-1]);
+	a3 = numStack[numStack.len-1];
+	y = ALLOCC(precision);
+	if(isMatrix(a1) || isMatrix(a2) || isMatrix(a3)) {
+		errMatrix();
+	}
+	else if(isImag(a1) || isImag(a2) || isImag(a3)) {
+		errImag();
+	}
+	else {
+		((Tternary)o->func)(y.r, a3.r, a2.r, a1.r);
+	}
+	FREEM(a3);
+	FREEM(a2);
+	FREEM(a1);
+	numStack[numStack.len-1] = y;
+}
+
+void ConstOp(const Top *o)
+{
+	void *fr, *fc, *fm;
+	fr = o->func;
+	fc = o->cfunc;
+	fm = o->mfunc;
+	Complex y = ALLOCC(precision);
+	if(fm) ((TnularyC)fm)(y);
+	else if(fr) ((Tnulary)fr)(y.r);
+	else ((TnularyC)fc)(y);
+	*numStack++ = y;
 }
 //---------------------------------------------------------------
 bool printValue(Complex y)
@@ -465,9 +486,25 @@ void jitRun(Tcompiled *j)
 			*numStack++= x;
 			break;
 		}
-		case jitApplyOp:
+		case jitUnaryOp:
 			errPos= ins->inputPtr;
-			applyOp(ins->op);
+			UnaryOp(ins->op);
+			break;
+		case jitUnaryFastOp:
+			errPos= ins->inputPtr;
+			UnaryFastOp(ins->op);
+			break;
+		case jitBinaryOp:
+			errPos= ins->inputPtr;
+			BinaryOp(ins->op);
+			break;
+		case jitTernaryOp:
+			errPos= ins->inputPtr;
+			TernaryOp(ins->op);
+			break;
+		case jitConst:
+			errPos= ins->inputPtr;
+			ConstOp(ins->op);
 			break;
 		case jitApplyVararg:
 			applyVararg(ins->op, ins->argCount, ins->inputPtr);

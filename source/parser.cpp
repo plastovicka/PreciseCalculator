@@ -535,7 +535,6 @@ const Top funcTab[]={
 	{"swap", CMDVARARG+2, 0, 0, F SWAPM, 2207, "Exchange variables a and b"},
 };
 const int funcTab_size = sizeA(funcTab);
-
 /*
 
  Functions with real operand, but imaginary result:
@@ -560,8 +559,6 @@ void cleanup()
 		FREEM(numStack[i]);
 	}
 	numStack.reset();
-	opStack.reset();
-	baseInStack.reset();
 }
 
 void Tvar::destroy()
@@ -1003,20 +1000,51 @@ void args(const char *input, const char **end)
 void doOp()
 {
 	if(error || opStack.len==0) return;
-	Tstack *t= opStack--;
+	Tstack *t = opStack--;
 	errPos = t->inputPtr;
-	const Top *o=t->op;
-	if(o->type == CMDBASE) 
+	const Top *o = t->op;
+	int i = o->type;
+	if(i == CMDBASE) {
+		//dec/hex/bin/oct - restore previous base after number or right parenthesis
 		baseIn = *baseInStack--;
-	else {
-		if(o->func==GOTORELX) {
-			//relative goto, record the current command number
-			jitEmit(jitCmdStart)->cmdNum = cmdNum;
-		}
-		Tcompiled *c = jitEmit(jitApplyOp);
-		c->op = o;
-		c->inputPtr = t->inputPtr;
+		return;
 	}
+	void *fr, *fc, *fm;
+	fr=o->func;
+	fc=o->cfunc;
+	fm=o->mfunc;
+	int kind;
+	if(i==1) {
+		//const function
+		kind = jitConst;
+	}
+	else if(fr || fc || fm) {
+		if(i==8 || i==2) {
+			//unary _stdcall operator
+			kind = jitUnaryOp;
+		}
+		else if(i==9 || i>=400) {
+			if(fr==GOTORELX) {
+				//relative goto, record the current command number
+				jitEmit(jitCmdStart)->cmdNum = cmdNum;
+			}
+			//unary _fastcall operator
+			kind = jitUnaryFastOp;
+		}
+		else if(o==&opPowMod) {
+			//ternary operator
+			kind = jitTernaryOp;
+		}
+		else {
+			//binary operator
+			kind = jitBinaryOp;
+		}
+	}
+	else return; //parenthesis
+
+	Tcompiled *c = jitEmit(kind);
+	c->op = o;
+	c->inputPtr = t->inputPtr;
 }
 //---------------------------------------------------------------
 void parse(const char *input, const char **e)
@@ -1205,6 +1233,8 @@ DWORD WINAPI calcThread(char *param)
 #endif
 	output=0;
 	cleanup();
+	opStack.reset();
+	baseInStack.reset();
 	initLabels(param);
 
 	//set the precision
