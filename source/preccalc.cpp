@@ -45,6 +45,8 @@ int width,
  ygap=5,
  split=350,
  maxHistory=200,
+ historyWidth,
+ historyHeight,
  keyboard=0,
  historyLen,
  idEnter,
@@ -132,6 +134,8 @@ struct Treg { char *s; int *i; } regVal[]={
 	{"log", &logging},
 	{"logSize", &logSize},
 	{"disableRounding", &disableRounding},
+	{"historyWidth", &historyWidth},
+	{"historyHeight", &historyHeight},
 };
 struct Tregs { char *s; char *i; DWORD n; BYTE isPath; } regValS[]={
 	{"language", lang, sizeof(lang), 0},
@@ -1083,7 +1087,11 @@ BOOL CALLBACK HistoryProc(HWND hWnd, UINT mesg, WPARAM wP, LPARAM lP)
 
 	switch(mesg){
 		case WM_INITDIALOG:
-			oldWidth=oldHeight=0;
+			GetClientRect(hWnd, &rc);
+			oldWidth=rc.right;
+			oldHeight=rc.bottom;
+			if(historyWidth > 100 && historyHeight > 100)
+				SetWindowPos(hWnd, 0, 0, 0, historyWidth, historyHeight, SWP_NOMOVE|SWP_NOZORDER);
 			setDlgTexts(hWnd);
 			SetWindowTextT(hWnd, lng(20, "History"));
 			initHistoryList(listBox);
@@ -1115,6 +1123,12 @@ BOOL CALLBACK HistoryProc(HWND hWnd, UINT mesg, WPARAM wP, LPARAM lP)
 
 		case WM_SIZE:
 			if(lP){ historySize(hWnd, lP, oldWidth, oldHeight); InvalidateRect(GetDlgItem(hWnd, 101), 0, TRUE); }
+			break;
+
+		case WM_EXITSIZEMOVE:
+			GetWindowRect(hWnd, &rc);
+			historyWidth= rc.right-rc.left;
+			historyHeight= rc.bottom-rc.top;
 			break;
 
 		case WM_GETMINMAXINFO:
