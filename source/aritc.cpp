@@ -429,7 +429,7 @@ void TuintToStr(Tuint x, char *buf)
 void _stdcall WRITEX(char *buf, const Pint x0, int _digits)
 {
 	__int64 e=0;
-	Pint y, t, w, x, a;
+	Pint y, t, x, a;
 	Tint prec;
 	char *s;
 
@@ -515,7 +515,7 @@ void _stdcall WRITEX(char *buf, const Pint x0, int _digits)
 				//correct exponent
 				while(y[-1]>0 && (y[-1]>1 || Tuint(y[0])>=Tuint(base)) && !error){
 					DIVI(t, y, base);
-					w=t; t=y; y=w;
+					std::swap(t, y);
 					e++;
 					if(e==Int64Min) overflow();
 				}
@@ -859,7 +859,7 @@ void _stdcall SQRX(Pint z, const Pint x)
 void _stdcall EXPX(Pint y, const Pint x0)
 {
 	Tint ex, n, sgn, k, p;
-	Pint z, t, u, w, x, x1;
+	Pint z, t, u, x, x1;
 
 	x=x0;
 	ONEX(y);
@@ -919,7 +919,7 @@ void _stdcall EXPX(Pint y, const Pint x0)
 		MULTX(t, x, u);
 		DIVI(u, t, n);
 		PLUSX(t, z, u); //z+=x^n/n!
-		w=t; t=z; z=w;
+		std::swap(t, z);
 		n++;
 	} while((u[-1]>=z[-1]-z[-3] || u[-1]>=0) && !isZero(u) && !error);
 
@@ -927,7 +927,7 @@ void _stdcall EXPX(Pint y, const Pint x0)
 	{
 		t[-4] = p + k/(TintBits/2);
 		SQRX(t, z);
-		w=t; t=z; z=w;
+		std::swap(t, z);
 	}
 	COPYX(y, z);
 	//y<=Base
@@ -937,7 +937,7 @@ void _stdcall EXPX(Pint y, const Pint x0)
 //-------------------------------------------------------------------
 void _stdcall AGMX(Pint z, const Pint x0, const Pint y0)
 {
-	Pint a, b, y, t, m, w;
+	Pint a, b, y, t, m;
 	Tint p;
 
 	p=z[-4]+3;
@@ -958,7 +958,7 @@ void _stdcall AGMX(Pint z, const Pint x0, const Pint y0)
 		MULTX(t, b, a);
 		SQRTX(b, t);
 		// a=y
-		w=a; a=y; y=w;
+		std::swap(a, y);
 		n++;
 	}
 	COPYX(z, a);
@@ -969,7 +969,7 @@ static void _stdcall _LNX(Pint y, const Pint x0, bool useAGM)
 {
 	Tint ex, p;
 	int num2;
-	Pint z, t, v, w, x, u=0;
+	Pint z, t, v, x, u=0;
 
 	if(x0[-2] || isZero(x0)){
 		cerror(1009, "Logarithm of not positive number");
@@ -1077,10 +1077,10 @@ static void _stdcall _LNX(Pint y, const Pint x0, bool useAGM)
 			int n=3;
 			do{
 				MULTX(t, u, x);
-				w=t; t=u; u=w;
+				std::swap(t, u);
 				DIVI(t, u, n);
 				PLUSX(v, z, t);
-				w=v; v=z; z=w;
+				std::swap(v, z);
 				n+=2;
 			} while((t[-1]>=z[-1]-z[-3] || t[-1]>=0) && !isZero(t) && !error);
 			MULTI1(z, 2);
@@ -1097,13 +1097,13 @@ static void _stdcall _LNX(Pint y, const Pint x0, bool useAGM)
 			MULTI(t, lnBase, ex);
 			PLUSX(v, z, t);
 		}
-		w=v; v=z; z=w;
+		std::swap(v, z);
 	}
 	if(num2 && !error){
 		getln2(y[-4]);
 		MULTIN(t, ln2, num2);
 		MINUSX(v, z, t);
-		w=v; v=z; z=w;
+		std::swap(v, z);
 	}
 	COPYX(y, z);
 	FREEX(x);
@@ -1129,7 +1129,7 @@ void _stdcall SetPrec(Pint x, Tint _precision)
 
 void _stdcall INVERSEROOTI(Pint y, Pint x, Tuint n)
 {
-	Pint t, u, r, a, w;
+	Pint t, u, r, a;
 	Tint p, _precision = 14;
 
 	p=y[-4] + 1;
@@ -1166,7 +1166,7 @@ void _stdcall INVERSEROOTI(Pint y, Pint x, Tuint n)
 		MULTX(u, r, t);
 		DIVI1(u, n);
 		PLUSX(t, r, u);
-		w=t; t=r; r=w;
+		std::swap(t, r);
 	} while((_precision<p || (u[-1]>r[-1]-r[-3]) && !isZero(u) && i<50) && !error);
 	COPYX(y, r);
 	FREEX(a);
@@ -1228,7 +1228,7 @@ void _stdcall DIVX(Pint y, const Pint a, const Pint b)
 		return;
 	}
 
-	Pint t, u, r, w, m, b1;
+	Pint t, u, r, m, b1;
 	Tint p, bp, _precision;
 
 	bp = b[-3];
@@ -1267,7 +1267,7 @@ void _stdcall DIVX(Pint y, const Pint a, const Pint b)
 		MULTX(u, b1, r);
 		MINUSX(t, two, u);
 		MULTX(u, r, t);
-		w=u; u=r; r=w;
+		std::swap(u, r);
 	} while(fin<2 && !error);/**/
 	MULTX(y, r, a);
 	if(b[-2]) NEGX(y);
@@ -1352,7 +1352,7 @@ void _stdcall POWX(Pint y, const Pint a, const Pint b)
 //-------------------------------------------------------------------
 void _stdcall POWI(Pint y, const Pint x, __int64 n)
 {
-	Pint z, t, w, a;
+	Pint z, t, a;
 
 	if(isZero(x)){
 		ZEROX(y);
@@ -1371,10 +1371,10 @@ void _stdcall POWI(Pint y, const Pint x, __int64 n)
 	while(!(n&i)) i>>=1;
 	for(; i && !error; i>>=1) {
 		SQRX(t, z);
-		w=t; t=z; z=w;
+		std::swap(t, z);
 		if(n&i) {
 			MULTX(t, z, x);
-			w=t; t=z; z=w;
+			std::swap(t, z);
 		}
 	}
 #else
@@ -1386,10 +1386,10 @@ void _stdcall POWI(Pint y, const Pint x, __int64 n)
 
 	for(n>>=1; n>0 && !error; n>>=1) {
 		SQRX(t, u);
-		w=t; t=u; u=w;
+		std::swap(t, u);
 		if(n&1) {
 			MULTX(t, z, u);
-			w=t; t=z; z=w;
+			std::swap(t, z);
 		}
 	}
 #endif
@@ -1654,7 +1654,7 @@ void _stdcall GCDX(Pint y, const Pint a, const Pint b)
 		return;
 	}
 	Tint p;
-	Pint t, u, v, w, m;
+	Pint t, u, v, m;
 	p= max(a[-4], b[-4]);
 	p= max(p, y[-4]);
 	m=ALLOCN(3, p, &t, &u, &v);
@@ -1662,7 +1662,8 @@ void _stdcall GCDX(Pint y, const Pint a, const Pint b)
 	COPYX(v, b);
 	while(!isZero(v)){
 		MODX(t, u, v);
-		w=v; v=t; t=u; u=w;
+		std::swap(v, t);
+		std::swap(t, u);
 	}
 	COPYX(y, u);
 	y[-2]=0;
@@ -1771,7 +1772,7 @@ void _stdcall DIVISORX(Pint y, const Pint x)
 
 void _stdcall PRIMEX(Pint y0, const Pint x)
 {
-	Pint t, y, w;
+	Pint t, y;
 
 	y=y0;
 	COPYX(y, x);
@@ -1787,12 +1788,12 @@ void _stdcall PRIMEX(Pint y0, const Pint x)
 	}
 	t=ALLOCX(y[-4]);
 	PLUSX(t, y, MODI(y, 2)==0 ? one : two);
-	w=t; t=y; y=w;
+	std::swap(t, y);
 	while(!error){
 		DIVISORX(t, y);
 		if(CMPU(t, y)==0) break;
 		PLUSX(t, y, two);
-		w=t; t=y; y=w;
+		std::swap(t, y);
 	}
 	if(y!=y0){ COPYX(y0, y); t=y; }
 	FREEX(t);
@@ -2073,7 +2074,7 @@ void _stdcall MODX(Pint y, const Pint a, const Pint b)
 //return true if odd number of PI was subtracted
 bool _stdcall ARGPI(Pint y0, const Pint x)
 {
-	Pint t, u, y, w;
+	Pint t, u, y;
 	bool odd=false;
 
 	y=y0;
@@ -2098,14 +2099,14 @@ bool _stdcall ARGPI(Pint y0, const Pint x)
 			MULTX(u, t, pi);
 			if(u[-1]>u[-4]) cerror(1060, "Trigonometric function operand is too big");
 			MINUSX(t, y, u);
-			w=y; y=t; t=w;
+			std::swap(y, t);
 			FREEX(u);
 			if(CMPU(y, pi2)<=0) break;
 		}
 		Tint sgn = y[-2];
 		if(sgn) PLUSX(t, y, pi);
 		else MINUSX(t, y, pi);
-		w=y; y=t; t=w;
+		std::swap(y, t);
 		odd=!odd;
 		if(y[-2]!=sgn) break;
 	}
@@ -2119,7 +2120,7 @@ bool _stdcall ARGPI(Pint y0, const Pint x)
 
 void _stdcall SINCOS(Pint y0, Pint x, Tint n, bool hyp)
 {
-	Pint x2, t, u, w, y, m;
+	Pint x2, t, u, y, m;
 
 	if(isZero(x)) return; //sin(0)=0, cos(0)=1
 	y=y0;
@@ -2136,7 +2137,8 @@ void _stdcall SINCOS(Pint y0, Pint x, Tint n, bool hyp)
 		DIVI(t, y, n++);
 		DIVI(y, t, n++);
 		PLUSX(t, u, y); //z+=x^n/n!
-		w=u; u=y; y=t; t=w;
+		std::swap(u, y);
+		std::swap(y, t);
 	} while((u[-1]>=y[-1]-y[-3] || u[-1]>=0) && !isZero(u) && !error);
 	COPYX(y0, y);
 	FREEX(m);
@@ -2300,7 +2302,7 @@ void _stdcall CSCX(Pint y, const Pint x)
 
 static void _stdcall TANCOTG(Pint y, const Pint x, bool co)
 {
-	Pint s, c, w;
+	Pint s, c;
 	int r=0;
 
 	if(isInt(x)){
@@ -2326,7 +2328,7 @@ static void _stdcall TANCOTG(Pint y, const Pint x, bool co)
 	SINX(s, x);
 	c=ALLOCX(y[-4]);
 	COSX(c, x);
-	if(co){ w=s; s=c; c=w; }
+	if(co){ std::swap(s, c); }
 	DIVX(y, s, c);
 	FREEX(s);
 }
@@ -2528,13 +2530,13 @@ void _stdcall ATAN2X(Pint y, const Pint a, const Pint b)
 {
 	Pint t, p;
 
-	if(isZero(a) && isZero(b)){
+	if(isZero_safe(a) && isZero(b)){
 		cerror(1032, "Angle of point [0,0]");
 		return;
 	}
 	getpi(y[-4]);
 
-	if(isZero(a)){
+	if(isZero_safe(a)){
 		if(b[-2]) COPYX(y, pi);
 		else ZEROX(y);
 	}
@@ -2609,13 +2611,13 @@ void _stdcall COSHX(Pint y, const Pint x)
 
 static void _stdcall TANHCOTGH(Pint y, const Pint x, bool co)
 {
-	Pint s, c, w;
+	Pint s, c;
 
 	ALLOCN(2, y[-4], &s, &c);
 	SINHX(s, x);
 	c=ALLOCX(y[-4]);
 	COSHX(c, x);
-	if(co){ w=s; s=c; c=w; }
+	if(co){ std::swap(s, c); }
 	DIVX(y, s, c);
 	FREEX(s);
 }
@@ -2867,7 +2869,7 @@ void _stdcall LESSEQX(Pint y, const Pint a, const Pint b)
 
 void _stdcall PI2(Pint y)
 {
-Pint r,s,t,u,v,w,a;
+Pint r,s,t,u,v,a;
 Tuint k,i;
 
 Numx Kc;
@@ -2893,7 +2895,7 @@ t[-4]=y[-4]+t[-1]+1;
 if(t[-3]>0) t[-3]=t[-4];
 }
 PLUSX(v,u,c);
-w=u; u=v; v=w;
+std::swap(u, v);
 for(i=6*k-1; i>6*k-6; i--) MULTI(t,t,i);
 if(k<21846) DIVI(t,t,(3*k-1)*(3*k-2)/2);
 else if(k&1){ DIVI(t,t,(3*k-1)/2); DIVI(t,t,3*k-2); }
@@ -2905,7 +2907,7 @@ DIVI(t,t,640320); DIVI(t,t,640320); DIVI(t,t,640320);
 MULTX1(v,t,u);
 if(k&1) MINUSX(r,s,v);
 else PLUSX(r,s,v);
-w=r; r=s; s=w;
+std::swap(r, s);
 k++;
 }while((-v[-1]<=y[-4]) && !isZero(v) && !error);
 MULTI(s,s,12);
@@ -2919,7 +2921,7 @@ FREEX(a);
 
 void _stdcall PI3(Pint y)
 {
-Pint r,s,t,u,v,w,a;
+Pint r,s,t,u,v,a;
 Tuint k,i,u1,u2;
 
 Numx Kc;
@@ -2951,7 +2953,7 @@ u1=0;
 }
 }else{
 PLUSX(v,u,c);
-w=u; u=v; v=w;
+std::swap(u, v);
 }
 i=4*k;
 #ifdef ARIT64
@@ -2978,7 +2980,7 @@ DIVI1(t,396); DIVI1(t,62099136);
 if(u1>0) MULTI(v,t,u1);
 else MULTX1(v,t,u);
 PLUSX(r,s,v);
-w=r; r=s; s=w;
+std::swap(r, s);
 k++;
 }while((-v[-1]<=y[-4]) && !isZero(v) && !error);
 MULTI1(s,2);
@@ -2994,7 +2996,7 @@ FREEX(a);
 //Brent–Salamin algorithm (1975)
 int _stdcall PI(Pint a0)
 {
-	Pint a, b, z, t, y, m, w;
+	Pint a, b, z, t, y, m;
 	Tint n;
 
 	m=ALLOCN(5, a0[-4], &a, &b, &z, &t, &y);
@@ -3012,7 +3014,7 @@ int _stdcall PI(Pint a0)
 		MULTX(t, b, a);
 		SQRTX(b, t);
 		// a=y
-		w=a; a=y; y=w;
+		std::swap(a, y);
 		// t=(a-y)^2*(2^n)
 		MINUSX(t, a, y);
 		SQRX(y, t);
@@ -3020,7 +3022,7 @@ int _stdcall PI(Pint a0)
 		n++;
 		// z-=t
 		MINUSX(y, z, t);
-		w=z; z=y; y=w;
+		std::swap(z, y);
 	} while(-t[-1]<=a0[-4] && !isZero(t) && !error);
 
 	// a0= (a+b)^2/(4*z)

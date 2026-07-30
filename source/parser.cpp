@@ -95,18 +95,18 @@ int strleni(char *s)
 	return (int)len;
 }
 
-void _stdcall SETBASEX(Complex y, const Complex b, const Complex x)
+void _stdcall SETBASEX(Complex &y, const Complex &b, const Complex &x)
 {
 	COPYM(y, x);
 	baseIn=(int)b.r[0];
 }
 
-void _stdcall ANS(Complex y)
+void _stdcall ANS(Complex &y)
 {
 	COPYM(y, ans);
 }
 
-void _fastcall RETM(Complex y)
+void _fastcall RETM(Complex &y)
 {
 	if(!retValue.r){
 		retValue= y;
@@ -134,7 +134,7 @@ void assign(Pint &dest, const Pint src)
 	}
 }
 
-void assign(Complex &dest, const Complex src)
+void assign(Complex &dest, const Complex &src)
 {
 	if(!src.r) return;
 	if(isMatrix(src)){
@@ -145,8 +145,7 @@ void assign(Complex &dest, const Complex src)
 		dest=NEWCOPYC(src);
 	}
 	else{
-		assign(dest.r, src.r);
-		assign(dest.i, src.i);
+		assignC(dest, src);
 	}
 }
 
@@ -174,21 +173,22 @@ bool deref(Complex &y, Complex &x)
 
 void deref(Complex &x)
 {
-	Complex v;
-	if(deref(v, x)){
+	if(x.r && (isVariable(x) || isRange(x))){
+		Tvar *v= toVariable(x);
+		Complex &w= v->modif ? v->newx : v->oldx;
 		if(isRange(x)){
 			Complex y= ALLOCC(precision);
-			INDEXM(y, v, (int*)&x.r[1]);
+			INDEXM(y, w, (int*)&x.r[1]);
 			FREEM(x);
 			x=y;
 		}
 		else{
-			COPYM(x, v);
+			COPYM(x, w);
 		}
 	}
 }
 
-void _stdcall ASSIGNM(Complex y, const Complex a, const Complex x)
+void _stdcall ASSIGNM(Complex &y, const Complex &a, const Complex &x)
 {
 	if(!isVariable(a) && !isRange(a)){
 		cerror(960, "There is a numeric expression at the left side of an assignment");
@@ -220,32 +220,30 @@ void INCDEC(Complex &y, const Complex &a, bool inc)
 			incdecRange(y, v->newx, inc, (int*)&a.r[1]);
 			v->modif=true;
 		}
+		else if(isMatrix(c)){
+			cerror(1042, "Increment or decrement of a matrix");
+		}
 		else{
-			if(isMatrix(c)){
-				cerror(1042, "Increment or decrement of a matrix");
-			}
-			else{
-				if(inc) PLUSX(y.r, c.r, one);
-				else MINUSX(y.r, c.r, one);
-				COPYX(y.i, c.i);
-				assign(v->newx, y);
-				v->modif=true;
-			}
+			if(inc) PLUSX(y.r, c.r, one);
+			else MINUSX(y.r, c.r, one);
+			COPYX_safe(y.i, c.i); 
+			assign(v->newx, y);
+			v->modif=true;
 		}
 	}
 }
 
-void _stdcall INCC(Complex y, const Complex a)
+void _stdcall INCC(Complex &y, const Complex &a)
 {
 	INCDEC(y, a, true);
 }
 
-void _stdcall DECC(Complex y, const Complex a)
+void _stdcall DECC(Complex &y, const Complex &a)
 {
 	INCDEC(y, a, false);
 }
 
-void _stdcall SWAPM(Complex y, Complex ca, Complex cb)
+void _stdcall SWAPM(Complex &y, Complex &ca, Complex &cb)
 {
 	if(!isVariable(ca) || !isVariable(cb)){
 		cerror(1061, "Parameters must be variables");
@@ -255,8 +253,7 @@ void _stdcall SWAPM(Complex y, Complex ca, Complex cb)
 	Tvar *vb= toVariable(cb);
 	if(va!=vb){
 		if(va->modif && vb->modif){
-			Complex w;
-			w=va->newx; va->newx=vb->newx; vb->newx=w;
+			std::swap(va->newx, vb->newx);
 		}
 		else{
 			Complex wa, wb;
@@ -1228,7 +1225,7 @@ DWORD WINAPI calcThread(char *param)
 	if(*param==0){
 		delete[] param;
 		param= new char[1000];
-		strcpy(param, "integral(x,1,5000,1,sin x)");
+		strcpy(param, "invert(2,3\\4,6");
 	}
 #endif
 	output=0;

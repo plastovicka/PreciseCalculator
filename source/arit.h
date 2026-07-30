@@ -230,6 +230,10 @@ inline bool isZero(const Pint x){
 	return x[-3]==0;
 }
 
+inline bool isZero_safe(const Pint x){
+	return !x || isZero(x);
+}
+
 inline bool isOneOrMinusOne(const Pint x){
 	return x[0]==1 && (x[-3]==1 && x[-1]==1 || x[-3]==-2 && x[1]==1);
 }
@@ -319,8 +323,8 @@ inline bool isOdd(const Pint x){
 		|| x[-3]==-2 && (x[0]&1);
 }
 
-void assignM(Complex &dest, const Complex src);
-void assign(Complex &dest, const Complex src);
+void assignM(Complex &dest, const Complex &src);
+void assign(Complex &dest, const Complex &src);
 
 enum{ ANGLE_DEG, ANGLE_RAD, ANGLE_GRAD };
 enum{ MODE_SCI, MODE_NORM, MODE_ENG, MODE_FIX };

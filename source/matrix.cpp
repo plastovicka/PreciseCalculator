@@ -28,7 +28,7 @@ bool isVector(const Complex &cx)
 	return isMatrix(cx) && (x->rows==1 || x->cols==1);
 }
 
-Tint getPrecision(Complex cx)
+Tint getPrecision(const Complex &cx)
 {
 	if(isMatrix(cx)){
 		Pmatrix x=toMatrix(cx);
@@ -59,7 +59,7 @@ void matrixToComplex(Complex &cx)
 }
 
 //create a new matrix or resize matrix to a->cols, a->rows
-void prepareM(Complex cy, int cols, int rows)
+void prepareM(Complex &cy, int cols, int rows)
 {
 	int i, len;
 	Tint prec;
@@ -75,7 +75,7 @@ void prepareM(Complex cy, int cols, int rows)
 			delete[] A0;
 		}
 		for(i=y->len; i<len; i++){
-			y->A[i]= ALLOCC(prec);
+			y->A[i]= ALLOCR(prec);
 		}
 		for(i=len; i<y->len; i++){
 			FREEC(y->A[i]);
@@ -89,7 +89,7 @@ void prepareM(Complex cy, int cols, int rows)
 	if(!y->alen && len){
 		y->A= new Complex[y->alen= len];
 		for(i=0; i<len; i++){
-			y->A[i]= ALLOCC(prec);
+			y->A[i]= ALLOCR(prec);
 		}
 	}
 	y->rows= rows;
@@ -138,7 +138,7 @@ bool noMatrixOrEmpty(Complex &y, const Complex &a, TunaryC2 f)
 	return false;
 }
 
-bool sameSizeM(const Complex ca, const Complex cb)
+bool sameSizeM(const Complex &ca, const Complex &cb)
 {
 	Pmatrix a=toMatrix(ca), b=toMatrix(cb);
 	if(!isMatrix(ca) || !isMatrix(cb) || a->cols!=b->cols ||
@@ -158,7 +158,7 @@ bool isSquareM(const Pmatrix x)
 	return true;
 }
 //-------------------------------------------------------------------
-Complex _fastcall NEWCOPYM(const Complex ca)
+Complex _fastcall NEWCOPYM(const Complex &ca)
 {
 	if(!isMatrix(ca)) return NEWCOPYC(ca);
 	Complex result;
@@ -183,7 +183,7 @@ Complex _fastcall NEWCOPYM(const Complex ca)
 	return result;
 }
 
-void _fastcall FREEM(Complex cx)
+void _fastcall FREEM(Complex &cx)
 {
 	if(cx.r && isMatrix(cx)){
 		FREE_ARRAYM(toMatrix(cx));
@@ -192,7 +192,7 @@ void _fastcall FREEM(Complex cx)
 	FREEX(cx.i);
 }
 
-void assignM(Complex &dest, const Complex src)
+void assignM(Complex &dest, const Complex &src)
 {
 	if(!dest.r || getPrecision(dest)<getPrecision(src)){
 		FREEM(dest);
@@ -204,7 +204,7 @@ void assignM(Complex &dest, const Complex src)
 }
 
 
-void _stdcall WRITEM(char *buf, const Complex cx, int digits, int cr)
+void _stdcall WRITEM(char *buf, const Complex &cx, int digits, int cr)
 {
 	int i, j;
 	Complex *p;
@@ -228,7 +228,7 @@ void _stdcall WRITEM(char *buf, const Complex cx, int digits, int cr)
 	*buf=0;
 }
 
-int _stdcall LENM(const Complex cx, int digits)
+int _stdcall LENM(const Complex &cx, int digits)
 {
 	int i, n;
 	Complex *p;
@@ -246,7 +246,7 @@ int _stdcall LENM(const Complex cx, int digits)
 	return n;
 }
 
-char*_stdcall AWRITEM(const Complex x, int digits, int cr)
+char*_stdcall AWRITEM(const Complex &x, int digits, int cr)
 {
 	int len=LENM(x, digits);
 	if(len<=0) {
@@ -262,18 +262,18 @@ char*_stdcall AWRITEM(const Complex x, int digits, int cr)
 }
 
 //-------------------------------------------------------------------
-void _fastcall EMPTYM(Complex x)
+void _fastcall EMPTYM(Complex &x)
 {
 	prepareM(x, 0, 0);
 }
 
-void _fastcall SETM(Complex x, Tuint n)
+void _fastcall SETM(Complex &x, Tuint n)
 {
 	matrixToComplex(x);
 	SETC(x, n);
 }
 
-void _fastcall WIDTHM(Complex x)
+void _fastcall WIDTHM(Complex &x)
 {
 	unsigned i;
 	if(!isMatrix(x)) i=1;
@@ -281,7 +281,7 @@ void _fastcall WIDTHM(Complex x)
 	SETM(x, i);
 }
 
-void _fastcall HEIGHTM(Complex x)
+void _fastcall HEIGHTM(Complex &x)
 {
 	unsigned i;
 	if(!isMatrix(x)) i=1;
@@ -289,7 +289,7 @@ void _fastcall HEIGHTM(Complex x)
 	SETM(x, i);
 }
 
-void _fastcall COUNTM(Complex x)
+void _fastcall COUNTM(Complex &x)
 {
 	unsigned i;
 	if(!isMatrix(x)) i=1;
@@ -298,7 +298,7 @@ void _fastcall COUNTM(Complex x)
 }
 
 
-void _fastcall TRANSPM(Complex cx)
+void _fastcall TRANSPM(Complex &cx)
 {
 	int i, j, rows, cols;
 	Complex *A;
@@ -322,14 +322,14 @@ void _fastcall TRANSPM(Complex cx)
 	x->cols= cols;
 }
 
-void _stdcall TRANSP2M(Complex y, const Complex cx)
+void _stdcall TRANSP2M(Complex &y, const Complex &cx)
 {
 	COPYM(y, cx);
 	TRANSPM(y);
 }
 
 //warning: a and b are destroyed
-void _stdcall CONCATROWM(Complex y, Complex a, Complex b)
+void _stdcall CONCATROWM(Complex &y, Complex &a, Complex &b)
 {
 	int cola, colb, rows;
 	Pmatrix ma, mb, my;
@@ -385,7 +385,7 @@ void _stdcall CONCATROWM(Complex y, Complex a, Complex b)
 }
 
 //warning: a and b are destroyed
-void _stdcall CONCATM(Complex y, Complex a, Complex b)
+void _stdcall CONCATM(Complex &y, Complex &a, Complex &b)
 {
 	TRANSPM(a);
 	TRANSPM(b);
@@ -453,11 +453,11 @@ void incdecRange(Complex &z, Complex &cy, bool inc, const int *D0)
 	}
 	if(inc) PLUSX(z.r, py->r, one);
 	else MINUSX(z.r, py->r, one);
-	COPYX(z.i, py->i);
+	COPYX_safe(z.i, py->i);
 	assignC(*py, z);
 }
 
-void assignRange(Complex &cy, const Complex cx, const int *D0)
+void assignRange(Complex &cy, const Complex &cx, const int *D0)
 {
 	int D[4];
 	D[0]=D0[0]; D[1]=D0[1]; D[2]=D0[2]; D[3]=D0[3];
@@ -498,7 +498,7 @@ void assignRange(Complex &cy, const Complex cx, const int *D0)
 	}
 }
 
-void _stdcall INDEXM(Complex cy, const Complex cx, int *D)
+void _stdcall INDEXM(Complex &cy, const Complex &cx, int *D)
 {
 	int i, j;
 
@@ -525,13 +525,13 @@ void _stdcall INDEXM(Complex cy, const Complex cx, int *D)
 		for(i=D[0]; i<=D[1]; i++){
 			Complex *B= x->A + x->cols*i + D[2];
 			for(j=0; j<cols; j++){
-				COPYC(*A++, *B++);
+				COPYC_safe(*A++, *B++);
 			}
 		}
 	}
 }
 
-void _stdcall EQUALM(Complex cy, const Complex ca, const Complex cb)
+void _stdcall EQUALM(Complex &cy, const Complex &ca, const Complex &cb)
 {
 	if(noMatrix(cy, ca, cb, EQUALC)) return;
 	if(!sameSizeM(ca, cb)) return;
@@ -547,7 +547,7 @@ void _stdcall EQUALM(Complex cy, const Complex ca, const Complex cb)
 	ONEC(cy);
 }
 
-void _stdcall NOTEQUALM(Complex cy, const Complex ca, const Complex cb)
+void _stdcall NOTEQUALM(Complex &cy, const Complex &ca, const Complex &cb)
 {
 	EQUALM(cy, ca, cb);
 	SETC(cy, isZero(cy));
@@ -567,7 +567,7 @@ static void plusminusM(Complex *C, Complex *A, Complex *B, int rows, int cols, i
 			C++; A++; B++;
 		}
 		if(zeroCol){
-			COPYC(*C, *A);
+			COPYC_safe(*C, *A);
 			C++; A++; B++;
 		}
 		C+=cd;
@@ -576,7 +576,7 @@ static void plusminusM(Complex *C, Complex *A, Complex *B, int rows, int cols, i
 	}
 	if(zeroRow){
 		for(j=0; j<cols; j++){
-			COPYC(*C, *A);
+			COPYC_safe(*C, *A);
 			C++; A++;
 		}
 	}
@@ -619,7 +619,7 @@ void _stdcall MULTMRecurse(int rows, int cols, int len, Complex *aA, int ad, Com
 					if(error) break;
 					MULTC(t, aA[i*ad+k], bA[k*bd+j]);
 					PLUSC(u, *S, t);
-					COPYC(*S, u);
+					COPYC_safe(*S, u);
 				}
 				S++;
 			}
@@ -656,7 +656,7 @@ void _stdcall MULTMRecurse(int rows, int cols, int len, Complex *aA, int ad, Com
 	}
 	prec=cA->r[-4];
 	for(i=0; i<lenM; i++){
-		buf[i]=ALLOCC(prec);
+		buf[i]=ALLOCR(prec);
 	}
 	plusminusM(M[0], A[0][1], A[1][1], rows2, len1, oddRows, 0, len1, ad, ad, MINUSC);
 	plusminusM(M[1], B[1][0], B[1][1], len1, cols2, 0, oddCols, cols2, bd, bd, PLUSC);
@@ -691,7 +691,7 @@ void _stdcall MULTMRecurse(int rows, int cols, int len, Complex *aA, int ad, Com
 }
 
 
-void _stdcall MULTM(Complex cy, const Complex ca, const Complex cb)
+void _stdcall MULTM(Complex &cy, const Complex &ca, const Complex &cb)
 {
 	int colsb, rowsa, n;
 	Complex *S;
@@ -732,7 +732,7 @@ void _stdcall MULTM(Complex cy, const Complex ca, const Complex cb)
 	MULTMRecurse(rowsa, colsb, n, a->A, a->cols, b->A, colsb, S, colsb);
 }
 
-void _fastcall SETDIAGM(Complex cx, Tuint n)
+void _fastcall SETDIAGM(Complex &cx, Tuint n)
 {
 	int i;
 
@@ -752,9 +752,9 @@ void _fastcall SETDIAGM(Complex cx, Tuint n)
 	}
 }
 
-void _stdcall POWMI(Complex y, const Complex cx, __int64 n)
+void _stdcall POWMI(Complex &y, const Complex &cx, __int64 n)
 {
-	Complex z, t, u, w;
+	Complex z, t, u;
 
 	if(!isMatrix(cx)){
 		matrixToComplex(y);
@@ -777,10 +777,10 @@ void _stdcall POWMI(Complex y, const Complex cx, __int64 n)
 
 	for(n>>=1; n>0; n>>=1){
 		MULTM(t, u, u);
-		w=t; t=u; u=w;
+		std::swap(t, u);
 		if(n&1){
 			MULTM(t, z, u);
-			w=t; t=z; z=w;
+			std::swap(t, z);
 		}
 	}
 	if(sgn){
@@ -800,7 +800,7 @@ void _stdcall POWMI(Complex y, const Complex cx, __int64 n)
 	if(t.r!=y.r) FREEM(t);
 }
 
-void _stdcall POWM(Complex y, const Complex a, const Complex b)
+void _stdcall POWM(Complex &y, const Complex &a, const Complex &b)
 {
 	if(noMatrix(y, a, b, POWC)) return;
 	if(isMatrix(b) || isImag(b) || !is32bit(b.r)){
@@ -810,7 +810,7 @@ void _stdcall POWM(Complex y, const Complex a, const Complex b)
 	POWMI(y, a, to32bit(b.r));
 }
 
-void _fastcall ELIMM(Complex cx)
+void _fastcall ELIMM(Complex &cx)
 {
 	if(!isMatrix(cx)) return;
 	Pmatrix m= toMatrix(cx);
@@ -836,7 +836,7 @@ void _fastcall ELIMM(Complex cx)
 			//divide row where is pivot
 			for(u++; u<zp; u++){
 				DIVC(t, *u, *p);
-				COPYC(*u, t);
+				COPYC_safe(*u, t);
 			}
 			ONEC(*p++);
 		}
@@ -857,7 +857,7 @@ void _fastcall ELIMM(Complex cx)
 				for(u=w+1, v=p; v<zp; u++, v++){
 					MULTC(t, *v, *w);
 					MINUSC(y, *u, t);
-					COPYC(*u, y);
+					COPYC_safe(*u, y);
 				}
 				ZEROC(*w);
 			}
@@ -868,7 +868,7 @@ lend:
 	FREEC(t);
 }
 
-void _fastcall DETRANKM(Complex D, Complex cx, int det)
+void _fastcall DETRANKM(Complex &D, Complex &cx, int det)
 {
 	if(noMatrix(D, cx, COPYC)){
 		if(!det && !isZero(cx)) ONEC(D);
@@ -931,17 +931,17 @@ lend:
 	if(!det) SETC(D, result);
 }
 
-void _fastcall DETM(Complex D, Complex cx)
+void _fastcall DETM(Complex &D, Complex &cx)
 {
 	DETRANKM(D, cx, 1);
 }
 
-void _fastcall RANKM(Complex D, Complex cx)
+void _fastcall RANKM(Complex &D, Complex &cx)
 {
 	DETRANKM(D, cx, 0);
 }
 
-void _stdcall INVERTM(Complex y, Complex cx)
+void _stdcall INVERTM(Complex &y, Complex &cx)
 {
 	if(noMatrix(y, cx, INVERTC)) return;
 	Pmatrix x= toMatrix(cx);
@@ -969,7 +969,7 @@ void _stdcall INVERTM(Complex y, Complex cx)
 	FREEM(t);
 }
 
-void check1x1(Complex cx)
+void check1x1(Complex &cx)
 {
 	Pmatrix x= toMatrix(cx);
 	if(isMatrix(cx) && x->rows==1 && x->cols==1){
@@ -980,7 +980,7 @@ void check1x1(Complex cx)
 	}
 }
 
-void _fastcall EQUSOLVEM(Complex cx)
+void _fastcall EQUSOLVEM(Complex &cx)
 {
 	int r, c, n, i;
 	Complex *p, *d, *A;
@@ -1019,7 +1019,7 @@ void _fastcall EQUSOLVEM(Complex cx)
 	check1x1(cx);
 }
 
-void _stdcall DIVM(Complex y, const Complex a, const Complex b)
+void _stdcall DIVM(Complex &y, const Complex &a, Complex &b)
 {
 	if(noMatrix(y, a, b, DIVC)) return;
 	Complex t= ALLOCC(getPrecision(y));
@@ -1029,7 +1029,7 @@ void _stdcall DIVM(Complex y, const Complex a, const Complex b)
 }
 
 
-void _fastcall ABSM(Complex x)
+void _fastcall ABSM(Complex &x)
 {
 	if(noMatrix(x, ABSC)) return;
 	Complex y= ALLOCC(getPrecision(x));
@@ -1039,7 +1039,7 @@ void _fastcall ABSM(Complex x)
 	FREEC(y);
 }
 
-void _stdcall MATRIXM(Complex y, const Complex ca, const Complex cb)
+void _stdcall MATRIXM(Complex &y, const Complex &ca, const Complex &cb)
 {
 	if(isInt(ca) && isInt(cb)){
 		Tint r = toInt(ca.r);
@@ -1056,7 +1056,7 @@ void _stdcall MATRIXM(Complex y, const Complex ca, const Complex cb)
 }
 
 
-void _stdcall ANGLEM(Complex y, const Complex ca, const Complex cb)
+void _stdcall ANGLEM(Complex &y, const Complex &ca, const Complex &cb)
 {
 	matrixToComplex(y);
 	if(!isMatrix(ca) && !isMatrix(cb)){
@@ -1090,7 +1090,7 @@ void _stdcall ANGLEM(Complex y, const Complex ca, const Complex cb)
 }
 
 //vector product
-void _stdcall VERTM(Complex y, const Complex ca, const Complex cb)
+void _stdcall VERTM(Complex &y, const Complex &ca, const Complex &cb)
 {
 	Pmatrix a=toMatrix(ca), b=toMatrix(cb);
 	if(!isVector(ca) || !isVector(cb) || a->len!=3 || b->len!=3){
@@ -1117,7 +1117,7 @@ void _stdcall VERTM(Complex y, const Complex ca, const Complex cb)
 }
 
 
-void _stdcall POLYNOMM(Complex y, const Complex cx, const Complex cp)
+void _stdcall POLYNOMM(Complex &y, const Complex &cx, const Complex &cp)
 {
 	int i, j, n=1;
 	Complex t, *m, *d, *s;
@@ -1182,7 +1182,7 @@ void _fastcall MAPM(Complex &cy, const Complex &cx, TunaryC2 f)
 	}
 }
 
-void _stdcall MAPM(Complex cx, Tuint n, TbinaryCI0 f)
+void _stdcall MAPM(Complex &cx, Tuint n, TbinaryCI0 f)
 {
 	if(!isMatrix(cx)){
 		f(cx, n);
@@ -1195,7 +1195,7 @@ void _stdcall MAPM(Complex cx, Tuint n, TbinaryCI0 f)
 	}
 }
 
-void _stdcall MAPM(Complex cy, const Complex cx, Tuint n, TbinaryCI2 f)
+void _stdcall MAPM(Complex &cy, const Complex &cx, Tuint n, TbinaryCI2 f)
 {
 	if(!isMatrix(cx)){
 		matrixToComplex(cy);
@@ -1211,14 +1211,19 @@ void _stdcall MAPM(Complex cy, const Complex cx, Tuint n, TbinaryCI2 f)
 	}
 }
 
-void _stdcall MAP1M(Complex &cy, const Complex &ca, const Complex &b, TbinaryC f)
+void _stdcall MAP1M(Complex &cy, const Complex &ca, const Complex &b, TbinaryC f, bool ensure = true)
 {
 	if(noMatrix(cy, ca, b, f)) return;
 	if(isMatrix(b)){ errMatrix(); return; }
 	Pmatrix a=toMatrix(ca), y=toMatrix(cy);
 	prepareM(cy, a);
 	for(int i=0; i<y->len; i++){
-		f(y->A[i], a->A[i], b);
+		Complex &yi = y->A[i], &ai = a->A[i];
+		if(ensure) {
+			ensureImagPart(yi);
+			ensureImagPart(ai);
+		}
+		f(yi, ai, b);
 	}
 }
 
@@ -1233,131 +1238,132 @@ void _stdcall MAPM(Complex &cy, const Complex &ca, const Complex &cb, TbinaryC f
 	}
 }
 
-void _stdcall COPYM(Complex dest, const Complex src)
+void _stdcall COPYM(Complex &dest, const Complex &src)
 {
 	if(!isMatrix(src) && !isMatrix(dest)) {
 		COPYX(dest.r, src.r);
-		COPYX(dest.i, src.i);
+		if(src.i) COPYX(dest.i, src.i);
+		else if(dest.i) ZEROX(dest.i);
 	}
 	else if(src.r!=dest.r)
-		MAPM(dest, src, COPYC);
+		MAPM(dest, src, COPYC_safe);
 }
-void _stdcall PLUSM(Complex y, const Complex a, const Complex b)
+void _stdcall PLUSM(Complex &y, const Complex &a, const Complex &b)
 {
 	MAPM(y, a, b, PLUSC);
 }
-void _stdcall MINUSM(Complex y, const Complex a, const Complex b)
+void _stdcall MINUSM(Complex &y, const Complex &a, const Complex &b)
 {
 	MAPM(y, a, b, MINUSC);
 }
-void _stdcall MULTCM(Complex y, const Complex a, const Complex i)
+void _stdcall MULTCM(Complex &y, const Complex &a, const Complex &i)
 {
-	MAP1M(y, a, i, MULTC);
+	MAP1M(y, a, i, MULTC, false);
 }
-void _stdcall MULTIM(Complex y, const Complex x, Tuint n)
+void _stdcall MULTIM(Complex &y, const Complex &x, Tuint n)
 {
 	MAPM(y, x, n, MULTIC);
 }
-void _stdcall DIVIM(Complex y, const Complex x, Tuint n)
+void _stdcall DIVIM(Complex &y, const Complex &x, Tuint n)
 {
 	MAPM(y, x, n, DIVIC);
 }
-void _stdcall MULTI1M(Complex x, Tuint n)
+void _stdcall MULTI1M(Complex &x, Tuint n)
 {
 	MAPM(x, n, MULTI1C);
 }
-void _stdcall DIVI1M(Complex x, Tuint n)
+void _stdcall DIVI1M(Complex &x, Tuint n)
 {
 	MAPM(x, n, DIVI1C);
 }
-void _stdcall LSHIM(Complex y, const Complex a, int n)
+void _stdcall LSHIM(Complex &y, const Complex &a, int n)
 {
 	MAPM(y, a, n, (TbinaryCI2)LSHIC);
 }
 
-void _fastcall NEGM(Complex x)
+void _fastcall NEGM(Complex &x)
 {
 	MAPM(x, NEGC);
 }
-void _fastcall CONJGM(Complex x)
+void _fastcall CONJGM(Complex &x)
 {
 	MAPM(x, CONJGC);
 }
-void _fastcall REALM(Complex x)
+void _fastcall REALM(Complex &x)
 {
 	MAPM(x, REALC);
 }
-void _fastcall IMAGM(Complex x)
+void _fastcall IMAGM(Complex &x)
 {
 	MAPM(x, IMAGC);
 }
-void _fastcall ROUNDM(Complex x)
+void _fastcall ROUNDM(Complex &x)
 {
 	MAPM(x, ROUNDC);
 }
-void _fastcall TRUNCM(Complex x)
+void _fastcall TRUNCM(Complex &x)
 {
 	MAPM(x, TRUNCC);
 }
-void _fastcall INTM(Complex x)
+void _fastcall INTM(Complex &x)
 {
 	MAPM(x, INTC);
 }
-void _fastcall CEILM(Complex x)
+void _fastcall CEILM(Complex &x)
 {
 	MAPM(x, CEILC);
 }
-void _fastcall FRACM(Complex x)
+void _fastcall FRACM(Complex &x)
 {
 	MAPM(x, FRACC);
 }
-void _stdcall NOTM(Complex y, const Complex x)
+void _stdcall NOTM(Complex &y, const Complex &x)
 {
 	MAPM(y, x, NOTC);
 }
-void _stdcall ANDM(Complex y, const Complex a, const Complex b)
+void _stdcall ANDM(Complex &y, const Complex &a, const Complex &b)
 {
 	MAPM(y, a, b, ANDC);
 }
-void _stdcall ORM(Complex y, const Complex a, const Complex b)
+void _stdcall ORM(Complex &y, const Complex &a, const Complex &b)
 {
 	MAPM(y, a, b, ORC);
 }
-void _stdcall NANDBM(Complex y, const Complex a, const Complex b)
+void _stdcall NANDBM(Complex &y, const Complex &a, const Complex &b)
 {
 	MAPM(y, a, b, NANDBC);
 }
-void _stdcall NORBM(Complex y, const Complex a, const Complex b)
+void _stdcall NORBM(Complex &y, const Complex &a, const Complex &b)
 {
 	MAPM(y, a, b, NORBC);
 }
-void _stdcall XORM(Complex y, const Complex a, const Complex b)
+void _stdcall XORM(Complex &y, const Complex &a, const Complex &b)
 {
 	MAPM(y, a, b, XORC);
 }
-void _stdcall IMPBM(Complex y, const Complex a, const Complex b)
+void _stdcall IMPBM(Complex &y, const Complex &a, const Complex &b)
 {
 	MAPM(y, a, b, IMPBC);
 }
-void _stdcall EQVBM(Complex y, const Complex a, const Complex b)
+void _stdcall EQVBM(Complex &y, const Complex &a, const Complex &b)
 {
 	MAPM(y, a, b, EQVBC);
 }
-void _stdcall RSHM(Complex y, const Complex a, const Complex b)
+void _stdcall RSHM(Complex &y, const Complex &a, const Complex &b)
 {
 	MAP1M(y, a, b, RSHC);
 }
-void _stdcall RSHIM(Complex y, const Complex a, const Complex b)
+void _stdcall RSHIM(Complex &y, const Complex &a, const Complex &b)
 {
 	MAP1M(y, a, b, RSHIC);
 }
-void _stdcall LSHM(Complex y, const Complex a, const Complex b)
+void _stdcall LSHM(Complex &y, const Complex &a, const Complex &b)
 {
 	MAP1M(y, a, b, LSHC);
 }
 //-------------------------------------------------------------------
 
-void _stdcall MINMAXM(Complex y, const Complex cx, int desc)
+void _stdcall MINMAXM(Complex &y, const Complex &cx, int desc)
 {
 	if(noMatrixOrEmpty(y, cx, COPYC)) return;
 	Pmatrix x= toMatrix(cx);
@@ -1370,17 +1376,17 @@ void _stdcall MINMAXM(Complex y, const Complex cx, int desc)
 	COPYM(y, z);
 }
 
-void _stdcall MINM(Complex y, const Complex cx)
+void _stdcall MINM(Complex &y, const Complex &cx)
 {
 	MINMAXM(y, cx, 1);
 }
 
-void _stdcall MAXM(Complex y, const Complex cx)
+void _stdcall MAXM(Complex &y, const Complex &cx)
 {
 	MINMAXM(y, cx, -1);
 }
 
-void _stdcall MIN3M(Complex y, const Complex a, const Complex b)
+void _stdcall MIN3M(Complex &y, const Complex &a, const Complex &b)
 {
 	if(isMatrix(a) || isMatrix(b)){
 		errMatrix();
@@ -1389,7 +1395,7 @@ void _stdcall MIN3M(Complex y, const Complex a, const Complex b)
 	COPYC(y, CMPC(a, b)<0 ? a : b);
 }
 
-void _stdcall MAX3M(Complex y, const Complex a, const Complex b)
+void _stdcall MAX3M(Complex &y, const Complex &a, const Complex &b)
 {
 	if(isMatrix(a) || isMatrix(b)){
 		errMatrix();
@@ -1406,10 +1412,10 @@ void checkLR(const Complex &x)
 	}
 }
 
-int _stdcall SUMM(Complex y0, const Complex cx, int start, int step)
+int _stdcall SUMM(Complex &y0, const Complex &cx, int start, int step)
 {
 	int i, count=1;
-	Complex t, y, w;
+	Complex t, y;
 
 	if(step==2) checkLR(cx);
 	if(noMatrixOrEmpty(y0, cx, COPYC)) return 1;
@@ -1418,11 +1424,11 @@ int _stdcall SUMM(Complex y0, const Complex cx, int start, int step)
 	int num= x->len;
 	matrixToComplex(y0);
 	y=y0;
-	t=ALLOCC(y.r[-4]);
+	t=ALLOCR(y.r[-4]);
 	COPYC(y, A[start]);
 	for(i=start+step; i<num; i+=step){
 		PLUSC(t, y, A[i]);
-		w=t; t=y; y=w;
+		std::swap(t, y);
 		count++;
 	}
 	if(y.r!=y0.r){ COPYC(y0, y); t=y; }
@@ -1430,25 +1436,25 @@ int _stdcall SUMM(Complex y0, const Complex cx, int start, int step)
 	return count;
 }
 
-void _stdcall SUM1M(Complex y, const Complex x)
+void _stdcall SUM1M(Complex &y, const Complex &x)
 {
 	SUMM(y, x, 0, 1);
 }
 
-void _stdcall SUMXM(Complex y, const Complex x)
+void _stdcall SUMXM(Complex &y, const Complex &x)
 {
 	SUMM(y, x, 0, 2);
 }
 
-void _stdcall SUMYM(Complex y, const Complex x)
+void _stdcall SUMYM(Complex &y, const Complex &x)
 {
 	SUMM(y, x, 1, 2);
 }
 
-int _stdcall SUMMULM(Complex y0, const Complex cx, int start, int step, int diff=0)
+int _stdcall SUMMULM(Complex &y0, const Complex &cx, int start, int step, int diff=0)
 {
 	int i, count=0;
-	Complex t, y, u, w;
+	Complex t, y, u;
 
 	if(step==2) checkLR(cx);
 	if(noMatrixOrEmpty(y0, cx, SQRC)) return 1;
@@ -1463,7 +1469,7 @@ int _stdcall SUMMULM(Complex y0, const Complex cx, int start, int step, int diff
 	for(i=start; i<num; i+=step){
 		MULTC(u, A[i], A[i+diff]);
 		PLUSC(t, y, u);
-		w=t; t=y; y=w;
+		std::swap(t, y);
 		count++;
 	}
 	if(y.r!=y0.r){ COPYC(y0, y); t=y; }
@@ -1472,69 +1478,69 @@ int _stdcall SUMMULM(Complex y0, const Complex cx, int start, int step, int diff
 	return count;
 }
 
-void _stdcall SUM2M(Complex y, const Complex x)
+void _stdcall SUM2M(Complex &y, const Complex &x)
 {
 	SUMMULM(y, x, 0, 1);
 }
 
-void _stdcall SUMX2M(Complex y, const Complex x)
+void _stdcall SUMX2M(Complex &y, const Complex &x)
 {
 	SUMMULM(y, x, 0, 2);
 }
 
-void _stdcall SUMY2M(Complex y, const Complex x)
+void _stdcall SUMY2M(Complex &y, const Complex &x)
 {
 	SUMMULM(y, x, 1, 2);
 }
 
-int _stdcall SUMXYM(Complex y, const Complex x)
+int _stdcall SUMXYM(Complex &y, const Complex &x)
 {
 	return SUMMULM(y, x, 0, 2, 1);
 }
 
 //ave=sum/n
-void _stdcall AVEM(Complex y, const Complex cx, int start, int step)
+void _stdcall AVEM(Complex &y, const Complex &cx, int start, int step)
 {
 	DIVI1C(y, SUMM(y, cx, start, step));
 }
 
-void _stdcall AVE1M(Complex y, const Complex x)
+void _stdcall AVE1M(Complex &y, const Complex &x)
 {
 	AVEM(y, x, 0, 1);
 }
 
-void _stdcall AVEXM(Complex y, const Complex x)
+void _stdcall AVEXM(Complex &y, const Complex &x)
 {
 	AVEM(y, x, 0, 2);
 }
 
-void _stdcall AVEYM(Complex y, const Complex x)
+void _stdcall AVEYM(Complex &y, const Complex &x)
 {
 	AVEM(y, x, 1, 2);
 }
 
-void _stdcall AVEMULM(Complex y, const Complex cx, int start, int step, int diff=0)
+void _stdcall AVEMULM(Complex &y, const Complex &cx, int start, int step, int diff=0)
 {
 	DIVI1C(y, SUMMULM(y, cx, start, step, diff));
 }
 
-void _stdcall AVE2M(Complex y, const Complex x)
+void _stdcall AVE2M(Complex &y, const Complex &x)
 {
 	AVEMULM(y, x, 0, 1);
 }
 
-void _stdcall AVEX2M(Complex y, const Complex x)
+void _stdcall AVEX2M(Complex &y, const Complex &x)
 {
 	AVEMULM(y, x, 0, 2);
 }
 
-void _stdcall AVEY2M(Complex y, const Complex x)
+void _stdcall AVEY2M(Complex &y, const Complex &x)
 {
 	AVEMULM(y, x, 1, 2);
 }
 
 //var=(sumq-sum^2/n)/(n-sample)
-void _stdcall VARM(Complex y, const Complex cx, unsigned sample, int start, int step, bool sqrt=false)
+void _stdcall VARM(Complex &y, const Complex &cx, unsigned sample, int start, int step, bool sqrt=false)
 {
 	Complex t, u;
 
@@ -1560,62 +1566,62 @@ void _stdcall VARM(Complex y, const Complex cx, unsigned sample, int start, int 
 	FREEC(t);
 }
 
-void _stdcall VAR0M(Complex y, const Complex x)
+void _stdcall VAR0M(Complex &y, const Complex &x)
 {
 	VARM(y, x, 0, 0, 1);
 }
 
-void _stdcall VAR1M(Complex y, const Complex x)
+void _stdcall VAR1M(Complex &y, const Complex &x)
 {
 	VARM(y, x, 1, 0, 1);
 }
 
-void _stdcall VARX0M(Complex y, const Complex x)
+void _stdcall VARX0M(Complex &y, const Complex &x)
 {
 	VARM(y, x, 0, 0, 2);
 }
 
-void _stdcall VARX1M(Complex y, const Complex x)
+void _stdcall VARX1M(Complex &y, const Complex &x)
 {
 	VARM(y, x, 1, 0, 2);
 }
 
-void _stdcall VARY0M(Complex y, const Complex x)
+void _stdcall VARY0M(Complex &y, const Complex &x)
 {
 	VARM(y, x, 0, 1, 2);
 }
 
-void _stdcall VARY1M(Complex y, const Complex x)
+void _stdcall VARY1M(Complex &y, const Complex &x)
 {
 	VARM(y, x, 1, 1, 2);
 }
 
-void _stdcall STDEV0M(Complex y, const Complex x)
+void _stdcall STDEV0M(Complex &y, const Complex &x)
 {
 	VARM(y, x, 0, 0, 1, true);
 }
 
-void _stdcall STDEV1M(Complex y, const Complex x)
+void _stdcall STDEV1M(Complex &y, const Complex &x)
 {
 	VARM(y, x, 1, 0, 1, true);
 }
 
-void _stdcall STDEVX0M(Complex y, const Complex x)
+void _stdcall STDEVX0M(Complex &y, const Complex &x)
 {
 	VARM(y, x, 0, 0, 2, true);
 }
 
-void _stdcall STDEVX1M(Complex y, const Complex x)
+void _stdcall STDEVX1M(Complex &y, const Complex &x)
 {
 	VARM(y, x, 1, 0, 2, true);
 }
 
-void _stdcall STDEVY0M(Complex y, const Complex x)
+void _stdcall STDEVY0M(Complex &y, const Complex &x)
 {
 	VARM(y, x, 0, 1, 2, true);
 }
 
-void _stdcall STDEVY1M(Complex y, const Complex x)
+void _stdcall STDEVY1M(Complex &y, const Complex &x)
 {
 	VARM(y, x, 1, 1, 2, true);
 }
@@ -1623,7 +1629,7 @@ void _stdcall STDEVY1M(Complex y, const Complex x)
 
 //b=(n*sumxy-sumx*sumy)/(n*sumxq-sumx^2)
 //a=(sumy-b*sumx)/n
-void _stdcall LRABM(Complex a, Complex b, const Complex x)
+void _stdcall LRABM(Complex &a, Complex &b, const Complex &x)
 {
 	Complex t, u, v, sx, sy;
 	int n;
@@ -1658,14 +1664,14 @@ void _stdcall LRABM(Complex a, Complex b, const Complex x)
 	FREEC(t);
 }
 
-void _stdcall LRAM(Complex y, const Complex x)
+void _stdcall LRAM(Complex &y, const Complex &x)
 {
 	Complex b=ALLOCC(getPrecision(y));
 	LRABM(y, b, x);
 	FREEC(b);
 }
 
-void _stdcall LRBM(Complex y, const Complex x)
+void _stdcall LRBM(Complex &y, const Complex &x)
 {
 	Complex a;
 	a.r=0;
@@ -1673,7 +1679,7 @@ void _stdcall LRBM(Complex y, const Complex x)
 }
 
 //x=(y-a)/b
-void _stdcall LRXM(Complex x, const Complex d, const Complex y)
+void _stdcall LRXM(Complex &x, const Complex &d, const Complex &y)
 {
 	Complex a, b;
 
@@ -1690,7 +1696,7 @@ void _stdcall LRXM(Complex x, const Complex d, const Complex y)
 }
 
 //y=a+b*x
-void _stdcall LRYM(Complex y, const Complex d, const Complex x)
+void _stdcall LRYM(Complex &y, const Complex &d, const Complex &x)
 {
 	Complex a, b;
 
@@ -1707,7 +1713,7 @@ void _stdcall LRYM(Complex y, const Complex d, const Complex x)
 }
 
 //r=(n*sumxy-sumx*sumy)/sqrt((n*sumxq-sumx^2)*(n*sumyq-sumy^2))
-void _stdcall LRRM(Complex y, const Complex x)
+void _stdcall LRRM(Complex &y, const Complex &x)
 {
 	Complex t, u, sx, sy;
 	int n;
@@ -1740,10 +1746,10 @@ void _stdcall LRRM(Complex y, const Complex x)
 	FREEC(t);
 }
 
-void _stdcall HARMONM(Complex y0, const Complex cx)
+void _stdcall HARMONM(Complex &y0, const Complex &cx)
 {
 	int i;
-	Complex t, u, y, w;
+	Complex t, u, y;
 
 	if(noMatrixOrEmpty(y0, cx, COPYC)) return;
 	Pmatrix x= toMatrix(cx);
@@ -1758,7 +1764,7 @@ void _stdcall HARMONM(Complex y0, const Complex cx)
 	for(i=0; i<num; i++){
 		INVERTC(u, A[i]);
 		PLUSC(t, y, u);
-		w=t; t=y; y=w;
+		std::swap(t, y);
 	}
 	SETC(u, num);
 	DIVC(t, u, y);
@@ -1772,10 +1778,10 @@ void _stdcall HARMONM(Complex y0, const Complex cx)
 	FREEC(t);
 }
 
-int _stdcall PRODUCTM(Complex y0, const Complex cx)
+int _stdcall PRODUCTM(Complex &y0, const Complex &cx)
 {
 	int i, count=2;
-	Complex t, y, w;
+	Complex t, y;
 
 	if(noMatrixOrEmpty(y0, cx, COPYC)) return 1;
 	Pmatrix x= toMatrix(cx);
@@ -1787,7 +1793,7 @@ int _stdcall PRODUCTM(Complex y0, const Complex cx)
 	MULTC(y, A[0], A[1]);
 	for(i=2; i<num; i++){
 		MULTC(t, y, A[i]);
-		w=t; t=y; y=w;
+		std::swap(t, y);
 		count++;
 	}
 	if(y.r!=y0.r){ COPYC(y0, y); t=y; }
@@ -1797,7 +1803,7 @@ int _stdcall PRODUCTM(Complex y0, const Complex cx)
 
 
 //geom=product^(1/n)
-void _stdcall GEOMM(Complex y, const Complex cx)
+void _stdcall GEOMM(Complex &y, const Complex &cx)
 {
 	Complex t, n;
 	n=ALLOCC(2);
@@ -1809,10 +1815,10 @@ void _stdcall GEOMM(Complex y, const Complex cx)
 }
 
 
-void _stdcall REPEATOPX(Tbinary f, Complex y, const Complex cx, int errId, char *errStr)
+void _stdcall REPEATOPX(Tbinary f, Complex &y, const Complex &cx, int errId, char *errStr)
 {
 	int i;
-	Pint t, w, y0;
+	Pint t, y0;
 
 	if(noMatrixOrEmpty(y, cx, COPYC)) return;
 	Pmatrix x= toMatrix(cx);
@@ -1826,11 +1832,11 @@ void _stdcall REPEATOPX(Tbinary f, Complex y, const Complex cx, int errId, char 
 	}
 	y0=y.r;
 	t=ALLOCX(y.r[-4]);
-	ZEROX(y.i);
+	ZEROX_safe(y.i);
 	f(y.r, A[0].r, A[1].r);
 	for(i=2; i<num; i++){
 		f(t, y.r, A[i].r);
-		w=t; t=y.r; y.r=w;
+		std::swap(t, y.r);
 	}
 	if(y.r!=y0){
 		COPYX(y0, y.r);
@@ -1839,12 +1845,12 @@ void _stdcall REPEATOPX(Tbinary f, Complex y, const Complex cx, int errId, char 
 	FREEX(t);
 }
 
-void _stdcall GCDM(Complex y, const Complex cx)
+void _stdcall GCDM(Complex &y, const Complex &cx)
 {
 	REPEATOPX(GCDX, y, cx, 1026, "The greatest common divisor of complex numbers");
 }
 
-void _stdcall LCMM(Complex y, const Complex cx)
+void _stdcall LCMM(Complex &y, const Complex &cx)
 {
 	REPEATOPX(LCMX, y, cx, 1027, "The least common multiple of complex numbers");
 }
@@ -1859,33 +1865,33 @@ int __cdecl SORTDCMP(const void *elem1, const void *elem2)
 	return CMPC(*(const Complex*)elem2, *(const Complex*)elem1);
 }
 
-void _fastcall SORTM(Complex cx)
+void _fastcall SORTM(Complex &cx)
 {
 	if(!isMatrix(cx)) return;
 	Pmatrix x= toMatrix(cx);
 	qsort(x->A, x->len, sizeof(Complex), SORTCMP);
 }
 
-void _fastcall SORTDM(Complex cx)
+void _fastcall SORTDM(Complex &cx)
 {
 	if(!isMatrix(cx)) return;
 	Pmatrix x= toMatrix(cx);
 	qsort(x->A, x->len, sizeof(Complex), SORTDCMP);
 }
 
-void _fastcall REVERSEM(Complex cx)
+void _fastcall REVERSEM(Complex &cx)
 {
 	if(!isMatrix(cx)) return;
 	Pmatrix x= toMatrix(cx);
-	Complex w, *b, *e;
+	Complex *b, *e;
 	if(x->len)
 		for(b=x->A, e=&x->A[x->len-1]; b<e; b++, e--){
-			w=*b; *b=*e; *e=w;
+			std::swap(*b, *e);
 		}
 }
 
 //warning: cx will be sorted
-void _stdcall MEDIANM(Complex y, Complex cx)
+void _stdcall MEDIANM(Complex &y, Complex &cx)
 {
 	if(noMatrixOrEmpty(y, cx, COPYC)) return;
 	Pmatrix x= toMatrix(cx);
@@ -1903,7 +1909,7 @@ void _stdcall MEDIANM(Complex y, Complex cx)
 }
 
 //warning: cx will be sorted
-void _stdcall MODEM(Complex y, Complex cx)
+void _stdcall MODEM(Complex &y, Complex &cx)
 {
 	int i, j, m, im=0;
 
@@ -1935,11 +1941,6 @@ void _stdcall MODEM(Complex y, Complex cx)
 
 //-------------------------------------------------------------------
 
-extern void deref(Complex &x);
-extern Complex *deref1(Complex &x);
-extern void _stdcall ASSIGNM(Complex y, const Complex a, const Complex x);
-extern Darray<Complex> numStack;
-
 struct IntegralData
 {
 	Complex var;
@@ -1950,7 +1951,7 @@ struct IntegralData
 	u= (F[0] + 4*F[1] + F[2])/2
 	y= (F[0] + 4*f(a+h/2) + 2*F[1] + 4*f(a+h*3/2) + F[2])/4
 	*/
-	void integralRecurse(Complex y, Complex *F0, Complex a, Complex h0, int finalDepth)
+	void integralRecurse(Complex &y, Complex *F0, Complex &a, Complex &h0, int finalDepth)
 	{
 		Complex t, u, *v, h, oldV, F[5];
 		int i;
@@ -2021,7 +2022,7 @@ struct IntegralData
 	}
 
 	//integral= (b-a)/3 * integralRecurse
-	void integral(Complex y, Complex a, Complex b)
+	void integral(Complex &y, Complex &a, Complex &b)
 	{
 		Complex h, z, F[3];
 		int i;
@@ -2068,7 +2069,7 @@ struct IntegralData
 	}
 };
 
-void INTEGRALM(Complex y, Complex a, Complex b, Complex p, Complex var, Tcompiled *jit)
+void INTEGRALM(Complex &y, Complex &a, Complex &b, Complex &p, Complex &var, Tcompiled *jit)
 {
 	Tuint timeOrPrec;
 	DWORD t0, t1, t2;

@@ -66,6 +66,7 @@ void ClearError(int err);
 void errGoto();
 void deref(Complex &x);
 bool deref(Complex &y, Complex &x);
+Complex *deref1(Complex &x);
 
 void jitScriptRun();
 void jitRun(Tcompiled *j);
@@ -77,8 +78,9 @@ Tlen jitCodeLen();
 Tcompiled *jitCurGet(Tlen idx);
 void doOp();
 
-void _stdcall INCC(Complex y, const Complex a);
-void _stdcall DECC(Complex y, const Complex a);
+void _stdcall ASSIGNM(Complex &y, const Complex &a, const Complex &x);
+void _stdcall INCC(Complex &y, const Complex &a);
+void _stdcall DECC(Complex &y, const Complex &a);
 void FILTERM();
 
 #endif

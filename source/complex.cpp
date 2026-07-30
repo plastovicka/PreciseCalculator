@@ -17,10 +17,10 @@ void errImag()
 	cerror(1035, "Function does not support imaginary numbers");
 }
 
-void _stdcall WRITEC(char *buf, const Complex x, int digits)
+void _stdcall WRITEC(char *buf, const Complex &x, int digits)
 {
 	WRITEX(buf, x.r, digits);
-	if(isZero(x.i)) return;
+	if(!isImag(x)) return;
 	buf=strchr(buf, 0);
 	*buf++=' ';
 	if(x.i[-2]==0) *buf++='+';
@@ -46,7 +46,7 @@ void _stdcall WRITEC(char *buf, const Complex x, int digits)
 }
 
 /*
-char* _stdcall READC(Complex x, const char *buf)
+char* _stdcall READC(Complex &x, const char *buf)
 {
 char *s= READX(x.r,buf);
 while(*s==' ') s++;
@@ -62,9 +62,9 @@ return s;
 }
 */
 
-int _stdcall LENC(const Complex x, int digits)
+int _stdcall LENC(const Complex &x, int digits)
 {
-	return LENX(x.r, digits)+LENX(x.i, digits)+5;
+	return LENX(x.r, digits) + (x.i ? LENX(x.i, digits) : 0) + 5;
 }
 
 Complex _fastcall ALLOCC(Tint len)
@@ -75,18 +75,50 @@ Complex _fastcall ALLOCC(Tint len)
 	return y;
 }
 
-Complex _fastcall NEWCOPYC(const Complex a)
+Complex _fastcall ALLOCR(Tint len)
+{
+	Complex y;
+	y.r=ALLOCX(len);
+	y.i=0;
+	return y;
+}
+
+Complex _fastcall NEWCOPYC(const Complex &a)
 {
 	Complex y;
 	y.r=NEWCOPYX(a.r);
-	y.i=NEWCOPYX(a.i);
+	if(a.i) y.i = NEWCOPYX(a.i); else y.i = 0;
 	return y;
+}
+
+void COPYX_safe(Pint dest, const Pint src)
+{
+	if(!isZero_safe(src)) COPYX(dest, src);
+	else ZEROX_safe(dest);
+}
+
+void _stdcall COPYC(Complex &dest, const Complex &src)
+{
+	COPYX(dest.r, src.r);
+	COPYX_safe(dest.i, src.i);
+}
+void _stdcall COPYC_safe(Complex &dest, const Complex &src)
+{
+	COPYX(dest.r, src.r);
+	if(!dest.i && isImag(src)) dest.i = ALLOCX(dest.r[-4]);
+	COPYX_safe(dest.i, src.i);
 }
 
 void assignC(Complex &dest, const Complex &src)
 {
 	assign(dest.r, src.r);
-	assign(dest.i, src.i);
+	if(src.i) assign(dest.i, src.i);
+	else if(src.r) ZEROX_safe(dest.i);
+}
+
+void ensureImagPart(Complex &x)
+{
+	if(!x.i) x.i=ALLOCX(x.r[-4]);
 }
 
 //-------------------------------------------------------------------
@@ -94,123 +126,160 @@ void assignC(Complex &dest, const Complex &src)
 void _fastcall MAPC(Complex &x, Tunary0 f)
 {
 	f(x.r);
-	f(x.i);
+	if(x.i) f(x.i);
 }
 
 void _fastcall MAPC(Complex &y, const Complex &x, Tunary2 f)
 {
 	f(y.r, x.r);
-	f(y.i, x.i);
+	if(x.i) {
+		f(y.i, x.i);
+	}
+	else {
+		ZEROX_safe(y.i);
+	}
 }
 
 void _fastcall MAPC(Complex &y, const Complex &a, const Complex &b, Tbinary f)
 {
 	f(y.r, a.r, b.r);
+	ensureImagPart((Complex &)a);
+	ensureImagPart((Complex &)b);
+	ensureImagPart(y);
 	f(y.i, a.i, b.i);
 }
 
-void _fastcall FREEC(Complex x)
+void _fastcall FREEC(Complex &x)
 {
 	MAPC(x, FREEX);
 }
-void _stdcall COPYC(Complex dest, const Complex src)
-{
-	MAPC(dest, src, COPYX);
-}
-void _fastcall ROUNDC(Complex x)
+void _fastcall ROUNDC(Complex &x)
 {
 	MAPC(x, ROUNDX);
 }
-void _fastcall TRUNCC(Complex x)
+void _fastcall TRUNCC(Complex &x)
 {
 	MAPC(x, TRUNCX);
 }
-void _fastcall INTC(Complex x)
+void _fastcall INTC(Complex &x)
 {
 	MAPC(x, INTX);
 }
-void _fastcall CEILC(Complex x)
+void _fastcall CEILC(Complex &x)
 {
 	MAPC(x, CEILX);
 }
-void _fastcall FRACC(Complex x)
+void _fastcall FRACC(Complex &x)
 {
 	MAPC(x, FRACX);
 }
-void _fastcall FRACTOC(Complex x)
+void _fastcall FRACTOC(Complex &x)
 {
 	MAPC(x, FRACTOX);
 }
-void _stdcall NOTC(Complex y, const Complex x)
+void _stdcall NOTC(Complex &y, const Complex &x)
 {
-	MAPC(y, x, NOTX);
+	NOTX(y.r, x.r);
+	ensureImagPart(y);
+	if(isImag(x)) NOTX(y.i, x.i);
+	else SETXN(y.i, -1);
 }
-void _fastcall NEGC(Complex x)
+void _fastcall NEGC(Complex &x)
 {
 	MAPC(x, NEGX);
 }
-void _stdcall ANDC(Complex y, const Complex a, const Complex b)
+void _stdcall ANDC(Complex &y, const Complex &a, const Complex &b)
 {
 	MAPC(y, a, b, ANDX);
 }
-void _stdcall ORC(Complex y, const Complex a, const Complex b)
+void _stdcall ORC(Complex &y, const Complex &a, const Complex &b)
 {
 	MAPC(y, a, b, ORX);
 }
-void _stdcall XORC(Complex y, const Complex a, const Complex b)
+void _stdcall XORC(Complex &y, const Complex &a, const Complex &b)
 {
 	MAPC(y, a, b, XORX);
 }
-void _stdcall NANDBC(Complex y, const Complex a, const Complex b)
+void _stdcall NANDBC(Complex &y, const Complex &a, const Complex &b)
 {
 	MAPC(y, a, b, NANDBX);
 }
-void _stdcall NORBC(Complex y, const Complex a, const Complex b)
+void _stdcall NORBC(Complex &y, const Complex &a, const Complex &b)
 {
 	MAPC(y, a, b, NORBX);
 }
-void _stdcall IMPBC(Complex y, const Complex a, const Complex b)
+void _stdcall IMPBC(Complex &y, const Complex &a, const Complex &b)
 {
 	MAPC(y, a, b, IMPBX);
 }
-void _stdcall EQVBC(Complex y, const Complex a, const Complex b)
+void _stdcall EQVBC(Complex &y, const Complex &a, const Complex &b)
 {
 	MAPC(y, a, b, EQVBX);
 }
-void _fastcall ZEROC(Complex x)
+void _fastcall ZEROC(Complex &x)
 {
-	MAPC(x, ZEROX);
+	ZEROX(x.r);
+	ZEROX_safe(x.i);
 }
-void _stdcall PLUSC(Complex y, const Complex a, const Complex b)
+
+void _stdcall PLUSC(Complex &y, const Complex &a, const Complex &b)
 {
-	MAPC(y, a, b, PLUSX);
+	PLUSX(y.r, a.r, b.r);
+	if(isImag(a)){
+		ensureImagPart(y);
+		if(isImag(b)) {
+			PLUSX(y.i, a.i, b.i);
+		} else {
+			COPYX(y.i, a.i);
+		}
+	}
+	else if(isImag(b)) {
+		ensureImagPart(y);
+		COPYX(y.i, b.i);
+	}
+	else ZEROX_safe(y.i);
 }
-void _stdcall MINUSC(Complex y, const Complex a, const Complex b)
+
+void _stdcall MINUSC(Complex &y, const Complex &a, const Complex &b)
 {
-	MAPC(y, a, b, MINUSX);
+	MINUSX(y.r, a.r, b.r);
+	if(isImag(a)){
+		ensureImagPart(y);
+		if(isImag(b)) {
+			MINUSX(y.i, a.i, b.i);
+		} else {
+			COPYX(y.i, a.i);
+		}
+	}
+	else if(isImag(b)) {
+		ensureImagPart(y);
+		COPYX(y.i, b.i);
+		NEGX(y.i);
+	}
+	else ZEROX_safe(y.i);
 }
 
 //-------------------------------------------------------------------
 
-void _fastcall SETCN(Complex x, Tint n)
+void _fastcall SETCN(Complex &x, Tint n)
 {
 	SETXN(x.r, n);
-	ZEROX(x.i);
+	ZEROX_safe(x.i);
 }
 
-void _fastcall SETC(Complex x, Tuint n)
+void _fastcall SETC(Complex &x, Tuint n)
 {
 	SETX(x.r, n);
-	ZEROX(x.i);
+	ZEROX_safe(x.i);
 }
 
-void _fastcall ONEC(Complex x)
+void _fastcall ONEC(Complex &x)
 {
 	ONEX(x.r);
-	ZEROX(x.i);
+	ZEROX_safe(x.i);
 }
 
-void _stdcall RSHC(Complex y, const Complex a, const Complex b)
+void _stdcall RSHC(Complex &y, const Complex &a, const Complex &b)
 {
 	if(isImag(b)){
 		cerror(1017, "The shift operand is not integer");
@@ -220,13 +289,13 @@ void _stdcall RSHC(Complex y, const Complex a, const Complex b)
 	RSHX(y.i, a.i, b.r);
 }
 
-void _stdcall RSHIC(Complex y, const Complex a, const Complex b)
+void _stdcall RSHIC(Complex &y, const Complex &a, const Complex &b)
 {
 	RSHC(y, a, b);
 	TRUNCC(y);
 }
 
-void _stdcall LSHC(Complex y, const Complex a, const Complex b)
+void _stdcall LSHC(Complex &y, const Complex &a, const Complex &b)
 {
 	if(isImag(b)){
 		cerror(1017, "The shift operand is not integer");
@@ -236,37 +305,37 @@ void _stdcall LSHC(Complex y, const Complex a, const Complex b)
 	LSHX(y.i, a.i, b.r);
 }
 
-void _stdcall LSHIC(Complex y, const Complex a, Tint n)
+void _stdcall LSHIC(Complex &y, const Complex &a, Tint n)
 {
 	LSHI(y.r, a.r, n);
-	LSHI(y.i, a.i, n);
+	if(isImag(a)) LSHI(y.i, a.i, n); else ZEROX_safe(y.i);
 }
 
-void _fastcall CONJGC(Complex x)
+void _fastcall CONJGC(Complex &x)
 {
-	NEGX(x.i);
+	if(x.i) NEGX(x.i);
 }
 
-void _fastcall REALC(Complex x)
+void _fastcall REALC(Complex &x)
 {
-	ZEROX(x.i);
+	ZEROX_safe(x.i);
 }
 
-void _fastcall IMAGC(Complex x)
+void _fastcall IMAGC(Complex &x)
 {
-	COPYX(x.r, x.i);
-	ZEROX(x.i);
+	COPYX_safe(x.r, x.i);
+	ZEROX_safe(x.i);
 }
 
-void _stdcall ISUFFIXC(Complex y, const Complex x)
+void _stdcall ISUFFIXC(Complex &y, const Complex &x)
 {
-	COPYX(y.r, x.i);
+	COPYX_safe(y.r, x.i);
 	COPYX(y.i, x.r);
 	NEGX(y.r);
 }
 
 //abs(a+bi)=sqrt(a^2+b^2)
-void _fastcall ABSC(Complex x)
+void _fastcall ABSC(Complex &x)
 {
 	if(!isImag(x)) {
 		ABSX(x.r);
@@ -300,14 +369,14 @@ void _fastcall ABSC(Complex x)
 }
 
 //arg(a+bi)=atan2(b,a)
-void _stdcall ARGC(Complex y, const Complex x)
+void _stdcall ARGC(Complex &y, const Complex &x)
 {
 	ATAN2X(y.r, x.i, x.r);
 	ZEROX(y.i);
 }
 
 //polar(r,a)=r*cos a + i*r*sin a
-void _stdcall POLARC(Complex y, const Complex a, const Complex b)
+void _stdcall POLARC(Complex &y, const Complex &a, const Complex &b)
 {
 	if(isImag(a) || isImag(b)){
 		errImag();
@@ -322,7 +391,7 @@ void _stdcall POLARC(Complex y, const Complex a, const Complex b)
 }
 
 //complex(a,b)=a+b i
-void _stdcall COMPLEXC(Complex y, const Complex a, const Complex b)
+void _stdcall COMPLEXC(Complex &y, const Complex &a, const Complex &b)
 {
 	if(isImag(a) || isImag(b)){
 		errImag();
@@ -334,88 +403,102 @@ void _stdcall COMPLEXC(Complex y, const Complex a, const Complex b)
 //-------------------------------------------------------------------
 
 // (a+bi)*(c+di)= (a*c-b*d) + i*(b*c+a*d)
-void _stdcall MULTC(Complex y, const Complex a, const Complex b)
+void _stdcall MULTC(Complex &y, const Complex &a, const Complex &b)
 {
-	Pint t, u;
-	t=ALLOCX(y.r[-4]);
-	u=ALLOCX(y.r[-4]);
-	MULTX(t, a.r, b.r);
-	MULTX(u, a.i, b.i);
-	MINUSX(y.r, t, u);
-	MULTX(t, a.r, b.i);
-	MULTX(u, a.i, b.r);
-	PLUSX(y.i, t, u);
-	FREEX(u);
-	FREEX(t);
+	if(isImag(a) && isImag(b)) {
+		Pint t, u;
+		ALLOCN(2, y.r[-4], &t, &u);
+		MULTX(t, a.r, b.r);
+		MULTX(u, a.i, b.i);
+		MINUSX(y.r, t, u);
+		MULTX(t, a.r, b.i);
+		MULTX(u, a.i, b.r);
+		ensureImagPart(y);
+		PLUSX(y.i, t, u);
+		FREEX(t);
+	}
+	else {
+		MULTX(y.r, a.r, b.r);
+		if(isImag(b)) { ensureImagPart(y); MULTX(y.i, a.r, b.i); }
+		else if(isImag(a)){ ensureImagPart(y); MULTX(y.i, a.i, b.r);}
+		else ZEROX_safe(y.i);
+	}
 }
 
-void _stdcall SQRC(Complex y, const Complex x)
+void _stdcall SQRC(Complex &y, const Complex &x)
 {
 	MULTC(y, x, x);
 }
 
-void _stdcall MULTI1C(Complex x, Tuint n)
+void _stdcall MULTI1C(Complex &x, Tuint n)
 {
 	MULTI1(x.r, n);
-	MULTI1(x.i, n);
+	if(isImag(x)) MULTI1(x.i, n);
 }
 
-void _stdcall MULTIC(Complex y, const Complex x, Tuint n)
+void _stdcall MULTIC(Complex &y, const Complex &x, Tuint n)
 {
 	MULTI(y.r, x.r, n);
-	MULTI(y.i, x.i, n);
+	if(isImag(x)) MULTI(y.i, x.i, n); else ZEROX_safe(y.i);
 }
 
-void _stdcall DIVI1C(Complex x, Tuint n)
+void _stdcall DIVI1C(Complex &x, Tuint n)
 {
 	DIVI1(x.r, n);
-	DIVI1(x.i, n);
+	if(isImag(x)) DIVI1(x.i, n);
 }
 
-void _stdcall DIVIC(Complex y, const Complex x, Tuint n)
+void _stdcall DIVIC(Complex &y, const Complex &x, Tuint n)
 {
 	DIVI(y.r, x.r, n);
-	DIVI(y.i, x.i, n);
+	if(isImag(x)) DIVI(y.i, x.i, n); else ZEROX_safe(y.i);
 }
 
 // (a+bi)/(c+di)=((a*c+b*d)+i*(b*c-a*d))/(c^2+d^2)
-void _stdcall DIVC(Complex y, const Complex a, const Complex b)
+void _stdcall DIVC(Complex &y, const Complex &a, const Complex &b)
 {
 	Pint t, u, v;
 
 	if(!isImag(b)){
 		DIVX(y.r, a.r, b.r);
-		DIVX(y.i, a.i, b.r);
+		if(isImag(a)) DIVX(y.i, a.i, b.r); else ZEROX_safe(y.i);
 	}
 	else if(isZero(b.r)){
-		DIVX(y.r, a.i, b.i);
+		if(isImag(a)) DIVX(y.r, a.i, b.i); else ZEROX(y.r);
 		DIVX(y.i, a.r, b.i);
 		NEGX(y.i);
 	}
 	else{
-		t=ALLOCX(y.r[-4]);
-		u=ALLOCX(y.r[-4]);
-		v=ALLOCX(y.r[-4]);
+		ALLOCN(3, y.r[-4], &t, &u, &v);
 		SQRX(t, b.r);
 		SQRX(u, b.i);
 		PLUSX(v, t, u);
 		MULTX(t, a.r, b.r);
-		MULTX(y.r, a.i, b.i);
+		if(isImag(a)) MULTX(y.r, a.i, b.i); else ZEROX(y.r);
 		PLUSX(u, t, y.r);
 		DIVX(y.r, u, v);
-		MULTX(t, a.i, b.r);
-		MULTX(y.i, a.r, b.i);
-		MINUSX(u, t, y.i);
+		if(isImag(a)) {
+			MULTX(t, a.i, b.r);
+			MULTX(y.i, a.r, b.i);
+			MINUSX(u, t, y.i);
+		}
+		else {
+			MULTX(u, a.r, b.i);
+			NEGX(u);
+		}
 		DIVX(y.i, u, v);
-		FREEX(v);
-		FREEX(u);
 		FREEX(t);
 	}
 }
 
 // 1/(a+bi)=a/(a^2+b^2) - i*b/(a^2+b^2)
-void _stdcall INVERTC(Complex y, const Complex x)
+void _stdcall INVERTC(Complex &y, const Complex &x)
 {
+	if(!isImag(x)) {
+		DIVX(y.r, one, x.r);
+		ZEROX_safe(y.i);
+		return;
+	}
 	SQRX(y.r, x.r);
 	SQRX(y.i, x.i);
 	Pint t=ALLOCX(y.r[-4]);
@@ -428,7 +511,7 @@ void _stdcall INVERTC(Complex y, const Complex x)
 
 
 //sign(x)=x/abs(x)
-void _fastcall SIGNC(Complex x)
+void _fastcall SIGNC(Complex &x)
 {
 	Complex t=ALLOCC(x.r[-4]);
 	Complex u=ALLOCC(x.r[-4]);
@@ -443,27 +526,24 @@ void _fastcall SIGNC(Complex x)
 //-------------------------------------------------------------------
 
 //sin(a+bi)=sin a*cosh b + i*cos a*sinh b
-void _stdcall SINC(Complex y, const Complex x)
+void _stdcall SINC(Complex &y, const Complex &x)
 {
 	Pint t, u;
-	t=ALLOCX(y.r[-4]);
-	u=ALLOCX(y.r[-4]);
+	ALLOCN(2, y.r[-4], &t, &u);
 	SINX(t, x.r);
 	if(!isZero(t)) COSHX(u, x.i);
 	MULTX(y.r, t, u);
 	COSX(t, x.r);
 	if(!isZero(t)) SINHX(u, x.i);
 	MULTX(y.i, t, u);
-	FREEX(u);
 	FREEX(t);
 }
 
 //cos(a+bi)=cos a*cosh b - i*sin a*sinh b
-void _stdcall COSC(Complex y, const Complex x)
+void _stdcall COSC(Complex &y, const Complex &x)
 {
 	Pint t, u;
-	t=ALLOCX(y.r[-4]);
-	u=ALLOCX(y.r[-4]);
+	ALLOCN(2, y.r[-4], &t, &u);
 	COSX(t, x.r);
 	if(!isZero(t)) COSHX(u, x.i);
 	MULTX(y.r, t, u);
@@ -471,43 +551,48 @@ void _stdcall COSC(Complex y, const Complex x)
 	if(!isZero(t)) SINHX(u, x.i);
 	MULTX(y.i, t, u);
 	NEGX(y.i);
-	FREEX(u);
 	FREEX(t);
 }
 
 //sinh(a+bi)=sinh a*cos b + i*cosh a*sin b
-void _stdcall SINHC(Complex y, const Complex x)
+void _stdcall SINHC(Complex &y, const Complex &x)
 {
+	if(!isImag(x)){
+		SINHX(y.r, x.r);
+		ZEROX_safe(y.i);
+		return;
+	}
 	Pint t, u;
-	t=ALLOCX(y.r[-4]);
-	u=ALLOCX(y.r[-4]);
+	ALLOCN(2, y.r[-4], &t, &u);
 	SINHX(t, x.r);
 	if(!isZero(t)) COSX(u, x.i);
 	MULTX(y.r, t, u);
 	COSHX(t, x.r);
 	if(!isZero(t)) SINX(u, x.i);
 	MULTX(y.i, t, u);
-	FREEX(u);
 	FREEX(t);
 }
 
 //cosh(a+bi)=cosh a*cos b + i*sinh a*sin b
-void _stdcall COSHC(Complex y, const Complex x)
+void _stdcall COSHC(Complex &y, const Complex &x)
 {
+	if(!isImag(x)){
+		COSHX(y.r, x.r);
+		ZEROX_safe(y.i);
+		return;
+	}
 	Pint t, u;
-	t=ALLOCX(y.r[-4]);
-	u=ALLOCX(y.r[-4]);
+	ALLOCN(2, y.r[-4], &t, &u);
 	COSHX(t, x.r);
 	if(!isZero(t)) COSX(u, x.i);
 	MULTX(y.r, t, u);
 	SINHX(t, x.r);
 	if(!isZero(t)) SINX(u, x.i);
 	MULTX(y.i, t, u);
-	FREEX(u);
 	FREEX(t);
 }
 
-static void _stdcall TANCOTGC(Complex y, const Complex x, bool co)
+static void _stdcall TANCOTGC(Complex &y, const Complex &x, bool co)
 {
 	Pint a, b, t, u;
 
@@ -533,18 +618,18 @@ static void _stdcall TANCOTGC(Complex y, const Complex x, bool co)
 }
 
 //tan(a+bi)=(sin(2a)+i*sinh(2b))/(cos(2a)+cosh(2b))
-void _stdcall TANC(Complex y, const Complex x)
+void _stdcall TANC(Complex &y, const Complex &x)
 {
 	TANCOTGC(y, x, false);
 }
 
 //cotg(a+bi)=(-sin(2a)+i*sinh(2b))/(cos(2a)-cosh(2b))
-void _stdcall COTGC(Complex y, const Complex x)
+void _stdcall COTGC(Complex &y, const Complex &x)
 {
 	TANCOTGC(y, x, true);
 }
 
-static void _stdcall TANHCOTGHC(Complex y, const Complex x, bool co)
+static void _stdcall TANHCOTGHC(Complex &y, const Complex &x, bool co)
 {
 	Pint a, b, t, u;
 
@@ -570,20 +655,20 @@ static void _stdcall TANHCOTGHC(Complex y, const Complex x, bool co)
 }
 
 //tanh(a+bi)=(sinh(2a)+i*sin(2b))/(cosh(2a)+cos(2b))
-void _stdcall TANHC(Complex y, const Complex x)
+void _stdcall TANHC(Complex &y, const Complex &x)
 {
 	TANHCOTGHC(y, x, false);
 }
 
 //cotgh(a+bi)=(sinh(2a)-i*sin(2b))/(cosh(2a)-cos(2b))
-void _stdcall COTGHC(Complex y, const Complex x)
+void _stdcall COTGHC(Complex &y, const Complex &x)
 {
 	TANHCOTGHC(y, x, true);
 }
 
 //-------------------------------------------------------------------
 // f: 0=asin, 1=acos, 2=asinh, 3=acosh
-static void _stdcall ASINCOSC(Complex y, const Complex x, int f)
+static void _stdcall ASINCOSC(Complex &y, const Complex &x, int f)
 {
 	Complex t, u, z;
 
@@ -608,14 +693,14 @@ static void _stdcall ASINCOSC(Complex y, const Complex x, int f)
 	z=x;
 	if(f==0){ // i*x
 		z=ALLOCC(y.r[-4]);
-		COPYX(z.r, x.i);
+		COPYX_safe(z.r, x.i);
 		COPYX(z.i, x.r);
 		NEGX(z.r);
 	}
 	PLUSC(y, z, u);
 	LNC(t, y);
 	if(f<2){ // *-i
-		COPYX(y.r, t.i);
+		COPYX_safe(y.r, t.i);
 		COPYX(y.i, t.r);
 		NEGX(y.i);
 	}
@@ -627,7 +712,7 @@ static void _stdcall ASINCOSC(Complex y, const Complex x, int f)
 }
 
 //arcsin(x)= -i*ln(i*x+sqrt(1-x^2))
-void _stdcall ASINC(Complex y, const Complex x)
+void _stdcall ASINC(Complex &y, const Complex &x)
 {
 	if(!isImag(x) && CMPU(x.r, one)<=0){
 		ASINX(y.r, x.r);
@@ -638,7 +723,7 @@ void _stdcall ASINC(Complex y, const Complex x)
 }
 
 //arccos(x)= -i*ln(x+i*sqrt(1-x^2))
-void _stdcall ACOSC(Complex y, const Complex x)
+void _stdcall ACOSC(Complex &y, const Complex &x)
 {
 	if(!isImag(x) && CMPU(x.r, one)<=0){
 		ACOSX(y.r, x.r);
@@ -649,13 +734,13 @@ void _stdcall ACOSC(Complex y, const Complex x)
 }
 
 //argsinh(x)= ln(x+sqrt(x^2+1))
-void _stdcall ASINHC(Complex y, const Complex x)
+void _stdcall ASINHC(Complex &y, const Complex &x)
 {
 	ASINCOSC(y, x, 2);
 }
 
 //argcosh(x)= ln(x+sqrt(x+1)*sqrt(x-1))
-void _stdcall ACOSHC(Complex y, const Complex x)
+void _stdcall ACOSHC(Complex &y, const Complex &x)
 {
 	if(isZero(x)){
 		ZEROX(y.r);
@@ -673,7 +758,7 @@ void _stdcall ACOSHC(Complex y, const Complex x)
 
 //-------------------------------------------------------------------
 // f: 0=atan, 1=acotg, 2=atanh, 3=acotgh
-static void _stdcall ATANCOTC(Complex y, const Complex x, int f)
+static void _stdcall ATANCOTC(Complex &y, const Complex &x, int f)
 {
 	Complex t, u, z;
 
@@ -707,15 +792,15 @@ static void _stdcall ATANCOTC(Complex y, const Complex x, int f)
 			if(!isZero(x)) NEGX(y.r);
 		}
 		if(isZero(x.r) && (f==0 ? CMPX(x.i, minusone)<0 :
-			x.i[-2] && !isZero(x.i))){
+			isImag(x) && x.i[-2])){
 			NEGX(y.r);
 		}
 	}
 	else{
 		DIVI(y.r, t.r, 2);
 		DIVI(y.i, t.i, 2);
-		if(isZero(x.i) && (f==2 ? CMPX(x.r, one)>0 :
-		CMPX(x.r, one)<0 && !x.r[-2] && !isZero(x.r))){
+		if(!isImag(x) && (f==2 ? CMPX(x.r, one)>0 :
+			CMPX(x.r, one)<0 && !x.r[-2] && !isZero(x.r))){
 			NEGX(y.i);
 		}
 	}
@@ -726,21 +811,21 @@ static void _stdcall ATANCOTC(Complex y, const Complex x, int f)
 
 //arctan(x)=-i/2*ln((1+i*x)/(1-i*x))
 //for imag x<-1i, the real part of the result is negated
-void _stdcall ATANC(Complex y, const Complex x)
+void _stdcall ATANC(Complex &y, const Complex &x)
 {
 	ATANCOTC(y, x, 0);
 }
 
 //arccotg(x)=i/2*ln((1+i*x)/(i*x-1))
 //for imag 0<x<1i, the real part of the result is negated
-void _stdcall ACOTGC(Complex y, const Complex x)
+void _stdcall ACOTGC(Complex &y, const Complex &x)
 {
 	ATANCOTC(y, x, 1);
 }
 
 //argtanh(x)=ln((1+x)/(1-x))/2
 //for real x>1, the result is conjugated
-void _stdcall ATANHC(Complex y, const Complex x)
+void _stdcall ATANHC(Complex &y, const Complex &x)
 {
 	if(isZero(x)){
 		ZEROC(y);
@@ -752,13 +837,13 @@ void _stdcall ATANHC(Complex y, const Complex x)
 
 //argcotgh(x)=ln((1+x)/(x-1))/2
 //for real 0<x<1, the result is conjugated
-void _stdcall ACOTGHC(Complex y, const Complex x)
+void _stdcall ACOTGHC(Complex &y, const Complex &x)
 {
 	ATANCOTC(y, x, 3);
 }
 
 //-------------------------------------------------------------------
-void _stdcall SECCSCC(Complex y, const Complex x, TunaryC2 f)
+void _stdcall SECCSCC(Complex &y, const Complex &x, TunaryC2 f)
 {
 	Complex t=ALLOCC(y.r[-4]);
 	f(t, x);
@@ -767,30 +852,30 @@ void _stdcall SECCSCC(Complex y, const Complex x, TunaryC2 f)
 }
 
 //sec x=1/cos x
-void _stdcall SECC(Complex y, const Complex x)
+void _stdcall SECC(Complex &y, const Complex &x)
 {
 	SECCSCC(y, x, COSC);
 }
 
 //csc x=1/sin x
-void _stdcall CSCC(Complex y, const Complex x)
+void _stdcall CSCC(Complex &y, const Complex &x)
 {
 	SECCSCC(y, x, SINC);
 }
 
 //sech x=1/cosh x
-void _stdcall SECHC(Complex y, const Complex x)
+void _stdcall SECHC(Complex &y, const Complex &x)
 {
 	SECCSCC(y, x, COSHC);
 }
 
 //csch x=1/sinh x
-void _stdcall CSCHC(Complex y, const Complex x)
+void _stdcall CSCHC(Complex &y, const Complex &x)
 {
 	SECCSCC(y, x, SINHC);
 }
 
-void _stdcall ASECCSCC(Complex y, const Complex x, TunaryC2 f)
+void _stdcall ASECCSCC(Complex &y, const Complex &x, TunaryC2 f)
 {
 	Complex t=ALLOCC(y.r[-4]);
 	INVERTC(t, x);
@@ -799,32 +884,32 @@ void _stdcall ASECCSCC(Complex y, const Complex x, TunaryC2 f)
 }
 
 //asec x=acos(1/x)
-void _stdcall ASECC(Complex y, const Complex x)
+void _stdcall ASECC(Complex &y, const Complex &x)
 {
 	ASECCSCC(y, x, ACOSC);
 }
 
 //acsc x=asin(1/x)
-void _stdcall ACSCC(Complex y, const Complex x)
+void _stdcall ACSCC(Complex &y, const Complex &x)
 {
 	ASECCSCC(y, x, ASINC);
 }
 
 //asech x=acosh(1/x)
-void _stdcall ASECHC(Complex y, const Complex x)
+void _stdcall ASECHC(Complex &y, const Complex &x)
 {
 	ASECCSCC(y, x, ACOSHC);
 }
 
 //acsch x=asinh(1/x)
-void _stdcall ACSCHC(Complex y, const Complex x)
+void _stdcall ACSCHC(Complex &y, const Complex &x)
 {
 	ASECCSCC(y, x, ASINHC);
 }
 
 //-------------------------------------------------------------------
 //exp(a+bi)=exp a*(cos b+i*sin b)
-void _stdcall EXPC(Complex y, const Complex x)
+void _stdcall EXPC(Complex &y, const Complex &x)
 {
 	Pint t, u;
 	t=ALLOCX(y.r[-4]);
@@ -838,7 +923,7 @@ void _stdcall EXPC(Complex y, const Complex x)
 	FREEX(t);
 }
 
-void lnSetArg(Complex y, const Complex &x)
+void lnSetArg(Complex &y, const Complex &x)
 {
 	if(x.r[-2]){
 		switch(angleMode){
@@ -860,7 +945,7 @@ void lnSetArg(Complex y, const Complex &x)
 }
 
 //ln z=ln abs z + i*arg z
-void _stdcall LNC(Complex y, const Complex x)
+void _stdcall LNC(Complex &y, const Complex &x)
 {
 	if(isZero(x)){ cerror(1036, "Logarithm of zero"); return; }
 	if(!isImag(x)){
@@ -920,9 +1005,9 @@ void _stdcall LNC(Complex y, const Complex x)
 }
 
 //log x=ln x/ln 10
-void _stdcall LOG10C(Complex y, const Complex x)
+void _stdcall LOG10C(Complex &y, const Complex &x)
 {
-	if(isDword(x.r) && isZero(x.i) && !isZero(x.r)) {
+	if(isDword(x.r) && !isImag(x) && !isZero(x.r)) {
 		//optimize log of power of 10
 		Tuint e=0;
 		Tuint d=toDword(x.r);
@@ -946,7 +1031,7 @@ void _stdcall LOG10C(Complex y, const Complex x)
 }
 
 //logn(n,x)=ln x/ln n
-void _stdcall LOGNC(Complex y, const Complex n, const Complex x)
+void _stdcall LOGNC(Complex &y, const Complex &n, const Complex &x)
 {
 	Complex t, u;
 	t=ALLOCC(y.r[-4]);
@@ -959,7 +1044,7 @@ void _stdcall LOGNC(Complex y, const Complex n, const Complex x)
 }
 
 //sqrt z= sqrt((abs z+real z)/2) + i*sqrt((abs z-real z)/2)*sign imag z
-void _stdcall SQRTC(Complex y, const Complex x)
+void _stdcall SQRTC(Complex &y, const Complex &x)
 {
 	if(!isImag(x)){
 		if(x.r[-2]){
@@ -999,7 +1084,7 @@ void _stdcall SQRTC(Complex y, const Complex x)
 	}
 }
 
-void _stdcall POWC(Complex y, const Complex a, const Complex b)
+void _stdcall POWC(Complex &y, const Complex &a, const Complex &b)
 {
 	if(isZero(a)){
 		ZEROC(y);
@@ -1030,7 +1115,7 @@ void _stdcall POWC(Complex y, const Complex a, const Complex b)
 	}
 }
 
-void _stdcall ROOTC(Complex y, const Complex b, const Complex a)
+void _stdcall ROOTC(Complex &y, const Complex &b, const Complex &a)
 {
 	if(isZero(a)){
 		ZEROC(y);
@@ -1057,9 +1142,9 @@ void _stdcall ROOTC(Complex y, const Complex b, const Complex a)
 }
 
 //-------------------------------------------------------------------
-void _stdcall POWCI(Complex y, const Complex x, __int64 n)
+void _stdcall POWCI(Complex &y, const Complex &x, __int64 n)
 {
-	Complex z, t, u, w;
+	Complex z, t, u;
 
 	if(!isImag(x)){
 		POWI(y.r, x.r, n);
@@ -1077,10 +1162,10 @@ void _stdcall POWCI(Complex y, const Complex x, __int64 n)
 
 	for(n>>=1; n>0; n>>=1){
 		SQRC(t, u);
-		w=t; t=u; u=w;
+		std::swap(t, u);
 		if(n&1){
 			MULTC(t, z, u);
-			w=t; t=z; z=w;
+			std::swap(t, z);
 		}
 	}
 	if(sgn){
@@ -1101,20 +1186,26 @@ void _stdcall POWCI(Complex y, const Complex x, __int64 n)
 }
 //-------------------------------------------------------------------
 
-void _stdcall EQUALC(Complex y, const Complex a, const Complex b)
+void _stdcall EQUALC(Complex &y, const Complex &a, const Complex &b)
 {
-	SETC(y, CMPX(a.r, b.r)==0 && CMPX(a.i, b.i)==0);
+	SETC(y, CMPX(a.r, b.r)==0 && (isImag(a) && isImag(b) ? CMPX(a.i, b.i)==0 : isImag(a)==isImag(b)));
 }
 
-void _stdcall NOTEQUALC(Complex y, const Complex a, const Complex b)
+void _stdcall NOTEQUALC(Complex &y, const Complex &a, const Complex &b)
 {
-	SETC(y, CMPX(a.r, b.r)!=0 || CMPX(a.i, b.i)!=0);
+	SETC(y, CMPX(a.r, b.r)!=0 || (isImag(a) && isImag(b) ? CMPX(a.i, b.i)!=0 : isImag(a)!=isImag(b)));
 }
 
-int  _stdcall CMPC(const Complex a, const Complex b)
+int  _stdcall CMPC(const Complex &a, const Complex &b)
 {
 	int result= CMPX(a.r, b.r);
-	if(!result) result= CMPX(a.i, b.i);
+	if(!result) {
+		if(isImag(a)) {
+			if(isImag(b)) result = CMPX(a.i, b.i);
+			else result = a.i[-2] ? -1 : 1;
+		}
+		else if(isImag(b)) result = b.i[-2] ? 1 : -1;
+	}
 	return result;
 }
 

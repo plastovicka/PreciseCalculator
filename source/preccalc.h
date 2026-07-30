@@ -91,7 +91,7 @@ void setSel(int b, int e);
 char *getInput(int *startPos=0);
 void writeOutput(char* s);
 void outputColor(COLORREF c);
-void _stdcall ASSIGNM(Complex y, const Complex a, const Complex x);
+void _stdcall ASSIGNM(Complex &y, const Complex &a, const Complex &x);
 void parse(const char *input, const char **e);
 DWORD getTickCount();
 void initCalc();
@@ -113,7 +113,7 @@ typedef char TfileName[MAX_PATH];
 extern TfileName fnLog;
 
 
-inline Tvar *toVariable(const Complex x){
+inline Tvar *toVariable(const Complex &x){
 	return &vars[x.r[0]];
 }
 

@@ -98,10 +98,6 @@ PreLink_Cmds=c:\_petr\cw\hotkeyp\hotkeyp -close window PreciseCalculator
 # PROP Default_Filter "cpp;c;cxx;rc;def;r;odl;idl;hpj;bat"
 # Begin Source File
 
-SOURCE=.\source\alloc.cpp
-# End Source File
-# Begin Source File
-
 SOURCE=.\source\aritc.cpp
 # End Source File
 # Begin Source File

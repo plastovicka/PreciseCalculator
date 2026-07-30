@@ -24,9 +24,9 @@ void checkInfinite(Complex &y, Tint prec)
 {
 	if(y.r[-1]<-prec)
 		ZEROX(y.r);
-	if(y.i[-1]<-prec)
+	if(y.i && y.i[-1]<-prec)
 		ZEROX(y.i);
-	if(y.r[-1]>prec && !isZero(y.r) || y.i[-1]>prec && !isZero(y.i)){
+	if(y.r[-1]>prec && !isZero(y.r) || y.i && y.i[-1]>prec && !isZero(y.i)){
 		cerror(1034, "Infinite result");
 	}
 }
@@ -50,7 +50,7 @@ void forExecute(const Top *o, Tcompiled *bodyJit)
 {
 	unsigned i;
 	int j, len=0;
-	Complex y, t, u, w, *stackEnd, *A=0;
+	Complex y, t, u, *stackEnd, *A=0;
 	void *fc, *fm;
 	bool isEach;
 
@@ -113,15 +113,16 @@ void forExecute(const Top *o, Tcompiled *bodyJit)
 			if(fm==FILTERM) {
 				if(!isZero(*stackEnd)) {
 					CONCATM(u, y, toVariable(stackEnd[isEach ? -2 : -3])->newx);
-					w=y; y=u; u=w;
+					std::swap(y, u);
 				}
 			}
 			else if(fm) {
 				if(j) {
+					ensureImagPart(u);
 					((TbinaryC)fm)(u, y, *stackEnd);
-					w=y; y=u; u=w;
+					std::swap(y, u);
 				} else {
-					w=y; y=*stackEnd; *stackEnd=w;
+					std::swap(y, *stackEnd);
 				}
 			}
 			FREEM(*numStack--);
@@ -161,7 +162,7 @@ void applyVararg(const Top *o, unsigned i, const char *opInputPtr)
 		if(isImag(v)) imag=true;
 	}
 	errPos = opInputPtr;
-	y=ALLOCC(precision);
+	y=ALLOCR(precision);
 	n= o->type-CMDVARARG;
 	fm=o->mfunc;
 	fc=o->cfunc;
@@ -181,17 +182,22 @@ void applyVararg(const Top *o, unsigned i, const char *opInputPtr)
 	else if(imag && !fc){
 		errImag();
 	}
-	else if(n==2){
-		if(imag) ((TbinaryC)fc)(y, stackEnd[-2], stackEnd[-1]);
-		else ((Tbinary)fr)(y.r, stackEnd[-2].r, stackEnd[-1].r);
-	}
-	else if(n){
-		if(imag) ((TarrayargC)fc)(y, stackEnd-i);
-		else ((Tarrayarg)fr)(y.r, stackEnd-i);
-	}
 	else{
-		if(imag) ((TvarargC)fc)(y, i, stackEnd-i);
-		else ((Tvararg)fr)(y.r, i, stackEnd-i);
+		if(imag){
+			ensureImagPart(y);
+		}
+		if(n==2){
+			if(imag) ((TbinaryC)fc)(y, stackEnd[-2], stackEnd[-1]);
+			else ((Tbinary)fr)(y.r, stackEnd[-2].r, stackEnd[-1].r);
+		}
+		else if(n){
+			if(imag) ((TarrayargC)fc)(y, stackEnd-i);
+			else ((Tarrayarg)fr)(y.r, stackEnd-i);
+		}
+		else{
+			if(imag) ((TvarargC)fc)(y, i, stackEnd-i);
+			else ((Tvararg)fr)(y.r, i, stackEnd-i);
+		}
 	}
 	//free arguments
 	while(i--){
@@ -259,45 +265,54 @@ void applyArrayIndex(int f)
 void UnaryOp(const Top *o)
 {
 	if(numStack.len==0) return;
+	Complex &a1=numStack[numStack.len-1], y;
 	void *fr, *fc, *fm;
-	Complex a1, y;
 	fr=o->func;
 	fc=o->cfunc;
-	if(fc!=DECC && fc!=INCC) deref(numStack[numStack.len-1]);
-	a1=numStack[numStack.len-1];
-	y=ALLOCC(precision);
+	if(fc!=DECC && fc!=INCC) deref(a1);
+	y=ALLOCR(precision);
 	if(isMatrix(a1) || !fc && !fr){
 		fm=o->mfunc;
 		if(!fm) cerror(1065, "The function requires one parameter");
-		else ((TunaryC2)fm)(y, a1);
+		else {
+			ensureImagPart(y);
+			((TunaryC2)fm)(y, a1);
+		}
 	}
 	else if(isImag(a1) || !fr){
 		if(!fc) errImag();
-		else ((TunaryC2)fc)(y, a1);
+		else {
+			ensureImagPart(y);
+			((TunaryC2)fc)(y, a1);
+		}
 	}
 	else{
 		((Tunary2)fr)(y.r, a1.r);
 	}
 	FREEM(a1);
-	numStack[numStack.len-1]=y;
+	a1=y;
 }
 
 void UnaryFastOp(const Top *o)
 {
 	if(numStack.len==0) return;
+	Complex &a1=numStack[numStack.len-1];
 	void *fr, *fc, *fm;
 	fr = o->func;
 	fc = o->cfunc;
-	deref(numStack[numStack.len-1]);
-	Complex a1=numStack[numStack.len-1];
+	deref(a1);
 	if(isMatrix(a1) || !fc && !fr) {
 		fm = o->mfunc;
 		if(!fm) errMatrix();
-		else ((TunaryC0)fm)(a1);
+		else {
+			((TunaryC0)fm)(a1);
+		}
 	}
 	else if(isImag(a1) || !fr) {
 		if(!fc) errImag();
-		else ((TunaryC0)fc)(a1);
+		else {
+			((TunaryC0)fc)(a1);
+		}
 	}
 	else {
 		((Tunary0)fr)(a1.r);
@@ -307,45 +322,45 @@ void UnaryFastOp(const Top *o)
 void BinaryOp(const Top *o)
 {
 	if(numStack.len<2) return;
+	Complex &a1 = numStack[numStack.len-1], &a2 = *(&a1-1), y;
+	deref(a1);
 	void *fr, *fc, *fm;
-	Complex a1, a2, y;
-	deref(numStack[numStack.len-1]);
-	a1 = numStack[numStack.len-1];
-	numStack--;
 	fr = o->func;
 	fc = o->cfunc;
 	fm = o->mfunc;
-	if(fm!=ASSIGNM) deref(numStack[numStack.len-1]);
-	a2 = numStack[numStack.len-1];
-	y = ALLOCC(precision);
+	if(fm!=ASSIGNM) deref(a2);
+	y = ALLOCR(precision);
 	if(isMatrix(a1) || isMatrix(a2) || !fc && !fr) {
 		if(!fm) errMatrix();
-		else ((TbinaryC)fm)(y, a2, a1);
+		else {
+			ensureImagPart(y);
+			((TbinaryC)fm)(y, a2, a1);
+		}
 	}
 	else if(isImag(a1) || isImag(a2) || !fr) {
 		if(!fc) errImag();
-		else ((TbinaryC)fc)(y, a2, a1);
+		else {
+			ensureImagPart(y);
+			((TbinaryC)fc)(y, a2, a1);
+		}
 	}
 	else {
 		((Tbinary)fr)(y.r, a2.r, a1.r);
 	}
 	FREEM(a2);
 	FREEM(a1);
-	numStack[numStack.len-1] = y;
+	a2 = y;
+	numStack--;
 }
 
 void TernaryOp(const Top *o)
 {
 	if(numStack.len<3) return;
-	Complex a1, a2, a3, y;
-	deref(numStack[numStack.len-1]);
-	a1 = numStack[numStack.len-1];
-	deref(numStack[numStack.len-2]);
-	a2 = numStack[numStack.len-2];
-	numStack -= 2;
-	deref(numStack[numStack.len-1]);
-	a3 = numStack[numStack.len-1];
-	y = ALLOCC(precision);
+	Complex &a1=numStack[numStack.len-1], &a2=*(&a1-1), &a3=*(&a1-2), y;
+	deref(a1);
+	deref(a2);
+	deref(a3);
+	y = ALLOCR(precision);
 	if(isMatrix(a1) || isMatrix(a2) || isMatrix(a3)) {
 		errMatrix();
 	}
@@ -358,7 +373,8 @@ void TernaryOp(const Top *o)
 	FREEM(a3);
 	FREEM(a2);
 	FREEM(a1);
-	numStack[numStack.len-1] = y;
+	a3 = y;
+	numStack -= 2;
 }
 
 void ConstOp(const Top *o)
@@ -374,7 +390,7 @@ void ConstOp(const Top *o)
 	*numStack++ = y;
 }
 //---------------------------------------------------------------
-bool printValue(Complex y)
+bool printValue(Complex &y)
 {
 	Darray<char> &buf = outBuf;
 	int n=buf.len;
@@ -457,7 +473,7 @@ void jitRun(Tcompiled *j)
 		case jitPushNum: {
 			Complex x;
 			if(ins->num) {
-				x = ALLOCC(precision);
+				x = ALLOCR(precision);
 				COPYX(x.r, ins->num);
 			}
 			else x.r = x.i = 0;
@@ -465,13 +481,13 @@ void jitRun(Tcompiled *j)
 			break;
 		}
 		case jitPushInt: {
-			Complex x = ALLOCC(precision);
+			Complex x = ALLOCR(precision);
 			SETXN(x.r, ins->integer);
 			*numStack++ = x;
 			break;
 		}
 		case jitPushFraction: {
-			Complex x = ALLOCC(precision);
+			Complex x = ALLOCR(precision);
 			x.r[0]= ins->integer;
 			x.r[1]= ins->fraction;
 			x.r[-1] = (Tuint)ins->integer >= ins->fraction;

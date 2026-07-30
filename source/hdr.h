@@ -9,3 +9,4 @@
 #include <commctrl.h>
 #include <malloc.h>
 #include "assert.h"
+#include <algorithm>
