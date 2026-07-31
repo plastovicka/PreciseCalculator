@@ -1139,7 +1139,7 @@ void _stdcall INVERSEROOTI(Pint y, Pint x, Tuint n)
 	Pint t, u, r, a;
 	Tint p, _precision = 14;
 
-	p=y[-4] + 1;
+	p=max(y[-4] + 1, 14*2);
 
 	a=ALLOCN(3, p, &t, &u, &r);
 
