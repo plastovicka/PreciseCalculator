@@ -647,11 +647,11 @@ void _stdcall MULTX2(Pint z, const Pint x, const Pint y)
 }
 //-------------------------------------------------------------------
 #ifndef NDEBUG
-const int MULT3LIM = 30;
+const int MULT3LIM = 30, MULTGMPLIM = 2000;
 #elif defined(ARIT64)
-const int MULT3LIM = 730;
+const int MULT3LIM = 73, MULTGMPLIM = 3640;
 #else
-const int MULT3LIM = 450;
+const int MULT3LIM = 450, MULTGMPLIM = 20000;
 #endif
 
 //Toom–Cook (Toom-3) algorithm
@@ -668,6 +668,13 @@ void _stdcall MULTX(Pint z, const Pint x, const Pint y)
 		MULTX2(z, x, y);
 		return;
 	}
+
+#if GMP
+	if(n01>MULTGMPLIM && n02>MULTGMPLIM) {
+		MULT_GMP(z, x, y);
+		return;
+	}
+#endif
 
 	n=z[-4]+1;
 	n1=min(n, n01); n2=min(n, n02);

@@ -2973,6 +2973,7 @@ local	sq,s2,s3,s4,d1,d2,k,ro
 @@f2:	sub	esp,8
 	mov	[sq],esp
 	sub	esp,HED
+	mov	dword ptr [esp+HED-16],2
 ;znaménko
 	mov	[esp+HED-8],esi	;kladné
 	mov	[edx-8],esi

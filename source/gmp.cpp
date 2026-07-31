@@ -42,9 +42,11 @@ void ConvertToGMP(Pint x, mpf_ptr f)
 	//mpz_clear(o);
 
 	//direct conversion to mpf_t
-	mpf_init2(f, precision*TintBits);
+	assert(x[-4]>1 && x[-4]<1000000000);
+	mpf_init2(f, x[-4]*TintBits);
 	f->_mp_exp= (mp_exp_t)x[-1];
 	int n = f->_mp_size = (int)x[-3];
+	assert(n <= f->_mp_prec);
 	for(int i=--n; i>=0; i--)
 		f->_mp_d[i]=x[n-i]; //reverse
 }
@@ -246,6 +248,37 @@ __int64 _stdcall WRITEX_GMP(char *buf, Pint x, int _digits)
 	WriteGmpParams = { buf, x, _digits, 0 };
 	RunOnGmpThread(WRITEX_GMP_Work);
 	return (__int64)WriteGmpParams.result;
+}
+
+static void MULT_GMP_Impl(Pint z, const Pint x, const Pint y)
+{
+	mpf_t fx, fy, fz;
+	ConvertToGMP((Pint)x, fx);
+	ConvertToGMP((Pint)y, fy);
+	mpf_init2(fz, z[-4]*TintBits);
+	fx->_mp_exp=fy->_mp_exp=0;
+	mpf_mul(fz, fx, fy);
+	ConvertFromGMP(z, fz);
+	z[-2]= x[-2]^y[-2]; //sign
+	z[-1] = ADDII(z[-1], ADDII(x[-1], y[-1])); //exponent
+	mpf_clear(fz);
+	mpf_clear(fy);
+	mpf_clear(fx);
+}
+
+struct MultGmpParams { Pint z; const Pint x; const Pint y; };
+
+static void MULT_GMP_Work()
+{
+	MultGmpParams *params = (MultGmpParams*)gmpParam;
+	MULT_GMP_Impl(params->z, params->x, params->y);
+}
+
+void _stdcall MULT_GMP(Pint z, const Pint x, const Pint y)
+{
+	MultGmpParams params = { z, x, y };
+	gmpParam = &params;
+	RunOnGmpThread(MULT_GMP_Work);
 }
 
 #endif

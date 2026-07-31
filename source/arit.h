@@ -77,7 +77,7 @@ extern "C"{
 	void _fastcall FRACX(Pint x);  //part after decimal point
 	void _fastcall SCALEX(Pint x, Tint n);  //add n to exponent
 	void _fastcall FRACTOX(Pint x); //convert fraction to real number
-	Tint _fastcall ADDII(Tint a, Tint b);
+	Tint _fastcall ADDII(Tint a, Tint b); //add ints and check overflow
 
 	int  _stdcall CMPX(const Pint a, const Pint b); //compare, return -1,0,+1
 	int  _stdcall CMPU(const Pint a, const Pint b); //ignore sign and compare
@@ -216,6 +216,7 @@ extern "C"{
 	void gmp_Stop();
 	const char* _stdcall READX_GMP(Pint x, const char *buf);
 	__int64 _stdcall WRITEX_GMP(char *buf, Pint x, int _digits);
+	void _stdcall MULT_GMP(Pint z, const Pint x, const Pint y);
 #endif
 
 	extern int error, base, baseIn, angleMode, numFormat, fixDigits;

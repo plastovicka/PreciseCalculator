@@ -3214,6 +3214,7 @@ local	sq:qword,s2:qword,s3:qword,s4:qword,d1:qword,d2:qword,k:qword,ro:qword
 @@f2:	sub	rsp,16
 	mov	[sq],rsp
 	sub	rsp,HED
+	mov	qword ptr [rsp+HED-32],2
 ;znaménko
 	mov	[rsp+HED-16],rsi	;kladné
 	mov	[rdx-16],rsi
