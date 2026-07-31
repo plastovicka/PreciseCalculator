@@ -489,7 +489,7 @@ void _stdcall WRITEX(char *buf, const Pint x0, int _digits)
 		er -= 5;
 		if(er>=Int64Min){
 			overflow();
-			*buf++='0';
+			*buf++='#';
 			*buf=0;
 		}
 		else if(-er>=Int64Min){

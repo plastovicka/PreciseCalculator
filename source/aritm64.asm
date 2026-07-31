@@ -3479,11 +3479,14 @@ local	sq:qword,s2:qword,s3:qword,s4:qword,d1:qword,d2:qword,k:qword,ro:qword
 SQRTX2	endp
 ;-------------------------------------
 overflow	proc
+	push	rbp
+	mov	rbp,rsp
+	and	rsp,-16
+	sub	rsp,32
 	lea	rdx,[E_1011]
 	mov	rcx,1011
-	sub	rsp,32
 	call	cerror
-	add	rsp,32
+	leave
 	ret
 overflow	endp
 ;-------------------------------------

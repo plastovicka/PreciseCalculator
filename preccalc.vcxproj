@@ -253,7 +253,7 @@
       <PrecompiledHeaderFile>hdr.h</PrecompiledHeaderFile>
       <WarningLevel>Level4</WarningLevel>
       <SuppressStartupBanner>true</SuppressStartupBanner>
-      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
       <AdditionalIncludeDirectories>.\source\mpir\lib\x64\Debug</AdditionalIncludeDirectories>
     </ClCompile>
     <ResourceCompile>
