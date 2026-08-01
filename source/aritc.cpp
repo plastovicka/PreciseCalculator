@@ -2537,17 +2537,27 @@ void _stdcall ATAN2X(Pint y, const Pint a, const Pint b)
 {
 	Pint t, p;
 
-	if(isZero_safe(a) && isZero(b)){
-		cerror(1032, "Angle of point [0,0]");
-		return;
+	if(isZero_safe(a)){
+		if(isZero(b)) {
+			cerror(1032, "Angle of point [0,0]");
+			return;
+		}
+		if(!b[-2]) {
+			ZEROX(y);
+			return;
+		}
 	}
 	getpi(y[-4]);
 
 	if(isZero_safe(a)){
-		if(b[-2]) COPYX(y, pi);
-		else ZEROX(y);
+		switch(angleMode){
+			case ANGLE_RAD: COPYX(y, pi); break;
+			case ANGLE_DEG: SETX(y, 180); break;
+			case ANGLE_GRAD: SETX(y, 200); break;
+		}
+		return;
 	}
-	else if(isZero(b)){
+	if(isZero(b)){
 		COPYX(y, pi2);
 		y[-2]=a[-2];
 	}

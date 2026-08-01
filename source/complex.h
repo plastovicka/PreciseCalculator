@@ -19,7 +19,6 @@ extern "C"{
 	void _fastcall FREEC(Complex &x);
 	Complex _fastcall NEWCOPYC(const Complex &a);
 	void _stdcall COPYC(Complex &dest, const Complex &src);
-	void _stdcall COPYC_safe(Complex &dest, const Complex &src);
 
 	char* _stdcall READC(Complex &x, const char *buf);
 	void _stdcall WRITEC(char *buf, const Complex &x, int digits);
@@ -140,8 +139,7 @@ inline void ZEROX_safe(Pint x)
 }
 
 void assignC(Complex &dest, const Complex &src);
-void ensureImagPart(Complex &x);
-void COPYX_safe(Pint dest, const Pint src);
+void COPYtoImag(Complex &dest, const Pint src);
 
 typedef void(_fastcall *TunaryC0)(Complex &);
 typedef void(_stdcall *TunaryC2)(Complex &, const Complex &);

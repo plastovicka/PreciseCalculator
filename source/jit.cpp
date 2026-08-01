@@ -61,7 +61,7 @@ void forExecute(const Top *o, Tcompiled *bodyJit)
 	}
 	i++;
 
-	y=ALLOCC(precision);
+	y=ALLOCR(precision);
 	fm=o->mfunc;
 	fc=o->cfunc;
 	if(fm==INTEGRALM){
@@ -92,8 +92,8 @@ void forExecute(const Top *o, Tcompiled *bodyJit)
 			ASSIGNM(stackEnd[-2], stackEnd[-3], stackEnd[-2]);
 		}
 		if(fc) ((TunaryC0)fc)(y);
-		t=ALLOCC(precision);
-		u=ALLOCC(precision);
+		t=ALLOCR(precision);
+		u=ALLOCR(precision);
 		for(j=0; !error; j++){
 			if(isEach){
 				if(j>=len) break;
@@ -118,7 +118,6 @@ void forExecute(const Top *o, Tcompiled *bodyJit)
 			}
 			else if(fm) {
 				if(j) {
-					ensureImagPart(u);
 					((TbinaryC)fm)(u, y, *stackEnd);
 					std::swap(y, u);
 				} else {
@@ -183,9 +182,6 @@ void applyVararg(const Top *o, unsigned i, const char *opInputPtr)
 		errImag();
 	}
 	else{
-		if(imag){
-			ensureImagPart(y);
-		}
 		if(n==2){
 			if(imag) ((TbinaryC)fc)(y, stackEnd[-2], stackEnd[-1]);
 			else ((Tbinary)fr)(y.r, stackEnd[-2].r, stackEnd[-1].r);
@@ -255,7 +251,7 @@ void applyArrayIndex(int f)
 	else{
 		Complex y, x1;
 		deref(x1, x);
-		y= ALLOCC(precision);
+		y= ALLOCR(precision);
 		INDEXM(y, x1, &D[0][0]);
 		FREEM(x);
 		x=y;
@@ -275,14 +271,12 @@ void UnaryOp(const Top *o)
 		fm=o->mfunc;
 		if(!fm) cerror(1065, "The function requires one parameter");
 		else {
-			ensureImagPart(y);
 			((TunaryC2)fm)(y, a1);
 		}
 	}
 	else if(isImag(a1) || !fr){
 		if(!fc) errImag();
 		else {
-			ensureImagPart(y);
 			((TunaryC2)fc)(y, a1);
 		}
 	}
@@ -333,14 +327,12 @@ void BinaryOp(const Top *o)
 	if(isMatrix(a1) || isMatrix(a2) || !fc && !fr) {
 		if(!fm) errMatrix();
 		else {
-			ensureImagPart(y);
 			((TbinaryC)fm)(y, a2, a1);
 		}
 	}
 	else if(isImag(a1) || isImag(a2) || !fr) {
 		if(!fc) errImag();
 		else {
-			ensureImagPart(y);
 			((TbinaryC)fc)(y, a2, a1);
 		}
 	}
@@ -383,7 +375,7 @@ void ConstOp(const Top *o)
 	fr = o->func;
 	fc = o->cfunc;
 	fm = o->mfunc;
-	Complex y = ALLOCC(precision);
+	Complex y = ALLOCR(precision);
 	if(fm) ((TnularyC)fm)(y);
 	else if(fr) ((Tnulary)fr)(y.r);
 	else ((TnularyC)fc)(y);
@@ -496,7 +488,7 @@ void jitRun(Tcompiled *j)
 			break;
 		}
 		case jitPushVar:{
-			Complex x= ALLOCC(precision); //deref needs this precision
+			Complex x= ALLOCR(precision); //deref needs this precision
 			x.r[0]= ins->variable;
 			x.r[-3]= -1;
 			*numStack++= x;

@@ -177,7 +177,7 @@ void deref(Complex &x)
 		Tvar *v= toVariable(x);
 		Complex &w= v->modif ? v->newx : v->oldx;
 		if(isRange(x)){
-			Complex y= ALLOCC(precision);
+			Complex y= ALLOCR(precision);
 			INDEXM(y, w, (int*)&x.r[1]);
 			FREEM(x);
 			x=y;
@@ -226,7 +226,7 @@ void INCDEC(Complex &y, const Complex &a, bool inc)
 		else{
 			if(inc) PLUSX(y.r, c.r, one);
 			else MINUSX(y.r, c.r, one);
-			COPYX_safe(y.i, c.i); 
+			COPYtoImag(y, c.i); 
 			assign(v->newx, y);
 			v->modif=true;
 		}
@@ -867,7 +867,7 @@ int token(const char *&s, bool isFor=false, bool isPostfix=false)
 			v->name[varNameLen]=0;
 			memcpy(v->name, s, varNameLen);
 			v->newx.r= v->newx.i=0;
-			v->oldx= ALLOCC(1);
+			v->oldx= ALLOCR(1);
 			v->modif= false;
 		}
 		if(v){
@@ -1454,7 +1454,7 @@ void initCalc()
 #if GMP
 	gmp_Init();
 #endif
-	ans = ALLOCC(1);
+	ans = ALLOCR(1);
 
 	funcTabSorted = new const Top*[sizeA(funcTab)];
 	for(int i=0; i<sizeA(funcTab); i++){

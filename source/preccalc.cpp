@@ -1014,9 +1014,9 @@ BOOL CALLBACK VarListProc(HWND hWnd, UINT mesg, WPARAM wP, LPARAM lP)
 					rc.right=60;
 					Utf8ToWideChar(v->name);
 					DrawTextW(lpdis->hDC, dtBuf, -1, &rc, DT_END_ELLIPSIS|DT_NOPREFIX);
-					c=ALLOCC(5);
+					c=ALLOCR(5);
 					COPYM(c, v->modif ? v->newx : v->oldx);
-					s= AWRITEM(c, isMatrix(c) ? 3 : (!isZero(c.r) && !isZero(c.i) ? 10 : 20), 0);
+					s= AWRITEM(c, isMatrix(c) ? 3 : (!isZero(c.r) && isImag(c) ? 10 : 20), 0);
 					FREEM(c);
 					rc.left=rc.right+5;
 					rc.right=lpdis->rcItem.right;
