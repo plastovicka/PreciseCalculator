@@ -47,6 +47,8 @@ int width,
  maxHistory=200,
  historyWidth,
  historyHeight,
+ varListWidth,
+ varListHeight,
  keyboard=0,
  historyLen,
  idEnter,
@@ -136,6 +138,8 @@ struct Treg { char *s; int *i; } regVal[]={
 	{"disableRounding", &disableRounding},
 	{"historyWidth", &historyWidth},
 	{"historyHeight", &historyHeight},
+	{"varListWidth", &varListWidth},
+	{"varListHeight", &varListHeight},
 };
 struct Tregs { char *s; char *i; DWORD n; BYTE isPath; } regValS[]={
 	{"language", lang, sizeof(lang), 0},
@@ -993,6 +997,11 @@ BOOL CALLBACK VarListProc(HWND hWnd, UINT mesg, WPARAM wP, LPARAM lP)
 		case WM_INITDIALOG:
 			oldWidth=oldHeight=0;
 			setDlgTexts(hWnd, 17);
+			GetClientRect(hWnd, &rc);
+			oldWidth=rc.right;
+			oldHeight=rc.bottom;
+			if(varListWidth > 100 && varListHeight > 100)
+				SetWindowPos(hWnd, 0, 0, 0, varListWidth, varListHeight, SWP_NOMOVE|SWP_NOZORDER);
 			initVarList(listBox);
 			return 1;
 
@@ -1030,6 +1039,12 @@ BOOL CALLBACK VarListProc(HWND hWnd, UINT mesg, WPARAM wP, LPARAM lP)
 
 		case WM_SIZE:
 			if(lP){ historySize(hWnd, lP, oldWidth, oldHeight); InvalidateRect(GetDlgItem(hWnd, 101), 0, TRUE); }
+			break;
+
+		case WM_EXITSIZEMOVE:
+			GetWindowRect(hWnd, &rc);
+			varListWidth = rc.right-rc.left;
+			varListHeight = rc.bottom-rc.top;
 			break;
 
 		case WM_GETMINMAXINFO:
