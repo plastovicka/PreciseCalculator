@@ -1825,16 +1825,16 @@ void _stdcall REPEATOPX(Tbinary f, Complex &y, const Complex &cx, int errId, cha
 		}
 	}
 	y0=y.r;
-	t=ALLOCX(y.r[-4]);
+	t=ALLOCX(y0[-4]);
 	ZEROX_safe(y.i);
-	f(y.r, A[0].r, A[1].r);
+	f(y0, A[0].r, A[1].r);
 	for(i=2; i<num; i++){
-		f(t, y.r, A[i].r);
-		std::swap(t, y.r);
+		f(t, y0, A[i].r);
+		std::swap(t, y0);
 	}
 	if(y.r!=y0){
-		COPYX(y0, y.r);
-		t=y.r;
+		COPYX(y.r, y0);
+		t=y0;
 	}
 	FREEX(t);
 }
