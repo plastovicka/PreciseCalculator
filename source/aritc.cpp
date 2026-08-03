@@ -50,7 +50,7 @@ struct Tpostfix { char c; int e; } postfixTab[] ={
 
 Numx Kzero={1, 0, 0, 0, 0}, Kone={1, -2, 0, 1, 1, 1}, Kminusone={1, -2, 1, 1, 1, 1}, Khalf={1, -2, 0, 0, 1, 2},
 Ktwo={1, -2, 0, 1, 2, 1}, Kthree={1, -2, 0, 1, 3, 1}, Kten={1, -2, 0, 1, 10, 1}, Kbase={1, 1, 0, 2, 1};
-Pint one=&Kone.m, minusone=&Kminusone.m, half=&Khalf.m, two=&Ktwo.m, three=&Kthree.m, ten=&Kten.m;
+Pint zero=&Kzero.m, one=&Kone.m, minusone=&Kminusone.m, half=&Khalf.m, two=&Ktwo.m, three=&Kthree.m, ten=&Kten.m;
 Pint lnBase, ln2, ln10, pi, pi2, pi4, seedx;
 
 double dwordDigits[37]={0, 0, // 32*ln(2)/ln(base)

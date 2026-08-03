@@ -39,11 +39,11 @@ struct Numx {
 };
 
 //fractions: alen,-2,sgn,0 or 1,numerator,denominator
-//zero can have any sgn, any exp, alen>0
+//zero can have sgn 0 or 1, any exp, alen>0
 
 struct Complex {
 	Pint r; //real part
-	Pint i; //imaginary part
+	Pint i; //imaginary part, can be null
 };
 
 /*
@@ -223,7 +223,7 @@ extern "C"{
 	extern int enableFractions, separator1, separator2, sepFreq1, sepFreq2, useSeparator1, useSeparator2, disableRounding;
 	extern double dwordDigits[];
 	extern char digitTab[];
-	extern Pint lnBase, ln2, ln10, pi, pi2, pi4, one, minusone, half, two, ten, seedx;
+	extern Pint lnBase, ln2, ln10, pi, pi2, pi4, zero, one, minusone, half, two, ten, seedx;
 	extern Tint precision, Nseed;
 }
 

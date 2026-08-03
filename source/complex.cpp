@@ -10,7 +10,7 @@
 
 char imagChar='i';
 extern Numx Kone, Kzero, Kminusone;
-Complex onec={&Kone.m, &Kzero.m}, minusonec={&Kminusone.m, &Kzero.m};
+Complex onec={&Kone.m, zero}, minusonec={&Kminusone.m, zero};
 
 void errImag()
 {
@@ -158,13 +158,14 @@ void _fastcall MAPC(Complex &y, const Complex &x, Tunary2 f)
 	}
 }
 
-void _fastcall MAPC(Complex &y, const Complex &a, const Complex &b, Tbinary f)
+void _fastcall MAPC(Complex &y, const Complex &a, const Complex &b, Tbinary f, bool imag)
 {
 	f(y.r, a.r, b.r);
-	ensureImagPart((Complex &)a);
-	ensureImagPart((Complex &)b);
-	ensureImagPart(y);
-	f(y.i, a.i, b.i);
+	if(isImag(a) || isImag(b) || imag) {
+		ensureImagPart(y);
+		f(y.i, a.i ? a.i : zero, b.i ? b.i : zero);
+	}
+	else ZEROX_safe(y.i);
 }
 
 void _fastcall FREEC(Complex &x)
@@ -208,32 +209,33 @@ void _fastcall NEGC(Complex &x)
 }
 void _stdcall ANDC(Complex &y, const Complex &a, const Complex &b)
 {
-	MAPC(y, a, b, ANDX);
+	MAPC(y, a, b, ANDX, false);
 }
 void _stdcall ORC(Complex &y, const Complex &a, const Complex &b)
 {
-	MAPC(y, a, b, ORX);
+	MAPC(y, a, b, ORX, false);
 }
 void _stdcall XORC(Complex &y, const Complex &a, const Complex &b)
 {
-	MAPC(y, a, b, XORX);
+	MAPC(y, a, b, XORX, false);
 }
 void _stdcall NANDBC(Complex &y, const Complex &a, const Complex &b)
 {
-	MAPC(y, a, b, NANDBX);
+	MAPC(y, a, b, NANDBX, true);
 }
 void _stdcall NORBC(Complex &y, const Complex &a, const Complex &b)
 {
-	MAPC(y, a, b, NORBX);
+	MAPC(y, a, b, NORBX, true);
 }
 void _stdcall IMPBC(Complex &y, const Complex &a, const Complex &b)
 {
-	MAPC(y, a, b, IMPBX);
+	MAPC(y, a, b, IMPBX, true);
 }
 void _stdcall EQVBC(Complex &y, const Complex &a, const Complex &b)
 {
-	MAPC(y, a, b, EQVBX);
+	MAPC(y, a, b, EQVBX, true);
 }
+
 void _fastcall ZEROC(Complex &x)
 {
 	ZEROX(x.r);
