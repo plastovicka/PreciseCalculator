@@ -1736,7 +1736,7 @@ void _stdcall DIVISORX(Pint y, const Pint x)
 {
 	Tuint last, d, *p, i, sgn;
 
-	if(isReal(x) || x[-1]>y[-4]){
+	if(isReal(x) || x[-1]>y[-4] && !isZero(x)){
 		cerror(1030, "divisor of real number");
 		return;
 	}

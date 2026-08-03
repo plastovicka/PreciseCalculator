@@ -9,8 +9,8 @@
 //-------------------------------------------------------------------
 
 char imagChar='i';
-extern Numx Kone, Kzero, Kminusone;
-Complex onec={&Kone.m, zero}, minusonec={&Kminusone.m, zero};
+extern Numx Kone;
+Complex onec={&Kone.m, 0};
 
 void errImag()
 {

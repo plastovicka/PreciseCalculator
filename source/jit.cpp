@@ -20,13 +20,11 @@ Darray<char> outBuf;
 const unsigned MAX_OUTPUT_SIZE=1000000000;
 
 //---------------------------------------------------------------
-void checkInfinite(Complex &y, Tint prec)
+void checkInfinite(Pint y, Tint prec)
 {
-	if(y.r[-1]<-prec)
-		ZEROX(y.r);
-	if(y.i && y.i[-1]<-prec)
-		ZEROX(y.i);
-	if(y.r[-1]>prec && !isZero(y.r) || y.i && y.i[-1]>prec && !isZero(y.i)){
+	if(y[-1]<-prec)
+		ZEROX(y);
+	if(y[-1]>prec && !isZero(y)){
 		cerror(1034, "Infinite result");
 	}
 }
@@ -35,12 +33,15 @@ void checkInfinite(Complex &y)
 {
 	if(precision>prec2+30) {
 		if(!isMatrix(y)) {
-			checkInfinite(y, prec2);
+			checkInfinite(y.r, prec2);
+			if(y.i) checkInfinite(y.i, prec2);
 		}
 		else {
 			Pmatrix ym = toMatrix(y);
 			for(int i = 0; i<ym->len; i++) {
-				checkInfinite(ym->A[i], prec2);
+				MatrixItem &m = ym->A[i];
+				if(!m.denominator) checkInfinite(m.r, prec2);
+				if(m.i) checkInfinite(m.i, prec2);
 			}
 		}
 	}
@@ -50,7 +51,8 @@ void forExecute(const Top *o, Tcompiled *bodyJit)
 {
 	unsigned i;
 	int j, len=0;
-	Complex y, t, u, *stackEnd, *A=0;
+	Complex y, t, u, *stackEnd;
+	MatrixItem *A = 0;
 	void *fc, *fm;
 	bool isEach;
 
@@ -79,7 +81,6 @@ void forExecute(const Top *o, Tcompiled *bodyJit)
 			}
 			else{
 				len=1;
-				A=&stackEnd[-1];
 			}
 		}
 		else{
@@ -98,7 +99,10 @@ void forExecute(const Top *o, Tcompiled *bodyJit)
 			if(isEach){
 				if(j>=len) break;
 				//assign matrix item to variable
-				ASSIGNM(A[j], stackEnd[-2], A[j]);
+				if(A)
+					assignM(stackEnd[-2], A[j]);
+				else
+					ASSIGNM(stackEnd[-1], stackEnd[-2], stackEnd[-1]);
 			}
 			else{
 				//is variable greater then last value

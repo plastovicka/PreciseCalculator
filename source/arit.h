@@ -333,6 +333,7 @@ enum{ MODE_SCI, MODE_NORM, MODE_ENG, MODE_FIX };
 typedef void(_fastcall *Tunary0)(Pint);
 typedef void(_stdcall *Tunary2)(Pint, const Pint);
 typedef void(_stdcall *Tbinary)(Pint, const Pint, const Pint);
+typedef void(_stdcall *TbinaryI0)(Pint, Tuint i);
 typedef void(_stdcall *Tternary)(Pint, const Pint, const Pint, const Pint);
 typedef void(_stdcall *Tnulary)(Pint);
 typedef void(_stdcall *Tvararg)(Pint, unsigned, const Complex*);

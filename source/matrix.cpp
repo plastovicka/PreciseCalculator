@@ -32,15 +32,169 @@ Tint getPrecision(const Complex &cx)
 {
 	if(isMatrix(cx)){
 		Pmatrix x=toMatrix(cx);
-		if(x->len>0) return x->A[0].r[-4];
+		if(x->len>0){
+			MatrixItem &m= x->A[0];
+			if(!m.denominator) return m.r[-4];
+		}
 	}
 	return cx.r[-4];
+}
+
+//materialize a full Complex value from a matrix item
+ComplexItem::ComplexItem(const MatrixItem &m)
+{
+	if(m.denominator){
+		Pint y= c.r = &x.m;
+		y[-4]= 2; //length
+		if(m.numerator==0){
+			ZEROX(y);
+			y[-2] = 0; //CMPX requires initialized sign
+		}
+		else{
+			y[0]= m.numerator;
+			y[1]= m.denominator<0 ? -m.denominator : m.denominator;
+			y[-1]= (Tuint)y[0] >= (Tuint)y[1]; //exponent
+			y[-2]= m.denominator<0; //sign
+			y[-3]= -2; //fraction
+		}
+	}
+	else{
+		c.r=m.r;
+	}
+	c.i= m.i;
+}
+
+void ComplexItem::set(const ComplexItem &s)
+{
+	if(s.c.r==&s.x.m){
+		c.r = &x.m;
+		COPYX(c.r, s.c.r);
+	}
+	else c.r= s.c.r;
+	c.i = s.c.i;
+}
+
+void ComplexItem::free()
+{
+	if(c.r!=&x.m) FREEX(c.r);
+	if(c.i) FREEX(c.i);
+}
+
+static void newItem(MatrixItem &m, Complex &c)
+{
+	if(isFraction(c.r) && c.r[1]>0){
+		m.numerator= c.r[0];
+		m.denominator= c.r[-2] ? -c.r[1] : c.r[1];
+	}
+	else if(isZero(c.r)){
+		m.numerator = 0;
+		m.denominator = 1;
+	}
+	else{
+		m.denominator= 0;
+		m.r= NEWCOPYX(c.r);
+	}
+	m.i = isImag(c) ? NEWCOPYX(c.i) : 0;
+}
+
+static void newItem(MatrixItem &dest, const MatrixItem &src)
+{
+	if(src.denominator){
+		dest.numerator= src.numerator;
+		dest.denominator= src.denominator;
+	}
+	else{
+		dest.denominator= 0;
+		dest.r= NEWCOPYX(src.r);
+	}
+	dest.i= !isZero_safe(src.i) ? NEWCOPYX(src.i) : 0;
+}
+
+static void assignItem(MatrixItem &m, const Complex &c)
+{
+	if(isFraction(c.r) && c.r[1]>0) {
+		if(!m.denominator) FREEX(m.r);
+		m.numerator = c.r[0];
+		m.denominator = c.r[-2] ? -c.r[1] : c.r[1];
+	}
+	else if(isZero(c.r)) {
+		if(!m.denominator) FREEX(m.r);
+		m.numerator = 0;
+		m.denominator = 1;
+	}
+	else if(m.denominator) {
+		m.denominator = 0;
+		m.r = NEWCOPYX(c.r);
+	}
+	else assign(m.r, c.r);
+
+	if(isImag(c)) assign(m.i, c.i);
+	else ZEROX_safe(m.i);
+}
+
+static void copyItem(MatrixItem &dest, const Complex &src)
+{
+	if(isFraction(src.r) && src.r[1]>0) {
+		if(!dest.denominator) FREEX(dest.r);
+		dest.numerator = src.r[0];
+		dest.denominator = src.r[-2] ? -src.r[1] : src.r[1];
+	}
+	else if(isZero(src.r)) {
+		if(!dest.denominator) FREEX(dest.r);
+		dest.numerator = 0;
+		dest.denominator = 1;
+	}
+	else if(dest.denominator) {
+		dest.denominator = 0;
+		dest.r = NEWCOPYX(src.r);
+	}
+	else COPYX(dest.r, src.r);
+
+	if(isImag(src)) {
+		if(!dest.i) dest.i = NEWCOPYX(src.i);
+		else COPYX(dest.i, src.i);
+	}
+	else ZEROX_safe(dest.i);
+}
+
+static void copyItem(MatrixItem &dest, const MatrixItem &src)
+{
+	if(src.denominator) {
+		if(!dest.denominator) FREEX(dest.r);
+		dest.numerator = src.numerator;
+		dest.denominator = src.denominator;
+	}
+	else if(dest.denominator) {
+		dest.denominator = 0;
+		dest.r = NEWCOPYX(src.r);
+	}
+	else COPYX(dest.r, src.r);
+
+	if(!isZero_safe(src.i)) {
+		if(!dest.i) dest.i = NEWCOPYX(src.i);
+		else COPYX(dest.i, src.i);
+	}
+	else ZEROX_safe(dest.i);
+}
+
+void MatrixItem::set(Tuint n)
+{
+	if(!denominator) FREEX(r);
+	denominator = 1;
+	numerator = n;
+	ZEROX_safe(i);
+}
+
+inline void MatrixItem::free()
+{
+	if(!denominator) FREEX(r);
+	FREEX(i);
 }
 
 void _fastcall FREE_ARRAYM(Pmatrix x)
 {
 	for(int i=0; i<x->len; i++){
-		FREEC(x->A[i]);
+		x->A[i].free();
 	}
 	delete[] x->A;
 }
@@ -55,30 +209,36 @@ void matrixToComplex(Complex &cx)
 	if(!isMatrix(cx)) return;
 	Pmatrix x=toMatrix(cx);
 	FREE_ARRAYM(x);
-	x->tag=0;
+	x->tag=0; //zero
+	cx.r[-2]=0;
+}
+
+inline void MatrixItem::init()
+{
+	numerator = 0;
+	denominator = 1;
+	i = 0;
 }
 
 //create a new matrix or resize matrix to a->cols, a->rows
 void prepareM(Complex &cy, int cols, int rows)
 {
 	int i, len;
-	Tint prec;
 
 	len= cols * rows;
-	prec= getPrecision(cy);
 	Pmatrix y= toMatrix(cy);
 	if(isMatrix(cy)){
 		if(y->alen < len){
-			Complex *A0=y->A;
-			y->A= new Complex[y->alen= len];
-			memcpy(y->A, A0, sizeof(Complex)*y->len);
+			MatrixItem *A0=y->A;
+			y->A= new MatrixItem[y->alen= len];
+			memcpy(y->A, A0, sizeof(MatrixItem)*y->len);
 			delete[] A0;
 		}
 		for(i=y->len; i<len; i++){
-			y->A[i]= ALLOCR(prec);
+			y->A[i].init();
 		}
 		for(i=len; i<y->len; i++){
-			FREEC(y->A[i]);
+			y->A[i].free();
 		}
 	}
 	else{
@@ -87,9 +247,9 @@ void prepareM(Complex &cy, int cols, int rows)
 		y->A= NULL;
 	}
 	if(!y->alen && len){
-		y->A= new Complex[y->alen= len];
+		y->A= new MatrixItem[y->alen= len];
 		for(i=0; i<len; i++){
-			y->A[i]= ALLOCR(prec);
+			y->A[i].init();
 		}
 	}
 	y->rows= rows;
@@ -161,9 +321,7 @@ bool isSquareM(const Pmatrix x)
 Complex _fastcall NEWCOPYM(const Complex &ca)
 {
 	if(!isMatrix(ca)) return NEWCOPYC(ca);
-	Complex result;
-	result.r= ALLOCX(ca.r[-4]);
-	result.i= isImag(ca) ? NEWCOPYX(ca.i) : 0;
+	Complex result= ALLOCC(ca.r[-4]);
 	Pmatrix y= toMatrix(result);
 	Pmatrix a= toMatrix(ca);
 	y->tag= -12;
@@ -171,9 +329,9 @@ Complex _fastcall NEWCOPYM(const Complex &ca)
 	y->cols= a->cols;
 	y->len= a->len;
 	if(a->len) {
-		y->A= new Complex[y->alen= a->alen];
+		y->A= new MatrixItem[y->alen= a->alen];
 		for(int i=0; i<a->len; i++) {
-			y->A[i]= NEWCOPYC(a->A[i]);
+			newItem(y->A[i], a->A[i]);
 		}
 	}
 	else {
@@ -207,7 +365,7 @@ void assignM(Complex &dest, const Complex &src)
 void _stdcall WRITEM(char *buf, const Complex &cx, int digits, int cr)
 {
 	int i, j;
-	Complex *p;
+	MatrixItem *p;
 
 	if(!isMatrix(cx)){
 		WRITEC(buf, cx, digits);
@@ -220,7 +378,8 @@ void _stdcall WRITEM(char *buf, const Complex &cx, int digits, int cr)
 		if(i){ *buf++=' '; *buf++='\\'; *buf++= cr ? '\n' : ' '; }
 		for(j=0; j<x->cols; j++){
 			if(j){ *buf++=','; *buf++=' '; }
-			WRITEC(buf, *p++, digits);
+			ComplexItem t(*p++);
+			WRITEC(buf, t, digits);
 			buf=strchr(buf, 0);
 		}
 	}
@@ -231,7 +390,7 @@ void _stdcall WRITEM(char *buf, const Complex &cx, int digits, int cr)
 int _stdcall LENM(const Complex &cx, int digits)
 {
 	int i, n;
-	Complex *p;
+	MatrixItem *p;
 
 	if(!isMatrix(cx)){
 		return LENC(cx, digits);
@@ -240,7 +399,8 @@ int _stdcall LENM(const Complex &cx, int digits)
 	n=2+x->rows;
 	p=x->A;
 	for(i=0; i<x->len; i++){
-		n+=2+LENC(*p++, digits);
+		ComplexItem c(*p++);
+		n+=2+LENC(c, digits);
 		if(n<0) return 0;
 	}
 	return n;
@@ -301,7 +461,7 @@ void _fastcall COUNTM(Complex &x)
 void _fastcall TRANSPM(Complex &cx)
 {
 	int i, j, rows, cols;
-	Complex *A;
+	MatrixItem *A;
 
 	if(!isMatrix(cx)) return;
 	Pmatrix x=toMatrix(cx);
@@ -309,7 +469,7 @@ void _fastcall TRANSPM(Complex &cx)
 	cols= x->rows;
 	if(cols!=1 && rows!=1){
 		if(x->len==0) return;
-		A= new Complex[x->alen];
+		A= new MatrixItem[x->alen];
 		for(i=0; i<rows; i++){
 			for(j=0; j<cols; j++){
 				A[i*cols+j]= x->A[j*rows+i];
@@ -333,7 +493,7 @@ void _stdcall CONCATROWM(Complex &y, Complex &a, Complex &b)
 {
 	int cola, colb, rows;
 	Pmatrix ma, mb, my;
-	Complex *p;
+	MatrixItem *p;
 
 	ma= isMatrix(a) ? toMatrix(a) : 0;
 	mb= isMatrix(b) ? toMatrix(b) : 0;
@@ -369,17 +529,14 @@ void _stdcall CONCATROWM(Complex &y, Complex &a, Complex &b)
 		ma->A=0;
 	}
 	else{
-		my->A= new Complex[my->alen=2*my->len];
-		if(ma) memcpy(my->A, ma->A, ma->len*sizeof(Complex));
-		else my->A[0]=NEWCOPYC(a);
+		my->A= new MatrixItem[my->alen=2*my->len];
+		if(ma) memcpy(my->A, ma->A, ma->len*sizeof(MatrixItem));
+		else newItem(my->A[0], a);
 	}
 	p= my->A + (ma ? ma->len : 1);
-	if(mb){
-		memcpy(p, mb->A, mb->len*sizeof(Complex));
-	}
-	else{
-		*p= NEWCOPYC(b);
-	}
+	if(mb) memcpy(p, mb->A, mb->len*sizeof(MatrixItem));
+	else newItem(*p, b);
+
 	if(ma) ma->len=ma->rows=ma->cols=0;
 	if(mb) mb->len=mb->rows=mb->cols=0;
 }
@@ -443,18 +600,21 @@ void incdecRange(Complex &z, Complex &cy, bool inc, const int *D0)
 		cerror(1042, "Increment or decrement of a matrix");
 		return;
 	}
-	Complex *py;
 	if(!isMatrix(cy)){
-		py= &cy;
+		if(inc) PLUSX(z.r, cy.r, one);
+		else MINUSX(z.r, cy.r, one);
+		COPYtoImag(z, cy.i);
+		assignC(cy, z);
 	}
 	else{
 		Pmatrix y= toMatrix(cy);
-		py = y->A + y->cols*D[0] + D[2];
+		MatrixItem *pm= y->A + y->cols*D[0] + D[2];
+		ComplexItem py(*pm);
+		if(inc) PLUSX(z.r, py.c.r, one);
+		else MINUSX(z.r, py.c.r, one);
+		COPYtoImag(z, py.c.i);
+		assignItem(*pm, z);
 	}
-	if(inc) PLUSX(z.r, py->r, one);
-	else MINUSX(z.r, py->r, one);
-	COPYtoImag(z, py->i);
-	assignC(*py, z);
 }
 
 void assignRange(Complex &cy, const Complex &cx, const int *D0)
@@ -470,26 +630,30 @@ void assignRange(Complex &cy, const Complex &cx, const int *D0)
 		else{
 			Pmatrix x= toMatrix(cx);
 			if(x->len!=1) differentSize();
-			else assignC(cy, x->A[0]);
+			else{
+				ComplexItem c(x->A[0]);
+				assignC(cy, c);
+			}
 		}
 	}
 	else{
 		int rows = D[1]-D[0]+1;
 		int cols = D[3]-D[2]+1;
 		Pmatrix y= toMatrix(cy);
-		Complex *py = y->A + y->cols*D[0] + D[2];
+		MatrixItem *py = y->A + y->cols*D[0] + D[2];
 		if(!isMatrix(cx)){
 			if(rows!=1 || cols!=1) differentSize();
-			else assignC(*py, cx);
+			else assignItem(*py, cx);
 		}
 		else{
 			Pmatrix x= toMatrix(cx);
 			if(x->rows!=rows || x->cols!=cols) differentSize();
 			else{
-				Complex *px= x->A;
+				MatrixItem *px= x->A;
 				for(int r=0; r<rows; r++){
 					for(int c=0; c<cols; c++){
-						assignC(*py++, *px++);
+						ComplexItem cxi(*px++);
+						assignItem(*py++, cxi);
 					}
 					py+= y->cols - cols;
 				}
@@ -517,15 +681,16 @@ void _stdcall INDEXM(Complex &cy, const Complex &cx, int *D)
 	int cols=D[3]-D[2]+1;
 	int rows=D[1]-D[0]+1;
 	if(cols==1 && rows==1){
-		COPYM(cy, x->A[x->cols*D[0] + D[2]]);
+		ComplexItem c(x->A[x->cols*D[0] + D[2]]);
+		COPYM(cy, c);
 	}
 	else{
 		prepareM(cy, cols, rows);
-		Complex *A= toMatrix(cy)->A;
+		MatrixItem *A= toMatrix(cy)->A;
 		for(i=D[0]; i<=D[1]; i++){
-			Complex *B= x->A + x->cols*i + D[2];
+			MatrixItem *B= x->A + x->cols*i + D[2];
 			for(j=0; j<cols; j++){
-				COPYC(*A++, *B++);
+				copyItem(*A++, *B++);
 			}
 		}
 	}
@@ -538,8 +703,8 @@ void _stdcall EQUALM(Complex &cy, const Complex &ca, const Complex &cb)
 	matrixToComplex(cy);
 	Pmatrix a=toMatrix(ca), b=toMatrix(cb);
 	for(int i=0; i<a->len; i++){
-		Complex &a1= a->A[i], &b1= b->A[i];
-		if(CMPX(a1.r, b1.r) || CMPX(a1.i, b1.i)){
+		ComplexItem a1(a->A[i]), b1(b->A[i]);
+		if(CMPC(a1, b1)){
 			ZEROC(cy);
 			return;
 		}
@@ -554,7 +719,7 @@ void _stdcall NOTEQUALM(Complex &cy, const Complex &ca, const Complex &cb)
 }
 
 
-static void plusminusM(Complex *C, Complex *A, Complex *B, int rows, int cols, int zeroRow, int zeroCol, int cd, int ad, int bd, TbinaryC f)
+static void plusminusM(MatrixItem *C, MatrixItem *A, MatrixItem *B, int rows, int cols, int zeroRow, int zeroCol, int cd, int ad, int bd, TbinaryC f, Complex& t)
 {
 	int i, j;
 
@@ -563,11 +728,13 @@ static void plusminusM(Complex *C, Complex *A, Complex *B, int rows, int cols, i
 	bd-=cols;
 	for(i=zeroRow; i<rows; i++){
 		for(j=zeroCol; j<cols; j++){
-			f(*C, *A, *B);
+			ComplexItem a(*A), b(*B);
+			f(t, a, b);
+			copyItem(*C, t);
 			C++; A++; B++;
 		}
 		if(zeroCol){
-			COPYC(*C, *A);
+			copyItem(*C, *A);
 			C++; A++; B++;
 		}
 		C+=cd;
@@ -576,7 +743,7 @@ static void plusminusM(Complex *C, Complex *A, Complex *B, int rows, int cols, i
 	}
 	if(zeroRow){
 		for(j=0; j<cols; j++){
-			COPYC(*C, *A);
+			copyItem(*C, *A);
 			C++; A++;
 		}
 	}
@@ -597,34 +764,36 @@ C12=M4+M5
 C21=M6+M7
 C22=M2-M3+M5-M7
 
-T(2*n)=7*T(n)+18*n^2
+time: T(2*n)=7*T(n)+18*n^2
 */
-void _stdcall MULTMRecurse(int rows, int cols, int len, Complex *aA, int ad, Complex *bA, int bd, Complex *cA, int cd)
+static void _stdcall MULTMRecurse(int rows, int cols, int len, MatrixItem *aA, int ad, MatrixItem *bA, int bd, MatrixItem *cA, int cd, Tint prec)
 {
 	int i, j, k, rows2, cols2, len2, rows1, cols1, len1, lenM, lenM1;
-	Complex t, u, *S, *buf, *M[5], *A[2][2], *B[2][2];
+	Complex t, u, v;
+	MatrixItem *S, *buf, *M[5], *A[2][2], *B[2][2];
 	int oddRows, oddCols, oddLen;
-	Tint prec;
 	const int MINMULT=10;
 
 	if(rows<MINMULT || cols<MINMULT || len<MINMULT){
 		S=cA;
-		prec=S->r[-4];
 		t=ALLOCR(prec);
 		u=ALLOCR(prec);
+		v=ALLOCR(prec);
 		for(i=0; i<rows; i++){
 			for(j=0; j<cols; j++){
-				ZEROC(*S);
+				ZEROC(v);
 				for(k=0; k<len; k++){
 					if(error) break;
-					MULTC(t, aA[i*ad+k], bA[k*bd+j]);
-					PLUSC(u, *S, t);
-					COPYC(*S, u);
+					ComplexItem ai(aA[i*ad+k]), bi(bA[k*bd+j]);
+					MULTC(t, ai, bi);
+					PLUSC(u, v, t);
+					std::swap(v, u);
 				}
-				S++;
+				copyItem(*S++, v);
 			}
 			S+=cd-cols;
 		}
+		FREEC(v);
 		FREEC(u);
 		FREEC(t);
 		return;
@@ -650,51 +819,53 @@ void _stdcall MULTMRecurse(int rows, int cols, int len, Complex *aA, int ad, Com
 
 	lenM1=max(max(rows2*cols2, rows2*len2), len2*cols2);
 	lenM=lenM1*5;
-	M[0]= buf= new Complex[lenM];
+	M[0]= buf= new MatrixItem[lenM];
 	for(i=1; i<5; i++){
 		M[i]= M[i-1] + lenM1;
 	}
-	prec=cA->r[-4];
 	for(i=0; i<lenM; i++){
-		buf[i]=ALLOCR(prec);
+		buf[i].init();
 	}
-	plusminusM(M[0], A[0][1], A[1][1], rows2, len1, oddRows, 0, len1, ad, ad, MINUSC);
-	plusminusM(M[1], B[1][0], B[1][1], len1, cols2, 0, oddCols, cols2, bd, bd, PLUSC);
-	MULTMRecurse(rows2, cols2, len1, M[0], len1, M[1], cols2, M[2], cols2);
-	plusminusM(M[0], A[0][0], A[1][1], rows2, len2, oddRows, oddLen, len2, ad, ad, PLUSC);
-	plusminusM(M[1], B[0][0], B[1][1], len2, cols2, oddLen, oddCols, cols2, bd, bd, PLUSC);
-	MULTMRecurse(rows2, cols2, len2, M[0], len2, M[1], cols2, M[3], cols2);
-	plusminusM(M[0], A[0][0], A[0][1], rows2, len1, 0, 0, len1, ad, ad, PLUSC);
-	MULTMRecurse(rows2, cols1, len1, M[0], len1, B[1][1], bd, M[4], cols1);
-	plusminusM(M[0], B[1][0], B[0][0], len1, cols2, 0, 0, cols2, bd, bd, MINUSC);
-	MULTMRecurse(rows1, cols2, len1, A[1][1], ad, M[0], cols2, M[1], cols2);
-	plusminusM(M[0], M[2], M[3], rows2, cols2, 0, 0, cols2, cols2, cols2, PLUSC);
-	plusminusM(M[2], M[0], M[4], rows2, cols2, 0, oddCols, cols2, cols2, cols1, MINUSC);
-	plusminusM(cA, M[2], M[1], rows2, cols2, oddRows, 0, cd, cols2, cols2, PLUSC);
-	plusminusM(M[2], B[0][1], B[1][1], len2, cols1, oddLen, 0, cols1, bd, bd, MINUSC);
-	MULTMRecurse(rows2, cols1, len2, A[0][0], ad, M[2], cols1, M[0], cols1);
-	plusminusM(cA+cols2, M[4], M[0], rows2, cols1, 0, 0, cd, cols1, cols1, PLUSC);
-	plusminusM(M[4], A[1][0], A[1][1], rows1, len2, 0, oddLen, len2, ad, ad, PLUSC);
-	MULTMRecurse(rows1, cols2, len2, M[4], len2, B[0][0], bd, M[2], cols2);
-	plusminusM(cA+rows2*cd, M[1], M[2], rows1, cols2, 0, 0, cd, cols2, cols2, PLUSC);
-	plusminusM(M[1], M[3], M[0], rows1, cols1, 0, 0, cols1, cols2, cols1, PLUSC);
-	plusminusM(M[0], M[1], M[2], rows1, cols1, 0, 0, cols1, cols1, cols2, MINUSC);
-	plusminusM(M[2], A[0][0], A[1][0], rows1, len2, 0, 0, len2, ad, ad, MINUSC);
-	plusminusM(M[1], B[0][0], B[0][1], len2, cols1, 0, 0, cols1, bd, bd, PLUSC);
-	MULTMRecurse(rows1, cols1, len2, M[2], len2, M[1], cols1, M[3], cols1);
-	plusminusM(cA+rows2*cd+cols2, M[0], M[3], rows1, cols1, 0, 0, cd, cols1, cols1, MINUSC);
-
+	t=ALLOCR(prec);
+	
+	plusminusM(M[0], A[0][1], A[1][1], rows2, len1, oddRows, 0, len1, ad, ad, MINUSC, t);
+	plusminusM(M[1], B[1][0], B[1][1], len1, cols2, 0, oddCols, cols2, bd, bd, PLUSC, t);
+	MULTMRecurse(rows2, cols2, len1, M[0], len1, M[1], cols2, M[2], cols2, prec);
+	plusminusM(M[0], A[0][0], A[1][1], rows2, len2, oddRows, oddLen, len2, ad, ad, PLUSC, t);
+	plusminusM(M[1], B[0][0], B[1][1], len2, cols2, oddLen, oddCols, cols2, bd, bd, PLUSC, t);
+	MULTMRecurse(rows2, cols2, len2, M[0], len2, M[1], cols2, M[3], cols2, prec);
+	plusminusM(M[0], A[0][0], A[0][1], rows2, len1, 0, 0, len1, ad, ad, PLUSC, t);
+	MULTMRecurse(rows2, cols1, len1, M[0], len1, B[1][1], bd, M[4], cols1, prec);
+	plusminusM(M[0], B[1][0], B[0][0], len1, cols2, 0, 0, cols2, bd, bd, MINUSC, t);
+	MULTMRecurse(rows1, cols2, len1, A[1][1], ad, M[0], cols2, M[1], cols2, prec);
+	plusminusM(M[0], M[2], M[3], rows2, cols2, 0, 0, cols2, cols2, cols2, PLUSC, t);
+	plusminusM(M[2], M[0], M[4], rows2, cols2, 0, oddCols, cols2, cols2, cols1, MINUSC, t);
+	plusminusM(cA, M[2], M[1], rows2, cols2, oddRows, 0, cd, cols2, cols2, PLUSC, t);
+	plusminusM(M[2], B[0][1], B[1][1], len2, cols1, oddLen, 0, cols1, bd, bd, MINUSC, t);
+	MULTMRecurse(rows2, cols1, len2, A[0][0], ad, M[2], cols1, M[0], cols1, prec);
+	plusminusM(cA+cols2, M[4], M[0], rows2, cols1, 0, 0, cd, cols1, cols1, PLUSC, t);
+	plusminusM(M[4], A[1][0], A[1][1], rows1, len2, 0, oddLen, len2, ad, ad, PLUSC, t);
+	MULTMRecurse(rows1, cols2, len2, M[4], len2, B[0][0], bd, M[2], cols2, prec);
+	plusminusM(cA+rows2*cd, M[1], M[2], rows1, cols2, 0, 0, cd, cols2, cols2, PLUSC, t);
+	plusminusM(M[1], M[3], M[0], rows1, cols1, 0, 0, cols1, cols2, cols1, PLUSC, t);
+	plusminusM(M[0], M[1], M[2], rows1, cols1, 0, 0, cols1, cols1, cols2, MINUSC, t);
+	plusminusM(M[2], A[0][0], A[1][0], rows1, len2, 0, 0, len2, ad, ad, MINUSC, t);
+	plusminusM(M[1], B[0][0], B[0][1], len2, cols1, 0, 0, cols1, bd, bd, PLUSC, t);
+	MULTMRecurse(rows1, cols1, len2, M[2], len2, M[1], cols1, M[3], cols1, prec);
+	plusminusM(cA+rows2*cd+cols2, M[0], M[3], rows1, cols1, 0, 0, cd, cols1, cols1, MINUSC, t);
+	
+	FREEC(t);
 	for(i=0; i<lenM; i++){
-		FREEC(buf[i]);
+		buf[i].free();
 	}
 	delete[] buf;
 }
 
-
 void _stdcall MULTM(Complex &cy, const Complex &ca, const Complex &cb)
 {
 	int colsb, rowsa, n;
-	Complex *S;
+	bool scalar;
+	MatrixItem *S, m;
 
 	if(!isMatrix(ca)){
 		MULTCM(cy, cb, ca);
@@ -704,11 +875,11 @@ void _stdcall MULTM(Complex &cy, const Complex &ca, const Complex &cb)
 		MULTCM(cy, ca, cb);
 		return;
 	}
-	Pmatrix a=toMatrix(ca), b=toMatrix(cb), y=toMatrix(cy);
+	Pmatrix a=toMatrix(ca), b=toMatrix(cb);
 	colsb= b->cols;
 	rowsa= a->rows;
-	if(isVector(ca) && isVector(cb) &&
-		(a->cols!=1 || b->rows!=1)){
+	scalar= isVector(ca) && isVector(cb) && (a->cols!=1 || b->rows!=1);
+	if(scalar){
 		//scalar product of vectors
 		n=a->len;
 		if(n!=b->len){
@@ -716,7 +887,8 @@ void _stdcall MULTM(Complex &cy, const Complex &ca, const Complex &cb)
 			return;
 		}
 		matrixToComplex(cy);
-		S=&cy;
+		m.init();
+		S=&m;
 		colsb=rowsa=1;
 	}
 	else{
@@ -726,10 +898,16 @@ void _stdcall MULTM(Complex &cy, const Complex &ca, const Complex &cb)
 			return;
 		}
 		prepareM(cy, colsb, rowsa);
-		if(!y->len) return;
-		S= y->A;
+		if(!toMatrix(cy)->len) return;
+		S= toMatrix(cy)->A;
 	}
-	MULTMRecurse(rowsa, colsb, n, a->A, a->cols, b->A, colsb, S, colsb);
+	MULTMRecurse(rowsa, colsb, n, a->A, a->cols, b->A, colsb, S, colsb, cy.r[-4]);
+
+	if(scalar){
+		ComplexItem c(m);
+		COPYC(cy, c);
+		m.free();
+	}
 }
 
 void _fastcall SETDIAGM(Complex &cx, Tuint n)
@@ -741,13 +919,14 @@ void _fastcall SETDIAGM(Complex &cx, Tuint n)
 		return;
 	}
 	Pmatrix x= toMatrix(cx);
-	Complex *p= x->A;
 	for(i=0; i<x->len; i++){
-		ZEROC(*p++);
+		MatrixItem &m = x->A[i];
+		m.free();
+		m.init();
 	}
-	p= x->A;
+	MatrixItem *p= x->A;
 	for(i=min(x->rows, x->cols)-1; i>=0; i--){
-		SETX((*p).r, n);
+		p->numerator = n;
 		p+= 1+x->cols;
 	}
 }
@@ -816,7 +995,8 @@ void _fastcall ELIMM(Complex &cx)
 	Pmatrix m= toMatrix(cx);
 
 	int n;
-	Complex t, y, *p, *u, *v, *w, *z, *zp, *a;
+	Complex t, y;
+	MatrixItem *p, *u, *v, *w, *z, *zp, *a;
 	Tint prec=getPrecision(cx);
 	t=ALLOCR(prec);
 	y=ALLOCR(prec);
@@ -825,7 +1005,7 @@ void _fastcall ELIMM(Complex &cx)
 	for(p=a=m->A, zp=p+n; p<zp && p<z; p+=n, zp+=n, a++){ //(p++ is inside cycle)
 		//find not zero pivot
 		u=p;
-		while(isZero(*u)){
+		while(u->isZero()){
 			if((u+=n)>=z){ //all zeros => to next column
 				a++;
 				u=++p;
@@ -835,31 +1015,34 @@ void _fastcall ELIMM(Complex &cx)
 		if(u==p){
 			//divide row where is pivot
 			for(u++; u<zp; u++){
-				DIVC(t, *u, *p);
-				COPYC(*u, t);
+				ComplexItem cu(*u), cp(*p);
+				DIVC(t, cu, cp);
+				copyItem(*u, t);
 			}
-			ONEC(*p++);
+			p++->set(1);
 		}
 		else{
 			//swap both rows and divide row which has pivot
 			w=u;
-			ONEC(*p++);
+			p++->set(1);
 			for(v=p, u++; v<zp; v++, u++){
-				DIVC(t, *u, *w);
-				COPYC(*u, *v);
-				COPYC(*v, t);
+				ComplexItem cu(*u), cw(*w);
+				DIVC(t, cu, cw);
+				copyItem(*u, *v);
+				copyItem(*v, t);
 			}
-			ZEROC(*w);
+			w->set(0);
 		}
 		//zero column where is pivot
 		for(w=a; w<z; w+=n){
-			if(w+1!=p && !isZero(*w)){ //except pivot
+			if(w+1!=p && !w->isZero()){ //except pivot
 				for(u=w+1, v=p; v<zp; u++, v++){
-					MULTC(t, *v, *w);
-					MINUSC(y, *u, t);
-					COPYC(*u, y);
+					ComplexItem cv(*v), cw(*w), cu(*u);
+					MULTC(t, cv, cw);
+					MINUSC(y, cu, t);
+					copyItem(*u, y);
 				}
-				ZEROC(*w);
+				w->set(0);
 			}
 		}
 	}
@@ -879,7 +1062,8 @@ void _fastcall DETRANKM(Complex &D, Complex &cx, int det)
 	SETM(D, 1);
 
 	int n, result;
-	Complex t, y, *p, *u, *v, *w, *z, *zp;
+	Complex t, y;
+	MatrixItem *p, *u, *v, *w, *z, *zp;
 	Tint prec=getPrecision(cx);
 	t=ALLOCR(prec);
 	y=ALLOCR(prec);
@@ -888,7 +1072,7 @@ void _fastcall DETRANKM(Complex &D, Complex &cx, int det)
 	for(result=0, p=m->A, zp=p+n; p<zp && p<z; result++, p+=n, zp+=n){
 		//find not zero pivot
 		u=p;
-		while(isZero(*u)){
+		while(u->isZero()){
 			if((u+=n)>=z){
 				if(det){
 					ZEROC(D); //matrix is not regular
@@ -902,26 +1086,30 @@ void _fastcall DETRANKM(Complex &D, Complex &cx, int det)
 			//swap rows
 			if(det) NEGC(D);
 			for(v=p; v<zp; v++, u++){
-				COPYC(t, *u);
-				COPYC(*u, *v);
-				COPYC(*v, t);
+				ComplexItem tu(*u);
+				COPYC(t, tu);
+				copyItem(*u, *v);
+				copyItem(*v, t);
 			}
 		}
 		//divide row where is pivot
+		ComplexItem cp(*p);
 		if(det){
-			MULTC(t, D, *p);
+			MULTC(t, D, cp);
 			COPYC(D, t);
 		}
 		for(v=p+1; v<zp; v++){
-			DIVC(t, *v, *p);
-			COPYC(*v, t);
+			ComplexItem cv(*v);
+			DIVC(t, cv, cp);
+			copyItem(*v, t);
 		}
 		//zero column where is pivot
 		for(w=(p++)+n; w<z; w+=n){
 			for(u=w+1, v=p; v<zp; u++, v++){
-				MULTC(t, *v, *w);
-				MINUSC(y, *u, t);
-				COPYC(*u, y);
+				ComplexItem cv(*v), cw(*w), cu(*u);
+				MULTC(t, cv, cw);
+				MINUSC(y, cu, t);
+				copyItem(*u, y);
 			}
 		}
 	}
@@ -956,15 +1144,15 @@ void _stdcall INVERTM(Complex &y, Complex &cx)
 	ELIMM(y);
 	TRANSPM(y);
 	x= toMatrix(y);
-	if(!x->len || isZero(x->A[n-1])){
+	if(!x->len || x->A[n-1].isZero()){
 		cerror(1050, "Matrix is not regular");
 	}
 	x->rows -= x->cols;
 	x->len -= n;
 	for(int i=0; i<n; i++){
-		FREEC(x->A[i]);
+		x->A[i].free();
 	}
-	memmove(x->A, x->A + n, x->len*sizeof(Complex));
+	memmove(x->A, x->A + n, x->len*sizeof(MatrixItem));
 	TRANSPM(y);
 	FREEM(t);
 }
@@ -972,18 +1160,18 @@ void _stdcall INVERTM(Complex &y, Complex &cx)
 void check1x1(Complex &cx)
 {
 	Pmatrix x= toMatrix(cx);
-	if(isMatrix(cx) && x->rows==1 && x->cols==1){
-		Complex w= x->A[0];
+	if(isMatrix(cx) && x->len==1){
+		ComplexItem w(x->A[0]);
 		x->len=0;
 		COPYM(cx, w);
-		FREEC(w);
+		w.free();
 	}
 }
 
 void _fastcall EQUSOLVEM(Complex &cx)
 {
 	int r, c, n, i;
-	Complex *p, *d, *A;
+	MatrixItem *p, *d, *A;
 
 	Pmatrix x= toMatrix(cx);
 	if(!isMatrix(cx) || x->cols<2){
@@ -996,16 +1184,16 @@ void _fastcall EQUSOLVEM(Complex &cx)
 	for(r=c=0; c<n-1; c++){
 		d= &A[c];
 		p= d + r*n;
-		if(r>=x->rows || isZero(*p)){
-			ZEROC(*d);
+		if(r>=x->rows || p->isZero()){
+			d->set(0);
 		}
 		else{
 			r++;
-			COPYC(*d, A[r*n-1]);
+			copyItem(*d, A[r*n-1]);
 		}
 	}
 	for(; r<x->rows; r++){
-		if(!isZero(A[(r+1)*n-1])){
+		if(!A[(r+1)*n-1].isZero()){
 			cerror(1055, "Equations are not solvable");
 		}
 	}
@@ -1013,7 +1201,7 @@ void _fastcall EQUSOLVEM(Complex &cx)
 	x->rows= 1;
 	x->cols= n;
 	for(i=n; i<x->len; i++){
-		FREEC(A[i]);
+		A[i].free();
 	}
 	x->len= n;
 	check1x1(cx);
@@ -1098,20 +1286,26 @@ void _stdcall VERTM(Complex &y, const Complex &ca, const Complex &cb)
 		return;
 	}
 	prepareM(y, a);
-	Complex *Y, *A, *B, t, u;
+	MatrixItem *Y, *A, *B;
+	Complex t, u, v;
 	Y= toMatrix(y)->A;
 	A= a->A;
 	B= b->A;
-	t=ALLOCR(getPrecision(y));
-	u=ALLOCR(getPrecision(y));
+	Tint p = getPrecision(y);
+	t=ALLOCR(p);
+	u=ALLOCR(p);
+	v=ALLOCR(p);
 	int i, j, k;
 	for(k=0; k<3; k++){
 		i=(k+1)%3;
 		j=(k+2)%3;
-		MULTC(t, A[i], B[j]);
-		MULTC(u, A[j], B[i]);
-		MINUSC(Y[k], t, u);
+		ComplexItem ai(A[i]), bj(B[j]), aj(A[j]), bi(B[i]);
+		MULTC(t, ai, bj);
+		MULTC(u, aj, bi);
+		MINUSC(v, t, u);
+		copyItem(Y[k], v);
 	}
+	FREEC(v);
 	FREEC(u);
 	FREEC(t);
 }
@@ -1120,7 +1314,8 @@ void _stdcall VERTM(Complex &y, const Complex &ca, const Complex &cb)
 void _stdcall POLYNOMM(Complex &y, const Complex &cx, const Complex &cp)
 {
 	int i, j, n=1;
-	Complex t, *m, *d, *s;
+	Complex t, u;
+	MatrixItem *m, *d, *s;
 
 	if(!isVector(cp)){
 		cerror(1056, "Parameter is not a vector");
@@ -1136,7 +1331,9 @@ void _stdcall POLYNOMM(Complex &y, const Complex &cx, const Complex &cp)
 	SETM(y, 0);
 	Tint prec=getPrecision(y);
 	t=ALLOCR(prec);
+	u=ALLOCR(prec);
 	for(m=&p->A[p->len-1]; m>=p->A; m--){
+		ComplexItem cm(*m);
 		MULTM(t, y, cx);
 		if(n>1){
 			s= toMatrix(t)->A;
@@ -1144,11 +1341,13 @@ void _stdcall POLYNOMM(Complex &y, const Complex &cx, const Complex &cp)
 			d= toMatrix(y)->A;
 			for(i=0; i<n; i++){
 				for(j=0; j<n; j++){
+					ComplexItem cs(*s);
 					if(i==j){
-						PLUSC(*d, *s, *m);
+						PLUSC(u, cs, cm);
+						copyItem(*d, u);
 					}
 					else{
-						COPYC(*d, *s);
+						copyItem(*d, cs);
 					}
 					s++;
 					d++;
@@ -1156,9 +1355,10 @@ void _stdcall POLYNOMM(Complex &y, const Complex &cx, const Complex &cp)
 			}
 		}
 		else{
-			PLUSC(y, t, *m);
+			PLUSC(y, t, cm);
 		}
 	}
+	FREEC(u);
 	FREEM(t);
 }
 //-------------------------------------------------------------------
@@ -1167,9 +1367,14 @@ void _fastcall MAPM(Complex &cx, TunaryC0 f)
 {
 	if(noMatrix(cx, f)) return;
 	Pmatrix x= toMatrix(cx);
+	Complex t= ALLOCR(getPrecision(cx));
 	for(int i=0; i<x->len; i++){
-		f(x->A[i]);
+		ComplexItem xi(x->A[i]);
+		COPYC(t, xi);
+		f(t);
+		copyItem(x->A[i], t);
 	}
+	FREEC(t);
 }
 
 void _fastcall MAPM(Complex &cy, const Complex &cx, TunaryC2 f)
@@ -1177,9 +1382,13 @@ void _fastcall MAPM(Complex &cy, const Complex &cx, TunaryC2 f)
 	if(noMatrix(cy, cx, f)) return;
 	Pmatrix x= toMatrix(cx), y=toMatrix(cy);
 	prepareM(cy, x);
+	Complex z = ALLOCR(getPrecision(cy));
 	for(int i=0; i<x->len; i++){
-		f(y->A[i], x->A[i]);
+		ComplexItem t(x->A[i]);
+		f(z, t);
+		copyItem(y->A[i], z);
 	}
+	FREEC(z);
 }
 
 void _stdcall MAPM(Complex &cx, Tuint n, TbinaryCI0 f)
@@ -1189,9 +1398,14 @@ void _stdcall MAPM(Complex &cx, Tuint n, TbinaryCI0 f)
 	}
 	else{
 		Pmatrix x= toMatrix(cx);
+		Complex t= ALLOCR(getPrecision(cx));
 		for(int i=0; i<x->len; i++){
-			f(x->A[i], n);
+			ComplexItem xi(x->A[i]);
+			COPYC(t, xi);
+			f(t, n);
+			copyItem(x->A[i], t);
 		}
+		FREEC(t);
 	}
 }
 
@@ -1202,12 +1416,15 @@ void _stdcall MAPM(Complex &cy, const Complex &cx, Tuint n, TbinaryCI2 f)
 		f(cy, cx, n);
 	}
 	else{
-		Pmatrix x= toMatrix(cx);
+		Pmatrix x= toMatrix(cx), y=toMatrix(cy);
 		prepareM(cy, x);
-		Complex *y= toMatrix(cy)->A;
+		Complex z= ALLOCR(getPrecision(cy));
 		for(int i=0; i<x->len; i++){
-			f(y[i], x->A[i], n);
+			ComplexItem xi(x->A[i]);
+			f(z, xi, n);
+			copyItem(y->A[i], z);
 		}
+		FREEC(z);
 	}
 }
 
@@ -1217,10 +1434,13 @@ void _stdcall MAP1M(Complex &cy, const Complex &ca, const Complex &b, TbinaryC f
 	if(isMatrix(b)){ errMatrix(); return; }
 	Pmatrix a=toMatrix(ca), y=toMatrix(cy);
 	prepareM(cy, a);
+	Complex z = ALLOCR(getPrecision(cy));
 	for(int i=0; i<y->len; i++){
-		Complex &yi = y->A[i], &ai = a->A[i];
-		f(yi, ai, b);
+		ComplexItem ai(a->A[i]);
+		f(z, ai, b);
+		copyItem(y->A[i], z);
 	}
+	FREEC(z);
 }
 
 void _stdcall MAPM(Complex &cy, const Complex &ca, const Complex &cb, TbinaryC f)
@@ -1229,9 +1449,13 @@ void _stdcall MAPM(Complex &cy, const Complex &ca, const Complex &cb, TbinaryC f
 	if(!sameSizeM(ca, cb)) return;
 	Pmatrix a=toMatrix(ca), b=toMatrix(cb), y=toMatrix(cy);
 	prepareM(cy, a);
+	Complex z = ALLOCR(getPrecision(cy));
 	for(int i=0; i<y->len; i++){
-		f(y->A[i], a->A[i], b->A[i]);
+		ComplexItem ta(a->A[i]), tb(b->A[i]);
+		f(z, ta, tb);
+		copyItem(y->A[i], z);
 	}
+	FREEC(z);
 }
 
 void _stdcall COPYM(Complex &dest, const Complex &src)
@@ -1275,10 +1499,18 @@ void _stdcall LSHIM(Complex &y, const Complex &a, int n)
 	MAPM(y, a, n, (TbinaryCI2)LSHIC);
 }
 
-void _fastcall NEGM(Complex &x)
+void _fastcall NEGM(Complex &cx)
 {
-	MAPM(x, NEGC);
+	if(noMatrix(cx, NEGC)) return;
+	Pmatrix x= toMatrix(cx);
+	for(int i=0; i<x->len; i++){
+		MatrixItem &m = x->A[i];
+		if(m.denominator) m.denominator = -m.denominator;
+		else NEGX(m.r);
+		if(m.i) NEGX(m.i);
+	}
 }
+
 void _fastcall CONJGM(Complex &x)
 {
 	MAPM(x, CONJGC);
@@ -1361,11 +1593,12 @@ void _stdcall MINMAXM(Complex &y, const Complex &cx, int desc)
 {
 	if(noMatrixOrEmpty(y, cx, COPYC)) return;
 	Pmatrix x= toMatrix(cx);
-	Complex *A= x->A;
+	MatrixItem *A= x->A;
 	int num= x->len;
-	Complex z= A[--num];
+	ComplexItem z(A[--num]);
 	while(num--){
-		if(CMPC(z, A[num])*desc > 0)  z=A[num];
+		ComplexItem u(A[num]);
+		if(CMPC(z, u)*desc > 0)  z.set(u);
 	}
 	COPYM(y, z);
 }
@@ -1414,14 +1647,16 @@ int _stdcall SUMM(Complex &y0, const Complex &cx, int start, int step)
 	if(step==2) checkLR(cx);
 	if(noMatrixOrEmpty(y0, cx, COPYC)) return 1;
 	Pmatrix x= toMatrix(cx);
-	Complex *A= x->A;
+	MatrixItem *A= x->A;
 	int num= x->len;
 	matrixToComplex(y0);
 	y=y0;
 	t=ALLOCR(y.r[-4]);
-	COPYC(y, A[start]);
+	ComplexItem a1(A[start]);
+	COPYC(y, a1);
 	for(i=start+step; i<num; i+=step){
-		PLUSC(t, y, A[i]);
+		ComplexItem ai(A[i]);
+		PLUSC(t, y, ai);
 		std::swap(t, y);
 		count++;
 	}
@@ -1453,7 +1688,7 @@ int _stdcall SUMMULM(Complex &y0, const Complex &cx, int start, int step, int di
 	if(step==2) checkLR(cx);
 	if(noMatrixOrEmpty(y0, cx, SQRC)) return 1;
 	Pmatrix x= toMatrix(cx);
-	Complex *A= x->A;
+	MatrixItem *A= x->A;
 	int num= x->len;
 	matrixToComplex(y0);
 	y=y0;
@@ -1461,7 +1696,14 @@ int _stdcall SUMMULM(Complex &y0, const Complex &cx, int start, int step, int di
 	t=ALLOCR(y.r[-4]);
 	u=ALLOCR(y.r[-4]);
 	for(i=start; i<num; i+=step){
-		MULTC(u, A[i], A[i+diff]);
+		ComplexItem ai(A[i]);
+		if(diff) {
+			ComplexItem ad(A[i+diff]);
+			MULTC(u, ai, ad);
+		}
+		else {
+			SQRC(u, ai);
+		}
 		PLUSC(t, y, u);
 		std::swap(t, y);
 		count++;
@@ -1747,7 +1989,7 @@ void _stdcall HARMONM(Complex &y0, const Complex &cx)
 
 	if(noMatrixOrEmpty(y0, cx, COPYC)) return;
 	Pmatrix x= toMatrix(cx);
-	Complex *A= x->A;
+	MatrixItem *A= x->A;
 	int num= x->len;
 	matrixToComplex(y0);
 	Tint prec=getPrecision(y0);
@@ -1756,7 +1998,8 @@ void _stdcall HARMONM(Complex &y0, const Complex &cx)
 	u=ALLOCR(prec);
 	ZEROC(y);
 	for(i=0; i<num; i++){
-		INVERTC(u, A[i]);
+		ComplexItem a(A[i]);
+		INVERTC(u, a);
 		PLUSC(t, y, u);
 		std::swap(t, y);
 	}
@@ -1779,14 +2022,16 @@ int _stdcall PRODUCTM(Complex &y0, const Complex &cx)
 
 	if(noMatrixOrEmpty(y0, cx, COPYC)) return 1;
 	Pmatrix x= toMatrix(cx);
-	Complex *A= x->A;
+	MatrixItem *A= x->A;
 	int num= x->len;
 	matrixToComplex(y0);
 	y=y0;
 	t=ALLOCR(y.r[-4]);
-	MULTC(y, A[0], A[1]);
+	ComplexItem a0(A[0]), a1(A[1]);
+	MULTC(y, a0, a1);
 	for(i=2; i<num; i++){
-		MULTC(t, y, A[i]);
+		ComplexItem ai(A[i]);
+		MULTC(t, y, ai);
 		std::swap(t, y);
 		count++;
 	}
@@ -1816,10 +2061,10 @@ void _stdcall REPEATOPX(Tbinary f, Complex &y, const Complex &cx, int errId, cha
 
 	if(noMatrixOrEmpty(y, cx, COPYC)) return;
 	Pmatrix x= toMatrix(cx);
-	Complex *A= x->A;
+	MatrixItem *A= x->A;
 	int num= x->len;
 	for(i=0; i<num; i++){
-		if(isImag(A[i])){
+		if(!isZero_safe(A[i].i)){
 			cerror(errId, errStr);
 			return;
 		}
@@ -1827,9 +2072,11 @@ void _stdcall REPEATOPX(Tbinary f, Complex &y, const Complex &cx, int errId, cha
 	y0=y.r;
 	t=ALLOCX(y0[-4]);
 	ZEROX_safe(y.i);
-	f(y0, A[0].r, A[1].r);
+	ComplexItem a0(A[0]), a1(A[1]);
+	f(y0, a0.c.r, a1.c.r);
 	for(i=2; i<num; i++){
-		f(t, y0, A[i].r);
+		ComplexItem ai(A[i]);
+		f(t, y0, ai.c.r);
 		std::swap(t, y0);
 	}
 	if(y.r!=y0){
@@ -1851,33 +2098,34 @@ void _stdcall LCMM(Complex &y, const Complex &cx)
 
 int __cdecl SORTCMP(const void *elem1, const void *elem2)
 {
-	return CMPC(*(const Complex*)elem1, *(const Complex*)elem2);
+	ComplexItem c1(*(const MatrixItem*)elem1), c2(*(const MatrixItem*)elem2);
+	return CMPC(c1, c2);
 }
 
 int __cdecl SORTDCMP(const void *elem1, const void *elem2)
 {
-	return CMPC(*(const Complex*)elem2, *(const Complex*)elem1);
+	return SORTCMP(elem2, elem1);
 }
 
 void _fastcall SORTM(Complex &cx)
 {
 	if(!isMatrix(cx)) return;
 	Pmatrix x= toMatrix(cx);
-	qsort(x->A, x->len, sizeof(Complex), SORTCMP);
+	qsort(x->A, x->len, sizeof(MatrixItem), SORTCMP);
 }
 
 void _fastcall SORTDM(Complex &cx)
 {
 	if(!isMatrix(cx)) return;
 	Pmatrix x= toMatrix(cx);
-	qsort(x->A, x->len, sizeof(Complex), SORTDCMP);
+	qsort(x->A, x->len, sizeof(MatrixItem), SORTDCMP);
 }
 
 void _fastcall REVERSEM(Complex &cx)
 {
 	if(!isMatrix(cx)) return;
 	Pmatrix x= toMatrix(cx);
-	Complex *b, *e;
+	MatrixItem *b, *e;
 	if(x->len)
 		for(b=x->A, e=&x->A[x->len-1]; b<e; b++, e--){
 			std::swap(*b, *e);
@@ -1890,14 +2138,16 @@ void _stdcall MEDIANM(Complex &y, Complex &cx)
 	if(noMatrixOrEmpty(y, cx, COPYC)) return;
 	Pmatrix x= toMatrix(cx);
 	int num= x->len;
-	Complex *A= x->A;
+	MatrixItem *A= x->A;
 	matrixToComplex(y);
 	SORTM(cx);
 	if(num&1){
-		COPYC(y, A[num>>1]);
+		ComplexItem a(A[num>>1]);
+		COPYC(y, a);
 	}
 	else{
-		PLUSC(y, A[num>>1], A[(num>>1)-1]);
+		ComplexItem a1(A[num>>1]), a2(A[(num>>1)-1]);
+		PLUSC(y, a1, a2);
 		DIVI1C(y, 2);
 	}
 }
@@ -1909,13 +2159,14 @@ void _stdcall MODEM(Complex &y, Complex &cx)
 
 	if(noMatrixOrEmpty(y, cx, COPYC)) return;
 	Pmatrix x= toMatrix(cx);
-	Complex *A= x->A;
-	Complex first= A[0];
+	MatrixItem *A= x->A;
+	ComplexItem first(A[0]);
 	SORTM(cx);
 	m=1;
 	j=1;
 	for(i=1; i<x->len; i++){
-		if(CMPC(A[i-1], A[i])==0){
+		ComplexItem a0(A[i-1]), a1(A[i]);
+		if(CMPC(a0, a1)==0){
 			j++;
 		}
 		else{
@@ -1954,7 +2205,8 @@ struct IntegralData
 		depth++;
 		F[1].r=F[1].i=F[3].r=F[3].i=0;
 		Tint prec=getPrecision(y);
-		Pint mem=ALLOCN(6, prec, &t.r, &t.i, &u.r, &u.i, &h.r, &h.i);
+		Pint mem=ALLOCN(3, prec, &t.r, &u.r, &h.r);
+		t.i = u.i = h.i = 0;
 		DIVIM(h, h0, 2);
 		PLUSM(t, a, h);
 		PLUSM(u, t, h0);
@@ -2011,6 +2263,9 @@ struct IntegralData
 		FREE_ARRAYM(t);
 		FREE_ARRAYM(u);
 		FREE_ARRAYM(h);
+		FREEX(t.i);
+		FREEX(u.i);
+		FREEX(h.i);
 		FREEX(mem);
 		depth--;
 	}

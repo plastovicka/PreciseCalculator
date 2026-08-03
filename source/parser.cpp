@@ -207,6 +207,12 @@ void _stdcall ASSIGNM(Complex &y, const Complex &a, const Complex &x)
 	}
 }
 
+void _stdcall assignM(const Complex &a, const MatrixItem &x)
+{
+	ComplexItem c(x);
+	ASSIGNM(c, a, c);
+}
+
 void INCDEC(Complex &y, const Complex &a, bool inc)
 {
 	if(!isVariable(a) && !isRange(a)){
@@ -1225,7 +1231,7 @@ DWORD WINAPI calcThread(char *param)
 	if(*param==0){
 		delete[] param;
 		param= new char[1000];
-		strcpy(param, "invert(2,3\\4,6");
+		strcpy(param, "gcd(12,30,48");
 	}
 #endif
 	output=0;

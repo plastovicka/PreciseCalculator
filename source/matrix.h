@@ -15,11 +15,37 @@
 #define MatrixMaxLen 100000
 #endif
 
+struct MatrixItem
+{
+	union {
+		Tint numerator; //unsigned numerator if denominator!=0
+		Pint r; //real part if denominator==0
+	};
+	//i must placed after r as in struct Complex
+	Pint i; //imaginary part, can be null
+	Tint denominator; //signed denominator
+
+	void init();
+	void free();
+	bool isZero() { return (denominator ? numerator==0 : ::isZero(r)) && isZero_safe(i); }
+	void set(Tuint n);
+};
+
+struct ComplexItem
+{
+	Complex c;
+	Numx x; //storage for compact representation of c.r if it is a fraction
+	ComplexItem(const MatrixItem &m);
+	operator Complex& () { return c; }
+	void set(const ComplexItem &s);
+	void free();
+};
+
 struct Matrix {
 	Tint tag;  //-12
-	Complex *A;
+	MatrixItem *A;
 	int
-	 alen, //allocated length (count of Complex structures)
+	 alen, //allocated length (count of MatrixItem structures)
 	 len,  //used length
 	 cols, //number of columns
 	 rows; //number of rows

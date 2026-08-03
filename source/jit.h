@@ -79,6 +79,7 @@ Tcompiled *jitCurGet(Tlen idx);
 void doOp();
 
 void _stdcall ASSIGNM(Complex &y, const Complex &a, const Complex &x);
+void _stdcall assignM(const Complex &a, const MatrixItem &x);
 void _stdcall INCC(Complex &y, const Complex &a);
 void _stdcall DECC(Complex &y, const Complex &a);
 void FILTERM();
