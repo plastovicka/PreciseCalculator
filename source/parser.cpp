@@ -111,7 +111,7 @@ void _stdcall SETBASEX(Complex &y, const Complex &b, const Complex &x)
 	baseIn=(int)b.r[0];
 }
 
-void _stdcall ANS(Complex &y)
+void _fastcall ANS(Complex &y)
 {
 	COPYM(y, ans);
 }
@@ -198,7 +198,9 @@ void deref(Complex &x)
 	}
 }
 
+#ifndef CONSOLE
 SRWLOCK varLock = SRWLOCK_INIT;
+#endif
 
 void _stdcall ASSIGNM(Complex &y, const Complex &a, const Complex &x)
 {

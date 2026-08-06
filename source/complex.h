@@ -146,6 +146,7 @@ typedef void(_stdcall *TunaryC2)(Complex &, const Complex &);
 typedef void(_stdcall *TbinaryCI0)(Complex &, Tuint i);
 typedef void(_stdcall *TbinaryCI2)(Complex &, const Complex &, Tuint i);
 typedef void(_stdcall *TbinaryC)(Complex &, const Complex &, const Complex &);
+typedef void(_fastcall *TnularyC0)(Complex &);
 typedef void(_stdcall *TnularyC)(Complex &);
 typedef void(_stdcall *TvarargC)(Complex &, unsigned, const Complex*);
 typedef void(_stdcall *TarrayargC)(Complex &, const Complex*);

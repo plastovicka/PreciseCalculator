@@ -380,7 +380,7 @@ void ConstOp(const Top *o)
 	fc = o->cfunc;
 	fm = o->mfunc;
 	Complex y = ALLOCR(precision);
-	if(fm) ((TnularyC)fm)(y);
+	if(fm) ((TnularyC0)fm)(y);
 	else if(fr) ((Tnulary)fr)(y.r);
 	else ((TnularyC)fc)(y);
 	*numStack++ = y;
@@ -391,7 +391,7 @@ bool printValue(Complex &y)
 	Darray<char> &buf = outBuf;
 	int n=buf.len;
 	int digits2= (precision>=prec2) ? digits : int((precision-2)*dwordDigits[base]+1);
-	int len = LENM(y, digits2);
+	int len = LENM(y, digits2, matrixFormat);
 	char *a= (buf+=len)-1;
 	if((unsigned)buf.len>MAX_OUTPUT_SIZE || !len){
 		buf.len=n;

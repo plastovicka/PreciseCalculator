@@ -1083,7 +1083,7 @@ lend:
 	FREEC(t);
 }
 
-void _fastcall DETRANKM(Complex &D, Complex &cx, int det)
+static void DETRANKM(Complex &D, Complex &cx, int det)
 {
 	if(noMatrix(D, cx, COPYC)){
 		if(!det && !isZero(cx)) ONEC(D);
@@ -1151,12 +1151,12 @@ lend:
 	if(!det) SETC(D, result);
 }
 
-void _fastcall DETM(Complex &D, Complex &cx)
+void _stdcall DETM(Complex &D, Complex &cx)
 {
 	DETRANKM(D, cx, 1);
 }
 
-void _fastcall RANKM(Complex &D, Complex &cx)
+void _stdcall RANKM(Complex &D, Complex &cx)
 {
 	DETRANKM(D, cx, 0);
 }

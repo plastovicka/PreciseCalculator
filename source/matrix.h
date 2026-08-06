@@ -69,8 +69,8 @@ extern "C"{
 	void _stdcall INVERTM(Complex &y, Complex &x);
 	void _fastcall ELIMM(Complex &x);
 	void _fastcall EQUSOLVEM(Complex &cx);
-	void _fastcall DETM(Complex &D, Complex &cx);
-	void _fastcall RANKM(Complex &D, Complex &cx);
+	void _stdcall DETM(Complex &D, Complex &cx);
+	void _stdcall RANKM(Complex &D, Complex &cx);
 	void _fastcall EMPTYM(Complex &x);
 	void _fastcall SETM(Complex &x, Tuint n);
 	void _fastcall SETDIAGM(Complex &x, Tuint n);
