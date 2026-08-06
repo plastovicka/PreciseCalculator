@@ -40,15 +40,17 @@ const int RecyclerCount = 14;
 static void *recycler[RecyclerCount];
 static size_t recyclerSizes[RecyclerCount];
 static int recyclerIndex = 0;
+int disableRecycler = 0;
 
 extern "C" void *Alloc(size_t size)
 {
-	for(int i = 0; i<RecyclerCount; i++) {
-		if(recyclerSizes[i]-size<=24) {
-			recyclerSizes[i] = 0;
-			return recycler[i];
+	if(!disableRecycler)
+		for(int i = 0; i<RecyclerCount; i++) {
+			if(recyclerSizes[i]-size<=24) {
+				recyclerSizes[i] = 0;
+				return recycler[i];
+			}
 		}
-	}
 	try {
 		void*p = operator new(size+sizeof(size_t));
 		*static_cast<size_t*>(p) = size;
@@ -57,6 +59,7 @@ extern "C" void *Alloc(size_t size)
 	catch(std::bad_alloc)
 	{
 #ifndef CONSOLE
+		if(disableRecycler) ReleaseSRWLockExclusive(&varLock);
 		msg(lng(1028, "Not enough memory !!!"));
 #endif
 		ExitProcess(99);
@@ -65,17 +68,24 @@ extern "C" void *Alloc(size_t size)
 
 extern "C" void Free(void *p)
 {
-	for(int i = 0; i<RecyclerCount; i++) {
-		if(!recyclerSizes[i]) {
-			recyclerSizes[i] = static_cast<size_t*>(p)[-1];
-			recycler[i] = p;
-			return;
+	if(!disableRecycler)
+	{
+		for(int i = 0; i<RecyclerCount; i++) {
+			if(!recyclerSizes[i]) {
+				recyclerSizes[i] = static_cast<size_t*>(p)[-1];
+				recycler[i] = p;
+				return;
+			}
 		}
+		operator delete(static_cast<size_t*>(recycler[recyclerIndex])-1);
+		recyclerSizes[recyclerIndex] = static_cast<size_t*>(p)[-1];
+		recycler[recyclerIndex] = p;
+		recyclerIndex = (recyclerIndex+1)%RecyclerCount;
 	}
-	operator delete(static_cast<size_t*>(recycler[recyclerIndex])-1);
-	recyclerSizes[recyclerIndex] = static_cast<size_t*>(p)[-1];
-	recycler[recyclerIndex] = p;
-	recyclerIndex = (recyclerIndex+1)%RecyclerCount;
+	else
+	{
+		operator delete(static_cast<size_t*>(p)-1);
+	}
 }
 
 void freeRecycler()
@@ -188,6 +198,8 @@ void deref(Complex &x)
 	}
 }
 
+SRWLOCK varLock = SRWLOCK_INIT;
+
 void _stdcall ASSIGNM(Complex &y, const Complex &a, const Complex &x)
 {
 	if(!isVariable(a) && !isRange(a)){
@@ -195,6 +207,9 @@ void _stdcall ASSIGNM(Complex &y, const Complex &a, const Complex &x)
 	}
 	else{
 		COPYM(y, x);
+#ifndef CONSOLE
+		AcquireSRWLockExclusive(&varLock);
+#endif
 		Tvar *v= toVariable(a);
 		if(isRange(a)){
 			if(!v->modif) COPYM(v->newx, v->oldx);
@@ -204,6 +219,9 @@ void _stdcall ASSIGNM(Complex &y, const Complex &a, const Complex &x)
 			assign(v->newx, x);
 		}
 		v->modif=true;
+#ifndef CONSOLE
+		ReleaseSRWLockExclusive(&varLock);
+#endif
 	}
 }
 
@@ -1231,7 +1249,7 @@ DWORD WINAPI calcThread(char *param)
 	if(*param==0){
 		delete[] param;
 		param= new char[1000];
-		strcpy(param, "gcd(12,30,48");
+		strcpy(param, "s=();for(x,-10,1e4,s=(s,x^9;s");
 	}
 #endif
 	output=0;

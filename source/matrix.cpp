@@ -177,6 +177,28 @@ static void copyItem(MatrixItem &dest, const MatrixItem &src)
 	else ZEROX_safe(dest.i);
 }
 
+static void copyItem(MatrixItem &dest, const MatrixItem &src, Tint prec)
+{
+	if(src.denominator) {
+		if(!dest.denominator) FREEX(dest.r);
+		dest.numerator = src.numerator;
+		dest.denominator = src.denominator;
+	}
+	else {
+		if(dest.denominator) {
+			dest.denominator = 0;
+			dest.r = ALLOCX(prec);
+		}
+		COPYX(dest.r, src.r);
+	}
+
+	if(!isZero_safe(src.i)) {
+		if(!dest.i) dest.i = ALLOCX(prec);
+		COPYX(dest.i, src.i);
+	}
+	else ZEROX_safe(dest.i);
+}
+
 void MatrixItem::set(Tuint n)
 {
 	if(!denominator) FREEX(r);
@@ -361,10 +383,11 @@ void assignM(Complex &dest, const Complex &src)
 	}
 }
 
+const int MatrixDisplayLen = 500; //limit for variables window
 
 void _stdcall WRITEM(char *buf, const Complex &cx, int digits, int cr)
 {
-	int i, j;
+	int i, j, n;
 	MatrixItem *p;
 
 	if(!isMatrix(cx)){
@@ -374,10 +397,18 @@ void _stdcall WRITEM(char *buf, const Complex &cx, int digits, int cr)
 	Pmatrix x= toMatrix(cx);
 	*buf++='(';
 	p=x->A;
+	n = 0;
 	for(i=0; i<x->rows; i++){
-		if(i){ *buf++=' '; *buf++='\\'; *buf++= cr ? '\n' : ' '; }
+		if(i){ *buf++=' '; *buf++='\\'; *buf++= cr>0 ? '\n' : ' '; }
 		for(j=0; j<x->cols; j++){
 			if(j){ *buf++=','; *buf++=' '; }
+			if(cr<0 && ++n>MatrixDisplayLen) {
+				*buf++ = '.';
+				*buf++ = '.';
+				*buf++ = '.';
+				*buf=0;
+				return;
+			}
 			ComplexItem t(*p++);
 			WRITEC(buf, t, digits);
 			buf=strchr(buf, 0);
@@ -387,7 +418,7 @@ void _stdcall WRITEM(char *buf, const Complex &cx, int digits, int cr)
 	*buf=0;
 }
 
-int _stdcall LENM(const Complex &cx, int digits)
+int _stdcall LENM(const Complex &cx, int digits, int cr)
 {
 	int i, n;
 	MatrixItem *p;
@@ -402,13 +433,14 @@ int _stdcall LENM(const Complex &cx, int digits)
 		ComplexItem c(*p++);
 		n+=2+LENC(c, digits);
 		if(n<0) return 0;
+		if(cr<0 && i>=MatrixDisplayLen) break;
 	}
 	return n;
 }
 
 char*_stdcall AWRITEM(const Complex &x, int digits, int cr)
 {
-	int len=LENM(x, digits);
+	int len=LENM(x, digits, cr);
 	if(len<=0) {
 		char *buf= new char[1];
 		*buf=0;
@@ -1383,7 +1415,7 @@ void _fastcall MAPM(Complex &cy, const Complex &cx, TunaryC2 f)
 	Pmatrix x= toMatrix(cx), y=toMatrix(cy);
 	prepareM(cy, x);
 	Complex z = ALLOCR(getPrecision(cy));
-	for(int i=0; i<x->len; i++){
+	for(int i=0; i < y->len; i++){
 		ComplexItem t(x->A[i]);
 		f(z, t);
 		copyItem(y->A[i], z);
@@ -1460,10 +1492,19 @@ void _stdcall MAPM(Complex &cy, const Complex &ca, const Complex &cb, TbinaryC f
 
 void _stdcall COPYM(Complex &dest, const Complex &src)
 {
-	if(!isMatrix(src) && !isMatrix(dest)) 
+	if(!isMatrix(src))
+	{
+		matrixToComplex(dest);
 		COPYC(dest, src);
-	else if(src.r!=dest.r)
-		MAPM(dest, src, COPYC);
+		return;
+	}
+	if(src.r==dest.r) return;
+	Pmatrix x= toMatrix(src), y=toMatrix(dest);
+	prepareM(dest, x);
+	Tint prec = getPrecision(dest);
+	for(int i=0; i < y->len; i++){
+		copyItem(y->A[i], x->A[i], prec);
+	}
 }
 
 void _stdcall PLUSM(Complex &y, const Complex &a, const Complex &b)

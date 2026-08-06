@@ -104,6 +104,7 @@ void skipArg(const char *s, const char **e);
 extern const bool dual;
 extern char *title;
 extern int digits, numFormat, base, maxHistory, historyLen, matrixFormat, logging;
+extern int disableRecycler;
 extern Complex ans;
 extern Darray<Tvar> vars;
 extern List2 history;
@@ -111,7 +112,7 @@ extern TstrItem *curHistory;
 extern HWND hWin, hIn, hOut;
 typedef char TfileName[MAX_PATH];
 extern TfileName fnLog;
-
+extern SRWLOCK varLock;
 
 inline Tvar *toVariable(const Complex &x){
 	return &vars[x.r[0]];

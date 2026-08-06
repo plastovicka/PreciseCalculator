@@ -59,7 +59,7 @@ extern "C"{
 
 	void _stdcall WRITEM(char *buf, const Complex &x, int digits, int cr);
 	char*_stdcall AWRITEM(const Complex &x, int digits, int cr);
-	int _stdcall LENM(const Complex &x, int digits);
+	int _stdcall LENM(const Complex &x, int digits, int cr);
 
 	void _stdcall CONCATM(Complex &y, Complex &a, Complex &b);
 	void _stdcall CONCATROWM(Complex &y, Complex &a, Complex &b);

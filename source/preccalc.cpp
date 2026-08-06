@@ -1019,19 +1019,25 @@ BOOL CALLBACK VarListProc(HWND hWnd, UINT mesg, WPARAM wP, LPARAM lP)
 					GetTextMetrics(lpdis->hDC, &tm);
 					rc.top= lpdis->rcItem.top+1;
 					rc.bottom= lpdis->rcItem.bottom;
+					//name
 					rc.left=4;
 					rc.right=60;
 					Utf8ToWideChar(v->name);
 					DrawTextW(lpdis->hDC, dtBuf, -1, &rc, DT_END_ELLIPSIS|DT_NOPREFIX);
+					//value
+					disableRecycler++;
 					c=ALLOCR(5);
+					AcquireSRWLockExclusive(&varLock);
 					COPYM(c, v->modif ? v->newx : v->oldx);
-					s= AWRITEM(c, isMatrix(c) ? 3 : (!isZero(c.r) && isImag(c) ? 10 : 20), 0);
+					ReleaseSRWLockExclusive(&varLock);
+					s= AWRITEM(c, isMatrix(c) ? 3 : (!isZero(c.r) && isImag(c) ? 10 : 20), -1);
 					FREEM(c);
-					rc.left=rc.right+5;
-					rc.right=lpdis->rcItem.right;
+					rc.left = rc.right+5;
+					rc.right = lpdis->rcItem.right;
 					Utf8ToWideChar(s);
-					DrawTextW(lpdis->hDC, dtBuf, -1, &rc, DT_END_ELLIPSIS|DT_NOPREFIX);
 					delete[] s;
+					disableRecycler--;
+					DrawTextW(lpdis->hDC, dtBuf, -1, &rc, DT_END_ELLIPSIS|DT_NOPREFIX);
 				case ODA_SELECT:
 					drawFocus(lpdis);
 			}
