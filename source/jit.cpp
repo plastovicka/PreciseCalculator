@@ -105,7 +105,7 @@ void forExecute(const Top *o, Tcompiled *bodyJit)
 					ASSIGNM(stackEnd[-1], stackEnd[-2], stackEnd[-1]);
 			}
 			else{
-				//is variable greater then last value
+				//is variable greater than last value
 				if(error || CMPC(toVariable(stackEnd[-3])->newx, stackEnd[-1]) > 0) break;
 			}
 			//evaluate expression

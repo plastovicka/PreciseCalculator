@@ -320,12 +320,17 @@ bool noMatrixOrEmpty(Complex &y, const Complex &a, TunaryC2 f)
 	return false;
 }
 
+void differentSize()
+{
+	cerror(1044, "Matrices don't have the same size");
+}
+
 bool sameSizeM(const Complex &ca, const Complex &cb)
 {
 	Pmatrix a=toMatrix(ca), b=toMatrix(cb);
 	if(!isMatrix(ca) || !isMatrix(cb) || a->cols!=b->cols ||
 		a->rows!=b->rows){
-		cerror(1044, "Matrices don't have the same size");
+		differentSize();
 		return false;
 	}
 	return true;
@@ -585,11 +590,6 @@ void _stdcall CONCATM(Complex &y, Complex &a, Complex &b)
 void indexOutOfRange()
 {
 	cerror(1051, "Index is out of range");
-}
-
-void differentSize()
-{
-	cerror(1044, "Matrices don't have the same size");
 }
 
 bool checkRange(const Complex &cx, int *D)

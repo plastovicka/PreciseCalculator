@@ -1785,12 +1785,12 @@ void _stdcall PRIMEX(Pint y0, const Pint x)
 	COPYX(y, x);
 	if(x[-2] || isZero(x)) ONEX(y);
 	TRUNCX(y);
-	if(y[-1]>y[-4]){
-		cerror(1030, "divisor of real number");
+	if(CMPU(y, one)<=0){
+		SETX(y, 2);
 		return;
 	}
-	if(CMPU(y, one)==0){
-		SETX(y, 2);
+	if(y[-1]>y[-4]){
+		cerror(1031, "Computation is too difficult");
 		return;
 	}
 	t=ALLOCX(y[-4]);
