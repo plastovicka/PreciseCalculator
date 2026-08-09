@@ -454,7 +454,7 @@ void _stdcall MULTI1C(Complex &x, Tuint n)
 void _stdcall MULTIC(Complex &y, const Complex &x, Tuint n)
 {
 	MULTI(y.r, x.r, n);
-	if(isImag(x)) MULTI(y.i, x.i, n); else ZEROX_safe(y.i);
+	if(needImag(y, x)) MULTI(y.i, x.i, n);
 }
 
 void _stdcall DIVI1C(Complex &x, Tuint n)
@@ -466,7 +466,7 @@ void _stdcall DIVI1C(Complex &x, Tuint n)
 void _stdcall DIVIC(Complex &y, const Complex &x, Tuint n)
 {
 	DIVI(y.r, x.r, n);
-	if(isImag(x)) DIVI(y.i, x.i, n); else ZEROX_safe(y.i);
+	if(needImag(y, x)) DIVI(y.i, x.i, n);
 }
 
 // (a+bi)/(c+di)=((a*c+b*d)+i*(b*c-a*d))/(c^2+d^2)
@@ -481,11 +481,10 @@ void _stdcall DIVC(Complex &y, const Complex &a, const Complex &b)
 	else if(isZero(b.r)){
 		if(isImag(a)) DIVX(y.r, a.i, b.i); 
 		else ZEROX(y.r);
-		if(!isZero(a.r)) {
+		if(needImag(y, a.r)) {
 			DIVX(y.i, a.r, b.i);
 			NEGX(y.i);
 		}
-		else ZEROX_safe(y.i);
 	}
 	else{
 		ALLOCN(3, y.r[-4], &t, &u, &v);
@@ -493,15 +492,22 @@ void _stdcall DIVC(Complex &y, const Complex &a, const Complex &b)
 		SQRX(u, b.i);
 		PLUSX(v, t, u);
 		MULTX(t, a.r, b.r);
-		if(isImag(a)) MULTX(y.r, a.i, b.i); else ZEROX(y.r);
-		PLUSX(u, t, y.r);
-		DIVX(y.r, u, v);
 		if(isImag(a)) {
-			MULTX(t, a.i, b.r);
-			MULTX(y.i, a.r, b.i);
-			MINUSX(u, t, y.i);
+			MULTX(y.r, a.i, b.i);
+			PLUSX(u, t, y.r);
+			DIVX(y.r, u, v);
+			if(!isZero(a.r)) {
+				MULTX(t, a.i, b.r);
+				ensureImagPart(y);
+				MULTX(y.i, a.r, b.i);
+				MINUSX(u, t, y.i);
+			}
+			else {
+				MULTX(u, a.i, b.r);
+			}
 		}
 		else {
+			DIVX(y.r, t, v);
 			MULTX(u, a.r, b.i);
 			NEGX(u);
 		}
