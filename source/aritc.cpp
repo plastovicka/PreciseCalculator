@@ -2769,6 +2769,14 @@ void _stdcall XORX(Pint y, const Pint a, const Pint b)
 	else if(isZero(b)){
 		COPYX(y, a);
 	}
+	else if(a[-1]-b[-1]>=y[-4]){
+		if(b[-2]) NOTX(y, a);
+		else COPYX(y, a);
+	}
+	else if(b[-1]-a[-1]>=y[-4]){
+		if(a[-2]) NOTX(y, b);
+		else COPYX(y, b);
+	}
 	else{
 		bitop(2, y, a, b);
 	}
