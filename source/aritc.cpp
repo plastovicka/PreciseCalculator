@@ -2666,14 +2666,8 @@ void _stdcall HYPOTX(Pint y, const Pint a, const Pint b)
 //-------------------------------------------------------------------
 void _stdcall NOTX(Pint y, const Pint x)
 {
-	if(x[-2] && x[-3]){
-		MINUSU(y, x, one);
-		y[-2]=0;
-	}
-	else{
-		PLUSU(y, x, one);
-		y[-2]=1;
-	}
+	PLUSX(y, x, one);
+	NEGX(y);
 }
 
 void _stdcall bitop(int op, Pint y, const Pint a0, const Pint b0)

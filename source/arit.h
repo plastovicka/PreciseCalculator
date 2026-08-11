@@ -194,7 +194,7 @@ extern "C"{
 	char*_stdcall READX1(Pint x, const char *buf);  //read number without exponent
 	void _stdcall MULTX1(Pint y, const Pint a, const Pint b); //multiply, does not recurse
 	void _stdcall PLUSU(Pint y, const Pint a, const Pint b); //addition, sign is ignored
-	void _stdcall MINUSU(Pint y, const Pint a, const Pint b);//subtraction, sign is ignored
+	void _stdcall MINUSU(Pint y, const Pint a, const Pint b);//subtraction, sign is ignored, crashes if a<b
 	void _stdcall ANDU(Pint y, const Pint a, const Pint b);
 	void _stdcall ORU(Pint y, const Pint a, const Pint b);
 	void _stdcall XORU(Pint y, const Pint a, const Pint b);
