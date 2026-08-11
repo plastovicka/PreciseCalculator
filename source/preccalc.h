@@ -40,12 +40,12 @@ struct TstrItem : public NxtPrv {
 	~TstrItem();
 };
 
-struct Tfunc {
-	char *name;
-	char *body;
-	Darray<char *> args;
-	void destroy();
-};
+//struct Tfunc {
+//	char *name;
+//	char *body;
+//	Darray<char *> args;
+//	void destroy();
+//};
 
 enum { clNumber, clFunction, clDelC, clOperator, clExe, Ncl };
 
@@ -112,7 +112,12 @@ extern TstrItem *curHistory;
 extern HWND hWin, hIn, hOut;
 typedef char TfileName[MAX_PATH];
 extern TfileName fnLog;
+
+#if (_WIN32_WINNT >= 0x0600)
 extern SRWLOCK varLock;
+#else
+extern CRITICAL_SECTION varLock;
+#endif
 
 inline Tvar *toVariable(const Complex &x){
 	return &vars[x.r[0]];

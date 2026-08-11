@@ -32,7 +32,7 @@ Darray<int> baseInStack;
 Darray<Tstack> opStack;
 Darray<Tvar> vars;
 Darray<Tlabel> labels;
-Darray<Tfunc> funcs;
+//Darray<Tfunc> funcs;
 const Top **funcTabSorted;
 
 //-------------------------------------------------------------------
@@ -59,7 +59,11 @@ extern "C" void *Alloc(size_t size)
 	catch(std::bad_alloc)
 	{
 #ifndef CONSOLE
+#if (_WIN32_WINNT >= 0x0600)
 		if(disableRecycler) ReleaseSRWLockExclusive(&varLock);
+#else
+		if(disableRecycler) LeaveCriticalSection(&varLock);
+#endif
 		msg(lng(1028, "Not enough memory !!!"));
 #endif
 		ExitProcess(99);
@@ -103,12 +107,6 @@ int strleni(char *s)
 	size_t len = strlen(s);
 	if(len>0x7fffff00){ exit(99); }
 	return (int)len;
-}
-
-void _stdcall SETBASEX(Complex &y, const Complex &b, const Complex &x)
-{
-	COPYM(y, x);
-	baseIn=(int)b.r[0];
 }
 
 void _fastcall ANS(Complex &y)
@@ -168,16 +166,14 @@ Complex *deref1(Complex &x)
 	return 0;
 }
 
-bool deref(Complex &y, Complex &x)
+void deref(Complex &y, Complex &x)
 {
 	if(x.r && (isVariable(x) || isRange(x))){
 		Tvar *v= toVariable(x);
 		y= v->modif ? v->newx : v->oldx;
-		return true;
 	}
 	else{
 		y=x;
-		return false;
 	}
 }
 
@@ -199,7 +195,11 @@ void deref(Complex &x)
 }
 
 #ifndef CONSOLE
+#if (_WIN32_WINNT >= 0x0600)
 SRWLOCK varLock = SRWLOCK_INIT;
+#else
+CRITICAL_SECTION varLock;
+#endif
 #endif
 
 void _stdcall ASSIGNM(Complex &y, const Complex &a, const Complex &x)
@@ -209,8 +209,13 @@ void _stdcall ASSIGNM(Complex &y, const Complex &a, const Complex &x)
 	}
 	else{
 		COPYM(y, x);
+
 #ifndef CONSOLE
+#if (_WIN32_WINNT >= 0x0600)
 		AcquireSRWLockExclusive(&varLock);
+#else
+		EnterCriticalSection(&varLock);
+#endif
 #endif
 		Tvar *v= toVariable(a);
 		if(isRange(a)){
@@ -221,8 +226,13 @@ void _stdcall ASSIGNM(Complex &y, const Complex &a, const Complex &x)
 			assign(v->newx, x);
 		}
 		v->modif=true;
+
 #ifndef CONSOLE
+#if (_WIN32_WINNT >= 0x0600)
 		ReleaseSRWLockExclusive(&varLock);
+#else
+		LeaveCriticalSection(&varLock);
+#endif
 #endif
 	}
 }
@@ -348,11 +358,11 @@ const Top funcTab[]={
 	{"return", 400, 0, 0, F RETM, 2091, "Stop computation and display result"},
 	{"goto", CMDGOTO, F GOTOX, 0, 0, 2069, "Jump to label or to n-th semicolon"},
 	{"gotor", 400, F GOTORELX, 0, 0, 2089, "Relative jump to command"},
-	{"base", CMDBASE, 0, 0, F SETBASEX, 2095, "N-th number base"},
-	{"dec", CMDBASE, 0, 0, F SETBASEX, 2096, "Decimal number"},
-	{"hex", CMDBASE, 0, 0, F SETBASEX, 2097, "Hexadecimal number"},
-	{"bin", CMDBASE, 0, 0, F SETBASEX, 2098, "Binary number"},
-	{"oct", CMDBASE, 0, 0, F SETBASEX, 2099, "Octal number"},
+	{"base", CMDBASE, 0, 0, 0, 2095, "N-th number base"},
+	{"dec", CMDBASE, 0, 0, 0, 2096, "Decimal number"},
+	{"hex", CMDBASE, 0, 0, 0, 2097, "Hexadecimal number"},
+	{"bin", CMDBASE, 0, 0, 0, 2098, "Binary number"},
+	{"oct", CMDBASE, 0, 0, 0, 2099, "Octal number"},
 
 	//statistical functions
 	{"min", 8, 0, 0, F MINM, 2041, "Minimal value"},
@@ -591,12 +601,12 @@ void Tvar::destroy()
 	delete[] name;
 }
 
-void Tfunc::destroy()
-{
-	delete[] name;
-	delete[] body;
-	deleteDarray(args);
-}
+//void Tfunc::destroy()
+//{
+//	delete[] name;
+//	delete[] body;
+//	deleteDarray(args);
+//}
 
 bool skipComment(const char *&s)
 {
@@ -1013,7 +1023,7 @@ void args(const char *input, const char **end)
 		errPos = stk.inputPtr;
 	}
 	else{
-		Tcompiled *c= jitEmit(jitApplyVararg);
+		Tcompiled *c= jitEmit(n==2 && o->mfunc!=SWAPM ? jitBinaryOp : jitApplyVararg);
 		c->op= o;
 		c->argCount= i;
 		c->inputPtr= stk.inputPtr;
@@ -1477,6 +1487,9 @@ static int __cdecl cmpOp(const void *a, const void *b)
 
 void initCalc()
 {
+#if (_WIN32_WINNT < 0x0600)
+	InitializeCriticalSection(&varLock);
+#endif
 #if GMP
 	gmp_Init();
 #endif

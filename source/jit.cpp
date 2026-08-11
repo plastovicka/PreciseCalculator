@@ -467,12 +467,8 @@ void jitRun(Tcompiled *j)
 		//execute one instruction
 		switch(ins->kind){
 		case jitPushNum: {
-			Complex x;
-			if(ins->num) {
-				x = ALLOCR(precision);
-				COPYX(x.r, ins->num);
-			}
-			else x.r = x.i = 0;
+			Complex x = ALLOCR(precision);
+			COPYX(x.r, ins->num);
 			*numStack++ = x;
 			break;
 		}
@@ -773,7 +769,7 @@ void jitUpdateNumbers()
 {
 	for(Tlen k = 0; k<code.len; k++) {
 		Tcompiled &c = code[k];
-		if(c.kind==jitPushNum && c.num) {
+		if(c.kind==jitPushNum) {
 			FREEX(c.num);
 			c.num = ALLOCX(precision);
 			int oldBase = baseIn;

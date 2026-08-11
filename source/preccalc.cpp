@@ -1027,9 +1027,16 @@ BOOL CALLBACK VarListProc(HWND hWnd, UINT mesg, WPARAM wP, LPARAM lP)
 					//value
 					disableRecycler++;
 					c=ALLOCR(5);
+					
+#if (_WIN32_WINNT >= 0x0600)
 					AcquireSRWLockExclusive(&varLock);
 					COPYM(c, v->modif ? v->newx : v->oldx);
 					ReleaseSRWLockExclusive(&varLock);
+#else
+					EnterCriticalSection(&varLock);
+					COPYM(c, v->modif ? v->newx : v->oldx);
+					LeaveCriticalSection(&varLock);
+#endif
 					s= AWRITEM(c, isMatrix(c) ? 3 : (!isZero(c.r) && isImag(c) ? 10 : 20), -1);
 					FREEM(c);
 					rc.left = rc.right+5;
