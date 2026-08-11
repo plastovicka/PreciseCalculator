@@ -1680,28 +1680,28 @@ void checkLR(const Complex &x)
 	}
 }
 
-int _stdcall SUMM(Complex &y0, const Complex &cx, int start, int step)
+int _stdcall SUMM(Complex &y, const Complex &cx, int start, int step)
 {
 	int i, count=1;
-	Complex t, y;
+	Complex t, *pt, *py;
 
 	if(step==2) checkLR(cx);
-	if(noMatrixOrEmpty(y0, cx, COPYC)) return 1;
+	if(noMatrixOrEmpty(y, cx, COPYC)) return 1;
 	Pmatrix x= toMatrix(cx);
 	MatrixItem *A= x->A;
 	int num= x->len;
-	matrixToComplex(y0);
-	y=y0;
+	matrixToComplex(y);
 	t=ALLOCR(y.r[-4]);
 	ComplexItem a1(A[start]);
 	COPYC(y, a1);
+	py = &y; pt = &t;
 	for(i=start+step; i<num; i+=step){
 		ComplexItem ai(A[i]);
-		PLUSC(t, y, ai);
-		std::swap(t, y);
+		PLUSC(*pt, *py, ai);
+		std::swap(pt, py);
 		count++;
 	}
-	if(y.r!=y0.r){ COPYC(y0, y); t=y; }
+	if(py!=&y) COPYC(y, *py);
 	FREEC(t);
 	return count;
 }
@@ -1721,21 +1721,21 @@ void _stdcall SUMYM(Complex &y, const Complex &x)
 	SUMM(y, x, 1, 2);
 }
 
-int _stdcall SUMMULM(Complex &y0, const Complex &cx, int start, int step, int diff=0)
+int _stdcall SUMMULM(Complex &y, const Complex &cx, int start, int step, int diff=0)
 {
 	int i, count=0;
-	Complex t, y, u;
+	Complex t, u, *pt, *py;
 
 	if(step==2) checkLR(cx);
-	if(noMatrixOrEmpty(y0, cx, SQRC)) return 1;
+	if(noMatrixOrEmpty(y, cx, SQRC)) return 1;
 	Pmatrix x= toMatrix(cx);
 	MatrixItem *A= x->A;
 	int num= x->len;
-	matrixToComplex(y0);
-	y=y0;
+	matrixToComplex(y);
 	ZEROC(y);
 	t=ALLOCR(y.r[-4]);
 	u=ALLOCR(y.r[-4]);
+	py = &y; pt = &t;
 	for(i=start; i<num; i+=step){
 		ComplexItem ai(A[i]);
 		if(diff) {
@@ -1745,11 +1745,11 @@ int _stdcall SUMMULM(Complex &y0, const Complex &cx, int start, int step, int di
 		else {
 			SQRC(u, ai);
 		}
-		PLUSC(t, y, u);
-		std::swap(t, y);
+		PLUSC(*pt, *py, u);
+		std::swap(pt, py);
 		count++;
 	}
-	if(y.r!=y0.r){ COPYC(y0, y); t=y; }
+	if(py!=&y) COPYC(y, *py);
 	FREEC(u);
 	FREEC(t);
 	return count;
@@ -2023,60 +2023,57 @@ void _stdcall LRRM(Complex &y, const Complex &x)
 	FREEC(t);
 }
 
-void _stdcall HARMONM(Complex &y0, const Complex &cx)
+void _stdcall HARMONM(Complex &y, const Complex &cx)
 {
 	int i;
-	Complex t, u, y;
+	Complex t, u, *pt, *py;
 
-	if(noMatrixOrEmpty(y0, cx, COPYC)) return;
+	if(noMatrixOrEmpty(y, cx, COPYC)) return;
 	Pmatrix x= toMatrix(cx);
 	MatrixItem *A= x->A;
 	int num= x->len;
-	matrixToComplex(y0);
-	Tint prec=getPrecision(y0);
-	y=y0;
+	matrixToComplex(y);
+	Tint prec=getPrecision(y);
 	t=ALLOCR(prec);
 	u=ALLOCR(prec);
 	ZEROC(y);
+	py = &y; pt = &t;
 	for(i=0; i<num; i++){
 		ComplexItem a(A[i]);
 		INVERTC(u, a);
-		PLUSC(t, y, u);
-		std::swap(t, y);
+		PLUSC(*pt, *py, u);
+		std::swap(pt, py);
 	}
 	SETC(u, num);
-	DIVC(t, u, y);
-	if(y.r!=y0.r){
-		t=y;
-	}
-	else{
-		COPYC(y0, t);
+	DIVC(*pt, u, *py);
+	if(py==&y){
+		COPYC(y, t);
 	}
 	FREEC(u);
 	FREEC(t);
 }
 
-int _stdcall PRODUCTM(Complex &y0, const Complex &cx)
+int _stdcall PRODUCTM(Complex &y, const Complex &cx)
 {
 	int i, count=2;
-	Complex t, y;
+	Complex t, *pt, *py;
 
-	if(noMatrixOrEmpty(y0, cx, COPYC)) return 1;
+	if(noMatrixOrEmpty(y, cx, COPYC)) return 1;
 	Pmatrix x= toMatrix(cx);
 	MatrixItem *A= x->A;
 	int num= x->len;
-	matrixToComplex(y0);
-	y=y0;
+	matrixToComplex(y);
 	t=ALLOCR(y.r[-4]);
 	ComplexItem a0(A[0]), a1(A[1]);
 	MULTC(y, a0, a1);
+	py = &y; pt = &t;
 	for(i=2; i<num; i++){
 		ComplexItem ai(A[i]);
-		MULTC(t, y, ai);
-		std::swap(t, y);
+		MULTC(*pt, *py, ai);
+		std::swap(pt, py);
 		count++;
 	}
-	if(y.r!=y0.r){ COPYC(y0, y); t=y; }
+	if(py!=&y) COPYC(y, *py);
 	FREEC(t);
 	return count;
 }
