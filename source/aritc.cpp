@@ -566,7 +566,7 @@ void _stdcall WRITEX(char *buf, const Pint x0, int _digits)
 
 int _stdcall LENX(const Pint x, int _digits)
 {
-	if(isFraction(x) && numFormat==MODE_NORM) return x[1]==1 ? 48 : 2*_digits+90;
+	if(isFraction(x)) return x[1]==1 && numFormat==MODE_NORM ? 48 : 2*_digits+90;
 	if(isZero(x)) return 6;
 	return 24+2*int(dwordDigits[base]*(x[-4]+1));
 }
@@ -2460,11 +2460,31 @@ void _stdcall ASINX(Pint y, const Pint x)
 	angleResult(y);
 }
 
+void set90deg(Pint y)
+{
+	switch(angleMode) {
+		case ANGLE_RAD:
+			getpi(y[-4]);
+			COPYX(y, pi2);
+			break;
+		case ANGLE_DEG:
+			SETX(y, 90);
+			break;
+		case ANGLE_GRAD:
+			SETX(y, 100);
+			break;
+	}
+}
+
 //arccos(x)=pi/2-arcsin(x)
 void _stdcall ACOSX(Pint y, const Pint x)
 {
 	if(CMPU(x, one)>0){
 		cerror(1022, "Operand of arccos is not in <-1,+1>");
+		return;
+	}
+	if(isZero(x)) {
+		set90deg(y);
 		return;
 	}
 	getpi(y[-4]);
@@ -2717,6 +2737,7 @@ void _stdcall ANDX(Pint y, const Pint a, const Pint b)
 {
 	if((a[-2]|b[-2])==0){
 		ANDU(y, a, b);
+		y[-2] = 0;
 	}
 	else{
 		ZEROX(y);
@@ -2738,6 +2759,7 @@ void _stdcall ORX(Pint y, const Pint a, const Pint b)
 {
 	if((a[-2]|b[-2])==0){
 		ORU(y, a, b);
+		y[-2] = 0;
 	}
 	else if(isZero(a)){
 		COPYX(y, b);
@@ -2762,6 +2784,7 @@ void _stdcall XORX(Pint y, const Pint a, const Pint b)
 {
 	if((a[-2]|b[-2])==0){
 		XORU(y, a, b);
+		y[-2] = 0;
 	}
 	else if(isZero(a)){
 		COPYX(y, b);

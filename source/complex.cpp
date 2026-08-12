@@ -753,7 +753,9 @@ static void _stdcall ASINCOSC(Complex &y, const Complex &x, int f)
 		COPYX(z.i, x.r);
 		NEGX(z.r);
 	}
-	PLUSC(y, z, u);
+	bool neg = f==2 && (!isZero(x.r) ? x.r[-2] : isImag(x) && x.i[-2]);
+	if(neg) MINUSC(y, u, z);
+	else PLUSC(y, z, u);
 	LNC(t, y);
 	if(f<2){ // *-i
 		COPYX_safe(y.r, t.i);
@@ -762,11 +764,12 @@ static void _stdcall ASINCOSC(Complex &y, const Complex &x, int f)
 			COPYX(y.i, t.r);
 			NEGX(y.i);
 		}
+		if(f==0) FREEC(z);
 	}
 	else{
 		COPYC(y, t);
+		if(neg) NEGC(y);
 	}
-	if(f==0) FREEC(z);
 	FREEC(t);
 }
 
@@ -801,13 +804,7 @@ void _stdcall ASINHC(Complex &y, const Complex &x)
 //argcosh(x)= ln(x+sqrt(x+1)*sqrt(x-1))
 void _stdcall ACOSHC(Complex &y, const Complex &x)
 {
-	if(isZero(x)){
-		ZEROX(y.r);
-		ensureImagPart(y);
-		COPYX(y.i, pi2);
-		angleResult(y.i);
-	}
-	else if(!isImag(x) && CMPU(x.r, one)<=0){
+	if(!isImag(x) && CMPU(x.r, one)<=0){
 		ZEROX(y.r);
 		ensureImagPart(y);
 		ACOSX(y.i, x.r);
@@ -845,13 +842,11 @@ static void _stdcall ATANCOTC(Complex &y, const Complex &x, int f)
 	LNC(t, y);
 	if(f<2){
 		DIVI(y.r, t.i, 2);
-		if(needImag(y, t.r)) DIVI(y.i, t.r, 2);
-		if(f==0){
-			NEGX(y.i);
+		if(needImag(y, t.r)) {
+			DIVI(y.i, t.r, 2);
+			if(f==0) NEGX(y.i);
 		}
-		else{
-			if(!isZero(x)) NEGX(y.r);
-		}
+		if(f==1 && !isZero(x)) NEGX(y.r);
 		if(isZero(x.r) && (f==0 ? CMPX(x.i, minusone)<0 :
 			isImag(x) && x.i[-2])){
 			NEGX(y.r);
@@ -1046,18 +1041,7 @@ void _stdcall LNC(Complex &y, const Complex &x)
 		if(!CMPU(x.i, one)){
 			ensureImagPart(y);
 			//ln 1i = 90°i
-			switch(angleMode){
-				case ANGLE_RAD:
-					getpi(y.r[-4]);
-					COPYX(y.i, pi2);
-					break;
-				case ANGLE_DEG:
-					SETX(y.i, 90);
-					break;
-				case ANGLE_GRAD:
-					SETX(y.i, 100);
-					break;
-			}
+			set90deg(y.i);
 			y.i[-2]=x.i[-2];
 			ZEROX(y.r);
 			return;

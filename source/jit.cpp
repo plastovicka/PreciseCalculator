@@ -17,7 +17,12 @@
 static Darray<Tcompiled> code;
 static Darray<Tlen> cmdStart;
 Darray<char> outBuf;
-const unsigned MAX_OUTPUT_SIZE=1000000000;
+
+#ifdef ARIT64
+const unsigned MAX_OUTPUT_SIZE = 1000000000;
+#else
+const unsigned MAX_OUTPUT_SIZE = 500000000;
+#endif
 
 //---------------------------------------------------------------
 void checkInfinite(Pint y, Tint prec)

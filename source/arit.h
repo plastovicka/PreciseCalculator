@@ -195,7 +195,7 @@ extern "C"{
 	void _stdcall MULTX1(Pint y, const Pint a, const Pint b); //multiply, does not recurse
 	void _stdcall PLUSU(Pint y, const Pint a, const Pint b); //addition, sign is ignored
 	void _stdcall MINUSU(Pint y, const Pint a, const Pint b);//subtraction, sign is ignored, crashes if a<b
-	void _stdcall ANDU(Pint y, const Pint a, const Pint b);
+	void _stdcall ANDU(Pint y, const Pint a, const Pint b); //sign is ignored, does not set sign of y
 	void _stdcall ORU(Pint y, const Pint a, const Pint b);
 	void _stdcall XORU(Pint y, const Pint a, const Pint b);
 	unsigned _stdcall MODI(const Pint a, Tuint b);  //modulus
@@ -210,6 +210,7 @@ extern "C"{
 	void getln10(Tint len);
 	void getpi(Tint len);
 	void angleResult(Pint x);
+	void set90deg(Pint y);
 	void assign(Pint &dest, const Pint src);
 #if GMP
 	void gmp_Init();
