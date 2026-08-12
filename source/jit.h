@@ -65,7 +65,6 @@ void cleanup();
 void ClearError(int err);
 void errGoto();
 void deref(Complex &x);
-void deref(Complex &y, Complex &x);
 Complex *deref1(Complex &x);
 
 void jitScriptRun();

@@ -166,17 +166,6 @@ Complex *deref1(Complex &x)
 	return 0;
 }
 
-void deref(Complex &y, Complex &x)
-{
-	if(x.r && (isVariable(x) || isRange(x))){
-		Tvar *v= toVariable(x);
-		y= v->modif ? v->newx : v->oldx;
-	}
-	else{
-		y=x;
-	}
-}
-
 void deref(Complex &x)
 {
 	if(x.r && (isVariable(x) || isRange(x))){
@@ -293,8 +282,8 @@ void _stdcall SWAPM(Complex &y, Complex &ca, Complex &cb)
 		}
 		else{
 			Complex wa, wb;
-			deref(wa, ca);
-			deref(wb, cb);
+			wa= va->modif ? va->newx : va->oldx;
+			wb= vb->modif ? vb->newx : vb->oldx;
 			assign(va->newx, wb);
 			assign(vb->newx, wa);
 			va->modif=vb->modif=true;
@@ -705,13 +694,11 @@ int findLabel(const char *s, int len)
 //---------------------------------------------------------------
 void arrayIndex(const char *&s)
 {
-	int D[2][2];
 	int i;
-	const char *opPtr= opStack[opStack.len-1].inputPtr;
+	const char *opPtr= s;
 	int jitFlags=0;
 
 	opStack--;
-	D[0][0]=D[0][1]=D[1][0]=D[1][1]=-1;
 	for(i=0;; i++){
 		skipSpaces(s);
 		if(*s!=']'){

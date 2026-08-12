@@ -587,7 +587,7 @@ void _stdcall CONCATM(Complex &y, Complex &a, Complex &b)
 	TRANSPM(y);
 }
 
-void indexOutOfRange()
+static void indexOutOfRange()
 {
 	cerror(1051, "Index is out of range");
 }
@@ -595,6 +595,7 @@ void indexOutOfRange()
 bool checkRange(const Complex &cx, int *D)
 {
 	if(!isMatrix(cx)){
+		//x[0] or x[0][0] or x[][0]
 		if(D[0]>=0 && (D[0] || D[1]) || D[2]>=0 && (D[2] || D[3])){
 			indexOutOfRange();
 			return false;
@@ -603,13 +604,18 @@ bool checkRange(const Complex &cx, int *D)
 	}
 	Pmatrix x= toMatrix(cx);
 	if(D[0]<0){
+		//all rows
 		D[0]=0;
 		D[1]=x->rows-1;
 	}
 	if(D[2]<0){
-		D[2]=0;
-		D[3]=x->cols-1;
-		if(isVector(cx) && x->rows==1){
+		if(x->rows>1) {
+			//all columns
+			D[2]=0;
+			D[3]=x->cols-1;
+		}
+		else{
+			//vector
 			D[2]=D[0];
 			D[3]=D[1];
 			D[0]=D[1]=0;
@@ -696,17 +702,6 @@ void assignRange(Complex &cy, const Complex &cx, const int *D0)
 
 void _stdcall INDEXM(Complex &cy, const Complex &cx, int *D)
 {
-	int i, j;
-
-	if(!isMatrix(cx)){
-		if(D[0]>=0 && (D[0] || D[1]) || D[2]>=0 && (D[2] || D[3])){
-			indexOutOfRange();
-		}
-		else{
-			COPYM(cy, cx);
-		}
-		return;
-	}
 	if(!checkRange(cx, D)) return;
 	if(!isMatrix(cx)){ COPYM(cy, cx); return; }
 	Pmatrix x= toMatrix(cx);
@@ -719,9 +714,9 @@ void _stdcall INDEXM(Complex &cy, const Complex &cx, int *D)
 	else{
 		prepareM(cy, cols, rows);
 		MatrixItem *A= toMatrix(cy)->A;
-		for(i=D[0]; i<=D[1]; i++){
+		for(int i=D[0]; i<=D[1]; i++){
 			MatrixItem *B= x->A + x->cols*i + D[2];
-			for(j=0; j<cols; j++){
+			for(int j=0; j<cols; j++){
 				copyItem(*A++, *B++);
 			}
 		}

@@ -243,7 +243,7 @@ void applyArrayIndex(int f)
 	if(f&1){ D[0][0]= getIndex(); if(!(f&2)) D[0][1]= D[0][0]; }
 	if(!numStack.len) return;
 	Complex &x= numStack[numStack.len-1];
-	if(x.r && isVariable(x)){
+	if(isVariable(x)){
 		//create range
 		x.r[-3] = -5;
 		int *xD = (int*)&x.r[1];
@@ -253,10 +253,9 @@ void applyArrayIndex(int f)
 		xD[3] = D[1][1];
 	}
 	else{
-		Complex y, x1;
-		deref(x1, x);
-		y= ALLOCR(precision);
-		INDEXM(y, x1, &D[0][0]);
+		if(isRange(x)) deref(x);
+		Complex y= ALLOCR(precision);
+		INDEXM(y, x, &D[0][0]);
 		FREEM(x);
 		x=y;
 	}
