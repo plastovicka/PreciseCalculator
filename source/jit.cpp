@@ -699,7 +699,14 @@ void jitCompileScript(const char *input)
 			skipSpaces(input);
 		}
 		if(!*input) break; // end of script
-		if(*input==';') continue; // empty command
+#ifdef CONSOLE
+		if(*input=='"' && (!input[1] || input[1]==' ' && !input[2])) break;
+#endif
+		if(*input==';') {
+			// empty command
+			input++; 
+			continue;
+		} 
 
 		if(!_strnicmp(input, "print", 5)){
 			input+=5;
