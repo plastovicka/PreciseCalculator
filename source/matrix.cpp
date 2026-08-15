@@ -2308,16 +2308,18 @@ struct IntegralData
 	{
 		Complex h, z, F[3];
 		int i;
-		Tint oldyPrec, oldPrec;
+		Tint oldyPrec, oldiPrec, oldPrec;
 
 		oldPrec=precision;
 		oldyPrec=y.r[-4];
+		if(!y.i) y.i=ALLOCX(oldyPrec);
+		oldiPrec=y.i[-4];
 #ifdef ARIT64
 		const int B = 39; //12 digits
 #else
 		const int B = 26; //8 digits
 #endif
-		y.r[-4]= precision= (bits<=B) ? 2 : min(oldyPrec, (bits+92*(TintBits/32))/TintBits);
+		y.r[-4]= y.i[-4]= precision= (bits<=B) ? 2 : min(oldyPrec, (bits+92*(TintBits/32))/TintBits);
 		memset(F, 0, sizeof(F));
 		h=ALLOCR(precision);
 		z=ALLOCR(precision);
@@ -2348,6 +2350,7 @@ struct IntegralData
 		FREEM(F[0]);
 		precision=oldPrec;
 		y.r[-4]=oldyPrec;
+		y.i[-4]=oldiPrec;
 	}
 };
 
