@@ -1514,10 +1514,14 @@ void _stdcall MULTCM(Complex &y, const Complex &a, const Complex &i)
 {
 	MAP1M(y, a, i, MULTC);
 }
+
+#ifdef ARIT_UNUSED
 void _stdcall MULTIM(Complex &y, const Complex &x, Tuint n)
 {
 	MAPM(y, x, n, MULTIC);
 }
+#endif
+
 void _stdcall DIVIM(Complex &y, const Complex &x, Tuint n)
 {
 	MAPM(y, x, n, DIVIC);

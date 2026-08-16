@@ -177,7 +177,6 @@ extern "C"{
 	void _stdcall GCDNX(Pint y0, unsigned num, const Complex *A);
 	void _stdcall LCMNX(Pint y0, unsigned num, const Complex *A);
 
-	void _stdcall IFX(Pint y, const Pint *A);
 	void _stdcall EQUALX(Pint y, const Pint a, const Pint b);
 	void _stdcall NOTEQUALX(Pint y, const Pint a, const Pint b);
 	void _stdcall GREATERX(Pint y, const Pint a, const Pint b);

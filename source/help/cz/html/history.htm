@@ -13,8 +13,25 @@
 
 <P><A NAME="history"></A><B>Historie zmìn</B></P>
 <BR>
+<CODE>3.0 (2026)</CODE>
 <UL>
-<LI>matice mùže mít až milion pvkù v 64-bitové verzi
+<LI>vektory a matice mohou mít až milion prvkù v 64-bitové verzi
+<LI>vstupní výraz je pøed spuštìním kompilován do binárního kódu
+<LI>optimalizované násobení, pokud je pøesnost vìtší než 100 000
+<LI>optimalizovaná alokace pamìti
+<LI>výstup hodnì velkých èísel lze zastavit klávesou Escape
+<LI>ukládají se velikost okna promìnných a velikost okna historie
+<LI><CODE>opravené chyby:</CODE>
+<LI>acosh(0) havaroval
+<LI>asinh(-1E1000) zobrazilo chybu Logaritmus z nuly
+<LI>sqrt(10 ^ 177696745232747428213) havaroval
+<LI>not(-1E-20) havaroval
+<LI>prime(0.5) vrátil 1 místo 2
+<LI>(-1E10000 XOR -1) vrátil 4E10018 místo 1E10000
+<LI>a=(1);a[0]++ zobrazilo chybu Operátor ++ nebo -- použit na matici
+<LI>rozsah z rozsahu ignoroval první rozsah, (a[3,8])[1,4] vrátil a[1,4] místo a[4,7]
+<LI>goto mohlo skoèit na støedník uvnitø komentáøe
+<LI>u konzolové aplikace nemohl výraz v uvozovkách konèit støedníkem</UL>
 </UL>
 <CODE>2.9.1 (9.10.2025)</CODE>
 <UL>

@@ -31,15 +31,17 @@ void ConvertFromGMP(Pint x, mpf_ptr f)
 
 void ConvertToGMP(Pint x, mpf_ptr f)
 {
+#if 0
 	//import is safe and compatible but it is slower and needs more memory
-	//mpz_t o;
-	//mpz_init(o);
-	//mpz_import(o, x[-3], 1, sizeof(Tint), 0, 0, x);
-	//mpf_init2(f, precision*TintBits);
-	//mpf_set_z(f, o);
-	//mp_bitcnt_t b = x[-1]-x[-3];
-	//if(b) mpf_mul_2exp(f, f, b*64);
-	//mpz_clear(o);
+	mpz_t o;
+	mpz_init(o);
+	mpz_import(o, x[-3], 1, sizeof(Tint), 0, 0, x);
+	mpf_init2(f, precision*TintBits);
+	mpf_set_z(f, o);
+	mp_bitcnt_t b = x[-1]-x[-3];
+	if(b) mpf_mul_2exp(f, f, b*64);
+	mpz_clear(o);
+#endif
 
 	//direct conversion to mpf_t
 	assert(x[-4]>1 && x[-4]<1000000000);

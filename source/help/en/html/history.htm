@@ -13,8 +13,25 @@
 
 <P><A NAME="history"></A><B>Version history</B></P>
 <BR>
+<CODE>3.0 (2026)</CODE>
 <UL>
-<LI>matrix can have up to a million elements in the 64-bit version
+<LI>vectors and matrices can have up to a million elements in 64-bit version
+<LI>input expression is compiled to a binary code before executing
+<LI>optimized multiplication if precision is greater than 100000
+<LI>optimized memory allocation
+<LI>output of big numbers can be stopped by Escape key
+<LI>variables window size and history window size are saved
+<LI><CODE>fixed bugs:</CODE>
+<LI>acosh(0) crashed
+<LI>asinh(-1E1000) showed error Logarithm of zero
+<LI>sqrt(10 ^ 177696745232747428213) crashed
+<LI>not(-1E-20) crashed
+<LI>prime(0.5) returned 1 instead of 2
+<LI>(-1E10000 XOR -1) returned 3.8E10018 instead of 1E10000
+<LI>a=(1);a[0]++ showed error Increment or decrement of a matrix
+<LI>range of range ignored the first range, (a[3,8])[1,4] returned a[1,4] instead of a[4,7]
+<LI>goto could jump to a semicolon inside a comment
+<LI>console app parameter in quotes could not end with a semicolon
 </UL>
 <CODE>2.9.1 (9 October 2025)</CODE>
 <UL>

@@ -159,11 +159,7 @@ void assign(Complex &dest, const Complex &src)
 
 Complex *deref1(Complex &x)
 {
-	if(x.r && isVariable(x)){
-		Tvar *v= toVariable(x);
-		return v->modif ? &v->newx : &v->oldx;
-	}
-	return 0;
+	return &toVariable(x)->newx;
 }
 
 void deref(Complex &x)
@@ -311,6 +307,7 @@ void _fastcall GOTORELX(Pint y)
 }
 
 void FILTERM() {};
+void IFX() {};
 
 //-------------------------------------------------------------------
 
@@ -656,7 +653,7 @@ bool isVarLetter(char c)
 		|| c>='0' && c<='9';
 }
 
-Tvar *findVar(const char *s, const char **e)
+Tvar *findVar(const char *s)
 {
 	Tlen i;
 	Tvar *v;
@@ -670,7 +667,6 @@ Tvar *findVar(const char *s, const char **e)
 			if(c!=tolower(*d) || !c) break;
 		}
 		if(*d=='\0' && !isVarLetter(c)){
-			if(e) *e=a;
 			return v;
 		}
 	}
@@ -881,7 +877,7 @@ int token(const char *&s, bool isFor=false, bool isPostfix=false)
 	varNameLen=0;
 	for(a=s; isVarLetter(*a); a++) varNameLen++;
 	if(varNameLen){
-		v= findVar(s, 0);
+		v= findVar(s);
 		skipSpaces(a);
 		if(!v && (*a=='=' && *(a+1)!='=' || isFor)){
 			//create a new variable

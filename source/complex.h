@@ -24,7 +24,6 @@ extern "C"{
 	void _stdcall WRITEC(char *buf, const Complex &x, int digits);
 	int _stdcall LENC(const Complex &x, int digits);
 
-	void _fastcall SETCN(Complex &x, Tint n);
 	void _fastcall SETC(Complex &x, Tuint n);
 	void _fastcall ZEROC(Complex &x);
 	void _fastcall ONEC(Complex &x);
@@ -41,7 +40,6 @@ extern "C"{
 	void _fastcall INTC(Complex &x);
 	void _fastcall CEILC(Complex &x);
 	void _fastcall FRACC(Complex &x);
-	void _fastcall FRACTOC(Complex &x);
 
 	void _stdcall ISUFFIXC(Complex &y, const Complex &x);
 
@@ -111,6 +109,11 @@ extern "C"{
 	void _stdcall RSHIC(Complex &y, const Complex &a, const Complex &b);
 	void _stdcall LSHC(Complex &y, const Complex &a, const Complex &b);
 	void _stdcall LSHIC(Complex &y, const Complex &a, Tint n);
+
+#ifdef ARIT_UNUSED
+	void _fastcall SETCN(Complex &x, Tint n);
+	void _fastcall FRACTOC(Complex &x);
+#endif
 }
 
 inline bool isZero(const Complex &x){

@@ -2223,6 +2223,10 @@ void _stdcall SINX(Pint y, const Pint x0)
 				ONEX(y);
 				y[-2]=x0[-2];
 				return;
+			case 180: //sin(deg 180)=0
+			case 360:
+				ZEROX(y);
+				return;
 		}
 	}
 
@@ -2868,11 +2872,6 @@ void _stdcall EQVX(Pint y, const Pint a, const Pint b)
 }
 
 //-------------------------------------------------------------------
-
-void _stdcall IFX(Pint y, const Pint *A)
-{
-	COPYX(y, A[isZero(A[0]) ? 2 : 1]);
-}
 
 void _stdcall EQUALX(Pint y, const Pint a, const Pint b)
 {

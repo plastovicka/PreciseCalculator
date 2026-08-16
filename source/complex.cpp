@@ -147,17 +147,6 @@ void _fastcall MAPC(Complex &x, Tunary0 f)
 	if(x.i) f(x.i);
 }
 
-void _fastcall MAPC(Complex &y, const Complex &x, Tunary2 f)
-{
-	f(y.r, x.r);
-	if(x.i) {
-		f(y.i, x.i);
-	}
-	else {
-		ZEROX_safe(y.i);
-	}
-}
-
 void _fastcall MAPC(Complex &y, const Complex &a, const Complex &b, Tbinary f, bool imag)
 {
 	f(y.r, a.r, b.r);
@@ -192,10 +181,14 @@ void _fastcall FRACC(Complex &x)
 {
 	MAPC(x, FRACX);
 }
+
+#ifdef ARIT_UNUSED
 void _fastcall FRACTOC(Complex &x)
 {
 	MAPC(x, FRACTOX);
 }
+#endif
+
 void _stdcall NOTC(Complex &y, const Complex &x)
 {
 	NOTX(y.r, x.r);
@@ -203,6 +196,7 @@ void _stdcall NOTC(Complex &y, const Complex &x)
 	if(isImag(x)) NOTX(y.i, x.i);
 	else SETXN(y.i, -1);
 }
+
 void _fastcall NEGC(Complex &x)
 {
 	MAPC(x, NEGX);
@@ -276,11 +270,13 @@ void _stdcall MINUSC(Complex &y, const Complex &a, const Complex &b)
 
 //-------------------------------------------------------------------
 
+#ifdef ARIT_UNUSED
 void _fastcall SETCN(Complex &x, Tint n)
 {
 	SETXN(x.r, n);
 	ZEROX_safe(x.i);
 }
+#endif
 
 void _fastcall SETC(Complex &x, Tuint n)
 {
@@ -451,11 +447,13 @@ void _stdcall MULTI1C(Complex &x, Tuint n)
 	if(isImag(x)) MULTI1(x.i, n);
 }
 
+#ifdef ARIT_UNUSED
 void _stdcall MULTIC(Complex &y, const Complex &x, Tuint n)
 {
 	MULTI(y.r, x.r, n);
 	if(needImag(y, x)) MULTI(y.i, x.i, n);
 }
+#endif
 
 void _stdcall DIVI1C(Complex &x, Tuint n)
 {
@@ -853,7 +851,8 @@ static void _stdcall ATANCOTC(Complex &y, const Complex &x, int f)
 		}
 	}
 	else{
-		DIVI(y.r, t.r, 2);
+		if(isZero(x.r) && f==3) ZEROX(y.r);
+		else DIVI(y.r, t.r, 2);
 		if(needImag(y, t)) DIVI(y.i, t.i, 2);
 		if(!isImag(x) && (f==2 ? CMPX(x.r, one)>0 :
 			CMPX(x.r, one)<0 && !x.r[-2] && !isZero(x.r))){

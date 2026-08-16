@@ -87,7 +87,6 @@ extern "C"{
 	void _stdcall PLUSM(Complex &y, const Complex &a, const Complex &b);
 	void _stdcall MINUSM(Complex &y, const Complex &a, const Complex &b);
 	void _stdcall MULTM(Complex &y, const Complex &a, const Complex &b);
-	void _stdcall MULTIM(Complex &y, const Complex &a, Tuint n);
 	void _stdcall MULTI1M(Complex &y, Tuint n);
 	void _stdcall MULTCM(Complex &y, const Complex &a, const Complex &i);
 	void _stdcall DIVM(Complex &y, const Complex &a, Complex &b);
@@ -171,6 +170,10 @@ extern "C"{
 
 	void _stdcall MIN3M(Complex &y, const Complex &a, const Complex &b);
 	void _stdcall MAX3M(Complex &y, const Complex &a, const Complex &b);
+
+#ifdef ARIT_UNUSED
+	void _stdcall MULTIM(Complex &y, const Complex &a, Tuint n);
+#endif
 }
 
 Tint getPrecision(const Complex &cx);
