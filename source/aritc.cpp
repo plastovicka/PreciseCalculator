@@ -166,7 +166,15 @@ void _stdcall RANDX(Pint y)
 void _stdcall RANDOMX(Pint y, const Pint x)
 {
 	RANDX(y);
-	MULTI1(y, toDword(x));
+	if(isDword(x))
+		MULTI1(y, toDword(x));
+	else
+	{
+		Pint t = ALLOCX(y[-4]);
+		MULTX(t, y, x);
+		COPYX(y, t);
+		FREEX(t);
+	} 
 	TRUNCX(y);
 }
 
@@ -649,7 +657,7 @@ void _stdcall MULTX2(Pint z, const Pint x, const Pint y)
 #ifndef NDEBUG
 const int MULT3LIM = 30, MULTGMPLIM = 2000;
 #elif defined(ARIT64)
-const int MULT3LIM = 73, MULTGMPLIM = 3640;
+const int MULT3LIM = 730, MULTGMPLIM = 3640;
 #else
 const int MULT3LIM = 450, MULTGMPLIM = 20000;
 #endif

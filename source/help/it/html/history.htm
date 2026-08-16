@@ -3,18 +3,101 @@
 <META http-equiv=Content-Type content="text/html; charset=utf-8">
 <META content="MSHTML 6.00.6000.21383" name=GENERATOR></HEAD>
 <BODY text=#000000 bgColor=#ffffff>
-<P><A name=history></A><B>Storico delle versioni</B></P><BR><CODE>2.6 (4 maggio 
-2013)</CODE> 
+<P><A name=history></A><B>Storico delle versioni</B></P><BR>
+<CODE>3.0 (17 agosto 2026)</CODE>
+<UL>
+<LI>Vettori e matrici possono avere fino a un milione di elementi nella versione a 64 bit
+<LI>L'espressione di input viene compilata in codice binario prima dell'esecuzione
+<LI>Moltiplicazione ottimizzata se la precisione è maggiore di 100000
+<LI>Allocazione di memoria ottimizzata
+<LI>L'output di numeri grandi può essere interrotto con il tasto Esc
+<LI>La dimensione della finestra delle variabili e la dimensione della finestra della cronologia vengono salvate
+<LI><CODE>Bug corretti:</CODE>
+<LI>acosh(0) ha causato un crash
+<LI>asinh(-1E1000) ha mostrato l'errore Logaritmo di zero
+<LI>sqrt(10 ^ 177696745232747428213) ha causato un crash
+<LI>not(-1E-20) ha causato un crash
+<LI>prime(0.5) ha restituito 1 invece di 2
+<LI>(-1E10000 XOR -1) ha restituito 3.8E10018 invece di 1E10000
+<LI>a=(1);a[0]++ ha mostrato l'errore Incremento o decremento di una matrice
+<LI>range di range ha ignorato il primo range, (a[3,8])[1,4] ha restituito a[1,4] invece di a[4,7]
+<LI>numeri casuali grandi, random(1e100)
+<LI>goto poteva saltare a un punto e virgola all'interno di un commento
+<LI>il parametro dell'app console tra virgolette non poteva terminare con un punto e virgola
+</UL>
+<CODE>2.9.1 (9 ottobre 2025)</CODE>
+<UL>
+<LI><CODE>Bug corretti:</CODE>
+<LI>La funzione mod ha restituito un risultato negativo per alcuni numeri grandi, ad esempio (1e40-1) mod 1e40
+</UL>
+<CODE>2.9 (10 maggio 2024)</CODE>
+<UL>
+<LI>Le potenze vengono eseguite da destra a sinistra, 2^3^4 = 2^(3^4) = 2^81
+<LI>Il segno meno ha priorità inferiore rispetto alla potenza, -(3)^2 = -3^2 = -9
+<LI>La dimensione del carattere dipende dal DPI
+<LI>Viene visualizzato un messaggio se la memoria non è sufficiente
+<LI>Input e output ottimizzati per numeri molto grandi
+<LI>Ottimizzazione di fattoriale, integrale, logaritmo, permutazione, seno, coseno, (x^y mod z)
+<LI><CODE>Bug corretti:</CODE>
+<LI>Overflow del buffer di output
+<LI>Anteprima del risultato di modulo, seno, coseno di un parametro grande
+</UL>
+<CODE>2.8 (28 maggio 2023)</CODE>
+<UL>
+<LI>Codifica Unicode (nomi delle variabili, commenti, stampa)
+<LI>I file vengono salvati con codifica UTF-8 e BOM
+<LI>Il tasto Esc o il tasto C posizionano il cursore nella casella di input
+<LI>L'anteprima del risultato è in grigio
+<LI>Precisione massima aumentata a 999999999
+<LI><CODE>Bug corretti:</CODE>
+<LI>La funzione divisore non funzionava per numeri molto grandi
+</UL>
+<CODE>2.7 (17 marzo 2022)</CODE>
+<UL>
+<LI>Funzioni agm, filterfor, filterforeach
+<LI>Gli operatori shl, shr, shri sono alternative a lsh, rsh, rshi
+<LI>() è una matrice vuota o un vettore di lunghezza zero
+<LI>Nelle modalità SCI e ENG, l'esponente viene visualizzato per gli interi, anche se le frazioni sono abilitate
+<LI>Suggerimenti dei pulsanti
+<LI>Interfaccia utente Unicode
+<LI>Macro Lunghezza del nome aumentata a 100
+<LI>Traduzione cinese
+<LI><CODE>Bug corretti:</CODE>
+<LI>L'operatore gotor saltava un comando dopo print con una virgola alla fine
+<LI>Gli operatori >>, >>> non sono stati trovati
+<LI>L'operatore ° dipendeva da una tabella codici di sistema
+<LI>Gli operatori round, int, ceil, trunc, frac a volte restituivano un valore maggiore o minore di 1, a seconda della precisione, ad esempio int(log(100)); round(log(sqrt(10)))
+</UL>
+<CODE>2.6.4 (8 marzo 2018)</CODE>
+<UL>
+<LI>Ottimizzato *, /, sin, cos, exp, ln, sqrt
+</UL>
+<CODE>2.6.3 (2 gennaio 2017)</CODE>
+<UL>
+<LI>Traduzioni in francese e italiano
+<LI><CODE>Corretti bug:</CODE>
+<LI>Impossibile aprire la guida su sistemi a 64 bit
+</UL>
+<CODE>2.6.2 (22 aprile 2015)</CODE>
+<UL>
+<LI>Traduzione in catalano
+<LI><CODE>Corretti bug:</CODE>
+<LI>Arctan(2^-65) bloccato
+<LI>Il processo non era compatibile con schermi ad alta risoluzione
+</UL>
+<CODE>2.6 (4 maggio 2013)</CODE> 
 <UL>
   <LI>la funzione mod mostra un errore se il primo operando è più lungo della 
-  precisione </LI></UL><CODE>2.5.4 (9 novembre 2012)</CODE> 
+  precisione </LI></UL>
+<CODE>2.5.4 (9 novembre 2012)</CODE> 
 <UL>
   <LI>il parametro funzione gcd ed lcm&nbsp;può essere una matrice 
   <LI><CODE>bug fissi:</CODE> 
   <LI>la modalità ENG tronca gli zeri finali </LI></UL><CODE>2.5.3 (24 settembre 
 2011)</CODE> 
 <UL>
-  <LI>Traduzione Russo&nbsp;</LI></UL><CODE>2.5.2 (18 marzo 2011)</CODE> 
+  <LI>Traduzione Russo&nbsp;</LI></UL>
+<CODE>2.5.2 (18 marzo 2011)</CODE> 
 <UL>
   <LI><CODE>bug fissi:</CODE> 
   <LI>Il tasto Esc causava&nbsp;il crash&nbsp;se i risultati sul file di 
