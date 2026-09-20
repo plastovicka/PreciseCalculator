@@ -38,7 +38,7 @@
     <AppxSymbolPackageEnabled>False</AppxSymbolPackageEnabled>
     <GenerateTestArtifacts>False</GenerateTestArtifacts>
     <HoursBetweenUpdateChecks>0</HoursBetweenUpdateChecks>
-    <PackageCertificateThumbprint>11D2F27F1A9893C6812E6394B107F6CD8010D6AE</PackageCertificateThumbprint>
+    <PackageCertificateThumbprint>421A95808D349CC5F0B78F8A6CD15F3917EB411D</PackageCertificateThumbprint>
     <AppxPackageSigningEnabled>True</AppxPackageSigningEnabled>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
