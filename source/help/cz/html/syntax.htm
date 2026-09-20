@@ -88,6 +88,18 @@
 
 <P>Pøed pøíkazem mùe bıt návìští, které je ukonèené dvojteèkou. Návìští je slovo, které mùe obsahovat stejné znaky jako promìnná a navíc mùe zaèínat èíslicí. Pøíkaz <CODE>goto</CODE> provede skok na zadané návìští. Kromì toho ale mùe obsahovat také poøadové èíslo pøíkazu nebo èíselnı vıraz. Napøíklad  <CODE>goto abc-2 </CODE> skoèí o dva pøíkazy pøed návìští abc. Pøíkaz <CODE>goto(abc-2)</CODE> skoèí na tolikátı pøíkaz, jaká je hodnota promìnné abc minus 2. Pøíkaz  <CODE>goto0</CODE>  skoèí na první pøíkaz.  Pøíkaz  <CODE>gotor N</CODE>   skoèí o N pøíkazù vpøed nebo zpìt podle toho, jestli je N kladné nebo záporné. Pøitom N mùe bıt libovolnı vıraz. </P>
 
+<P><U>Pøíkazy øízení toku programu</U></P>
+
+<P>Následující pøíkazy pouívají syntaxi ve stylu jazykù C nebo Java: <CODE>if</CODE>, <CODE>else</CODE>, <CODE>while</CODE>, <CODE>do</CODE>, <CODE>break</CODE>, <CODE>continue</CODE>. Podmínky se zapisují do závorek. Více pøíkazù lze seskupit do sloenıch závorek <CODE>{ }</CODE>.</P>
+
+<P><CODE>if(condition) command;</CODE> provede pøíkaz, pokud je podmínka nenulová. Pomocí <CODE>else</CODE> lze pøidat alternativní pøíkaz: <CODE>if(condition) command1 else command2</CODE>. Pøíklad: <CODE>if(x&gt;0) print x; else print -x;</CODE></P>
+
+<P><CODE>while(condition) command;</CODE> opakuje pøíkaz, dokud je podmínka nenulová. Pøíklad: <CODE>while(i&lt;10) { print i; i++; }</CODE></P>
+
+<P><CODE>do command while(condition);</CODE> nejprve provede pøíkaz a poté jej opakuje, dokud je podmínka nenulová. Støedník za <CODE>while(...)</CODE> je povinnı. Pøíklad: <CODE>do { i++; } while(i&lt;10);</CODE></P>
+
+<P><CODE>break</CODE> okamitì ukonèí aktuální cyklus. <CODE>continue</CODE> pøeskoèí zbytek aktuální iterace cyklu a pokraèuje další iterací. Tyto pøíkazy jsou platné pouze uvnitø cyklù. Pøíklad: <CODE>while(1) { if(a&gt;100) break; if(a&lt;0) { a++; continue; } print a++; }</CODE></P>
+
 <P><U>Operace</U></P>
 
 <P>Prefixové operace se píší pøed èíselnı vıraz.  Postfixové operace se píší za èíselnı vıraz. Binární operace se vkládají mezi dva èíselné vırazy. Funkce s&nbsp;více parametry se pouívají tak, e za nimi následují závorky a v&nbsp;nich jsou parametry oddìlené èárkami. Mezi operacemi popøípadì operandy a operátory se mùe vyskytovat libovolnı poèet mezer. Obvykle ale nejsou povinné. Napøíklad ve vıraze sqrt x musí bıt mezera, ale ve vıraze sqrt2 nemusí bıt mezera. </P>

@@ -12,12 +12,6 @@
 
 typedef long Tinterlock;
 
-struct Tlabel {
-	const char *name;
-	int nameLen;
-	int ind;
-};
-
 int digits=40;
 Tint precision, prec2;
 Complex ans, oldAns, retValue;
@@ -32,6 +26,7 @@ Darray<int> baseInStack;
 Darray<Tstack> opStack;
 Darray<Tvar> vars;
 Darray<Tlabel> labels;
+Darray<TlabelPatch> labelPatches;
 //Darray<Tfunc> funcs;
 const Top **funcTabSorted;
 
@@ -674,7 +669,7 @@ Tvar *findVar(const char *s)
 }
 
 //---------------------------------------------------------------
-int findLabel(const char *s, int len)
+int findLabel(const char *s, int len, int define)
 {
 	Tlen i;
 	Tlabel *a;
@@ -682,7 +677,14 @@ int findLabel(const char *s, int len)
 	for(i=labels.len-1; i>=0; i--){
 		a=&labels[i];
 		if(len==a->nameLen && !strncmp(s, a->name, a->nameLen)){
-			return a->ind;
+			if(a->ind>=0) return a->ind;
+			if(define>=0) a->ind = define;
+			else{
+				TlabelPatch *p = labelPatches++;
+				p->labelIndex = i;
+				p->instructionIndex = jitCodeLen();
+			}
+			return 0;
 		}
 	}
 	return -1;
@@ -904,7 +906,9 @@ int token(const char *&s, bool isFor=false, bool isPostfix=false)
 #ifdef CONSOLE
 		if(c=='"' && (!s[1] || s[1]==' ' && !s[2])) { s++; return CMDEND; }
 #endif
-		cerror(951, "Unknown operator");
+		if(c=='}') cerror(967, "Semicolon expected");
+		else if(c=='{') cerror(969, ") expected");
+		else cerror(951, "Unknown operator");
 	}
 	return -2;
 }
@@ -973,20 +977,19 @@ void args(const char *input, const char **end)
 		if(*e!=',') break;
 		s=e+1;
 		if(isIf){
-			//the condition and both branches are sub-traces emitted inline
-			Tcompiled *c= jitEmit(jitIf);
-			c->inputPtr= input;
-			Tlen branch0Start= jitCodeLen();
+			Tlen ifPos= jitCodeLen();
+			jitEmit(jitIf);
 			parse(s, &e);
 			if(error) return;
-			jitEmit(jitEnd);
 			if(*e!=',') break;
-			Tlen branch1Start= jitCodeLen();
+			Tlen jumpPos= jitCodeLen();
+			jitEmit(jitJump);
 			parse(e+1, &e);
 			if(error) return;
-			c= jitCurGet(branch0Start-1); //re-fetch: array may have been reallocated
-			c->subLen= (int)(branch1Start - branch0Start);
-			c->length = (int)(jitCodeLen() - branch0Start);
+			Tcompiled *c= jitCurGet(ifPos); //re-fetch: array may have been reallocated
+			c->jump = jumpPos + 1 - ifPos;
+			c = jitCurGet(jumpPos);
+			c->jump = jitCodeLen() - jumpPos;
 			if(*e!=',') i += 2;
 			break;
 		}
@@ -1121,7 +1124,7 @@ void parse(const char *input, const char **e)
 			if(t==CMDGOTO){
 				skipSpaces(s);
 				for(b=s; isVarLetter(*b); b++);
-				u=findLabel(s, int(b-s));
+				u=findLabel(s, int(b-s), -1);
 				if(u>=0){
 					jitEmit(jitPushInt)->integer = u;
 					s=b;
@@ -1191,8 +1194,8 @@ void parse(const char *input, const char **e)
 void initLabels(const char *s)
 {
 	bool quot=false;
-	int n=0;
 	labels.reset();
+	labelPatches.reset();
 
 	for(;;){
 		skipSpaces(s);
@@ -1201,18 +1204,17 @@ void initLabels(const char *s)
 		for(b=s; isVarLetter(*s); s++);
 		if(*s==':' && s>b){
 			Tlabel *a= labels++;
-			a->ind=n;
+			a->ind=-1;
 			a->name=b;
 			a->nameLen=int(s-b);
 		}
-		//find semi-colon
+		//find semi-colon or {
 		for(;;){
 			char c= *s;
 			if(c=='/' && !quot) skipComment(s);
 			if(c==0) return;
 			s++;
-			if(c==';' && !quot){
-				n++;
+			if((c==';' || c=='{') && !quot){
 				if(*s==0) return;
 				break;
 			}

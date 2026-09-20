@@ -88,6 +88,18 @@
 
 <P>There can be a label before any command. The label is a word which is ended by a colon. It can contain characters that are allowed in variables, but a label name can also begin by a digit. Command  <CODE>goto </CODE>jumps to a label. The parameter after goto can be a label or a command’s sequence number or an expression. Example:  <CODE>goto abc-2 </CODE> jumps two commands before label abc. Command<CODE> goto(abc-2)</CODE> jumps to the command which number is abc-2 where abc is a variable and not a label. Command<CODE> goto0</CODE>  jumps to the beginning. Command <CODE>gotor N </CODE> jumps forward or backward according to a sign of N that can be any integer expression. </P>
 
+<P><U>Control flow commands</U></P>
+
+<P>The following commands use Java or C-style syntax: <CODE>if</CODE>, <CODE>else</CODE>, <CODE>while</CODE>, <CODE>do</CODE>, <CODE>break</CODE>, <CODE>continue</CODE>. Conditions are written in parentheses. Multiple commands can be grouped in braces <CODE>{ }</CODE>.</P>
+
+<P><CODE>if(condition) command;</CODE> executes command when condition is not zero. You can add an alternative command with <CODE>else</CODE>: <CODE>if(condition) command1 else command2</CODE>. Example: <CODE>if(x&gt;0) print x; else print -x;</CODE></P>
+
+<P><CODE>while(condition) command;</CODE> repeats command while condition is not zero. Example: <CODE>while(i&lt;10) { print i; i++; }</CODE></P>
+
+<P><CODE>do command while(condition);</CODE> executes command first, then repeats while condition is not zero. The semicolon after <CODE>while(...)</CODE> is required. Example: <CODE>do { i++; } while(i&lt;10);</CODE></P>
+
+<P><CODE>break</CODE> ends the current loop immediately. <CODE>continue</CODE> skips the rest of the current loop iteration and continues with the next one. These commands are valid only inside loops. Example: <CODE>while(1) { if(a&gt;100) break; if(a&lt;0) { a++; continue; } print a++; }</CODE></P>
+
 <P><U>Operators</U></P>
 
 <P>Prefix operators are placed before a number or an expression.  Postfix operators come after an expression. Binary operators are placed between two expressions. Functions with multiple arguments are followed by parenthesis that enclose arguments separated by commas. There can be spaces before or after operators, but they are usually not mandatory. Example: there has to be a space in expression sqrt x, but there needn’t be a space in expression sqrt2.</P>

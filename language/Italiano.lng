@@ -118,6 +118,13 @@
 962=attendere 
 963=Parentesi destra non coincidete
 964=Fine commento mancante
+965=Atteso }
+966=Fine blocco } non corrispondente
+967=Atteso punto e virgola
+968=Attesa parola chiave while
+969=Atteso )
+970=break fuori dal ciclo
+971=continue fuori dal ciclo
 
 1010=Divisione per zero
 1011=Eccesso, il numero è troppo grande 

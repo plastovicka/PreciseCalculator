@@ -15,18 +15,19 @@ struct Tcompiled {
 		int variable;     //jitPushVar (variable index)
 		int indexes;	  //jitArrayIdx (index structure flags)
 		unsigned argCount;//jitApplyVararg (argument count)
-		int length;       //jitPrintText (text length), jitIf (length of both branches)
+		int length;       //jitPrintText (text length)
 		int base;         //jitPushNum (base)
 	};
 	union {
 		Pint num;         //jitPushNum (owned copy of a constant)
 		Tint integer;     //jitPushInt (integer constant), jitPushFraction (numerator)
+		Tlen jump;        //jitIf, jitIfNot, jitJump (relative offset)
 		const Top *op;    //jitApplyOp, jitApplyVararg, jitFor
 		int flags;        //jitCmdEnd (writeResult), jitPrintText (doubleQuotes)
 		int cmdNum;       //jitCmdStart (command number)
 	};
 	union {
-		int subLen;       //jitFor (length of inline body including jitEnd), jitIf (length of branch-0 including jitEnd)
+		int subLen;       //jitFor (length of inline body including jitEnd)
 		Tuint fraction;   //jitPushFraction (denominator)
 	};
 	const char *inputPtr; //value for errPos (position of the function name); jitPrintText: text pointer
@@ -37,9 +38,20 @@ struct Tstack {
 	const char *inputPtr;
 };
 
+struct Tlabel {
+	const char *name;
+	int nameLen;
+	int ind;
+};
+
+struct TlabelPatch {
+	int labelIndex;
+	Tlen instructionIndex;
+};
+
 enum { jitPushNum, jitPushInt, jitPushFraction, jitPushVar,
 	jitUnaryOp, jitUnaryFastOp, jitBinaryOp, jitTernaryOp, jitConst,
-	jitApplyVararg, jitFor, jitArrayIdx, jitIf,
+	jitApplyVararg, jitFor, jitArrayIdx, jitIf, jitIfNot, jitJump,
 	jitCmdStart,    // set cmdNum
 	jitCmdEnd,      // pop result, write to buf, set ans; flags: writeResult
 	jitPrintText,  // append literal text to buf: inputPtr=text, length=len, flags=doubleQuotes
@@ -59,6 +71,8 @@ extern Darray<Tstack> opStack;
 extern const Top opPowMod;
 extern const char *errPos;
 extern Darray<char> outBuf;
+extern Darray<Tlabel> labels;
+extern Darray<TlabelPatch> labelPatches;
 
 void skipSpaces(const char *&s);
 void cleanup();
@@ -66,6 +80,7 @@ void ClearError(int err);
 void errGoto();
 void deref(Complex &x);
 Complex *deref1(Complex &x);
+int findLabel(const char *s, int len, int define);
 
 void jitScriptRun();
 void jitRun(Tcompiled *j);

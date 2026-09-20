@@ -18,6 +18,12 @@ static Darray<Tcompiled> code;
 static Darray<Tlen> cmdStart;
 Darray<char> outBuf;
 
+struct TloopCompileContext {
+	Tlen breakBase, continueBase;
+};
+static Darray<TloopCompileContext> loopStack;
+static Darray<Tlen> loopBreakPatches, loopContinuePatches;
+
 #ifdef ARIT64
 const unsigned MAX_OUTPUT_SIZE = 1000000000;
 #else
@@ -526,20 +532,18 @@ void jitRun(Tcompiled *j)
 			forExecute(ins->op, ins+1);
 			ins += ins->subLen;
 			break;
-		case jitIf: {
-			errPos = ins->inputPtr;
+		case jitIf: case jitIfNot: {
 			deref(numStack[numStack.len-1]);
 			Complex y = *numStack--;
-			bool cond = !isZero(y);
+			bool cond = isZero(y);
+			if(ins->kind==jitIfNot) cond = !cond;
 			FREEM(y);
-			if(cond) {
-				jitRun(ins+1);
-				ins += ins->length;
-			}
-			else
-				ins += ins->subLen;
-			break;
+			if(!cond) break;
 		}
+		//fall through
+		case jitJump:
+			ins += ins->jump;
+			continue;
 		case jitArrayIdx:{
 			errPos= ins->inputPtr;
 			applyArrayIndex(ins->indexes);
@@ -681,99 +685,313 @@ Tcompiled *jitCurGet(Tlen idx)
 	return &code[idx];
 }
 
-void jitCompileScript(const char *input)
+static bool isKeyword(const char *input, const char *keyword, int n)
+{
+	return !_strnicmp(input, keyword, n) && !isVarLetter(input[n]);
+}
+
+static void jitCompileStatement(const char *&input);
+
+static void jitCompileCondition(const char *& input, bool isIf = false)
+{
+	errPos = input;
+	skipSpaces(input);
+	if(*input!='(') {
+		cerror(957, "Left parenthesis expected");
+		return;
+	}
+	const char *e;
+	parse(++input, &e);
+	if(error) return;
+	if(*e!=')' && !(isIf && *e==',')) {
+		errPos = e;
+		cerror(969, ") expected");
+		return;
+	}
+	input = e+1;
+}
+
+static bool jitCompileIf(const char *&input)
+{
+	Tlen startPos = jitCodeLen();
+	const char *startInput = input;
+	input += 2;
+	jitCompileCondition(input, true);
+	if(error) return true;
+	if(input[-1]==',') {
+		//ternary function, revert
+		input = startInput;
+		code.len = startPos;
+		return false;
+	}
+	Tlen ifPos = jitCodeLen();
+	jitEmit(jitIf);
+	jitCompileStatement(input);
+	if(error) return true;
+	Tlen elsePos = jitCodeLen();
+	skipSpaces(input);
+	if(isKeyword(input, "else", 4)) {
+		input += 4;
+		jitEmit(jitJump);
+		jitCompileStatement(input);
+		if(error) return true;
+		Tcompiled *c = jitCurGet(elsePos);
+		c->jump = jitCodeLen() - elsePos;
+		elsePos++;
+	}
+	jitCurGet(ifPos)->jump = elsePos - ifPos;
+	return true;
+}
+
+static void jitPushLoop()
+{
+	TloopCompileContext c = { loopBreakPatches.len, loopContinuePatches.len };
+	*loopStack++ = c;
+}
+
+static void jitPatchLoop(Darray<Tlen> &patches, Tlen start, Tlen target)
+{
+	for(Tlen k = start; k<patches.len; k++) {
+		Tlen jumpPos = patches[k];
+		jitCurGet(jumpPos)->jump = target - jumpPos;
+	}
+	patches.setLen(start);
+}
+
+static void jitPatchLoop(Tlen breakTarget, Tlen continueTarget)
+{
+	TloopCompileContext *loop = loopStack--;
+	jitPatchLoop(loopContinuePatches, loop->continueBase, continueTarget);
+	jitPatchLoop(loopBreakPatches, loop->breakBase, breakTarget);
+}
+
+static void jitCompileLoopJump(const char *&input, int keywordLen, bool isContinue)
+{
+	if(!loopStack.len) {
+		errPos = input;
+		cerror(isContinue ? 971 : 970, isContinue ? "continue outside loop" : "break outside loop");
+		return;
+	}
+	input += keywordLen;
+	errPos = input;
+	skipSpaces(input);
+	Tlen jumpPos = jitCodeLen();
+	jitEmit(jitJump);
+	if(isContinue)
+		*loopContinuePatches++ = jumpPos;
+	else
+		*loopBreakPatches++ = jumpPos;
+	if(*input==';') input++;
+	else cerror(967, "Semicolon expected");
+}
+
+static void jitCompileWhile(const char *&input)
+{
+	Tlen loopStart = jitCodeLen();
+	input += 5;
+	jitCompileCondition(input);
+	if(error) return;
+	Tlen ifPos = jitCodeLen();
+	jitEmit(jitIf);
+	jitPushLoop();
+	jitCompileStatement(input);
+	if(error) return;
+	Tcompiled *c= jitEmit(jitJump);
+	c->jump = loopStart + 1 - jitCodeLen();
+	Tlen loopEnd = jitCodeLen();
+	jitPatchLoop(loopEnd, loopStart);
+	c = jitCurGet(ifPos); //re-fetch: array may have been reallocated
+	c->jump = loopEnd - ifPos;
+}
+
+static void jitCompileDoWhile(const char *&input)
+{
+	Tlen loopStart = jitCodeLen();
+	input += 2;
+	jitPushLoop();
+	jitCompileStatement(input);
+	if(error) return;
+	errPos = input;
+	skipSpaces(input);
+	if(!isKeyword(input, "while", 5)){
+		cerror(968, "Keyword while expected");
+		return;
+	}
+	input += 5;
+	Tlen conditionStart = jitCodeLen();
+	jitCompileCondition(input);
+	if(error) return;
+	Tcompiled *c = jitEmit(jitIfNot);
+	Tlen loopEnd = jitCodeLen();
+	c->jump = loopStart + 1 - loopEnd;
+	jitPatchLoop(loopEnd, conditionStart);
+	errPos = input;
+	skipSpaces(input);
+	if(*input==';') input++;
+	else if(*input) cerror(967, "Semicolon expected");
+}
+
+static void jitCompileStatement(const char *&input)
 {
 	const char *e;
 
-	cmdStart.reset();
-
-	for(cmdNum=0; !error; cmdNum++)
-	{
-		// record where this command begins
-		*cmdStart++= code.len;
-		//skip label
+	// define labels
+	for(;;){
 		skipSpaces(input);
 		for(e=input; isVarLetter(*e); e++);
-		if(*e==':'){
-			input=e+1;
+		if(*e!=':') break;
+		findLabel(input, int(e-input), cmdNum+1);
+		input=e+1;
+	}
+
+	if(*input=='}') {
+		errPos = input;
+		cerror(966, "Unmatched end of block }");
+		return;
+	}
+
+	if(*input=='{'){
+		input++;
+		for(;;){
 			skipSpaces(input);
+			if(*input=='}'){
+				input++;
+				return;
+			}
+			if(!*input){
+				errPos=input;
+				cerror(965, "} expected");
+				return;
+			}
+			jitCompileStatement(input);
+			if(error) return;
 		}
-		if(!*input) break; // end of script
+	}
+
+	if(!*input) return;
+#ifdef CONSOLE
+	if(*input=='"' && (!input[1] || input[1]==' ' && !input[2])) return;
+#endif
+
+	// record where this command begins
+	*cmdStart++= code.len;
+	cmdNum++;
+	if(*input==';') {
+		// empty command
+		input++;
+		return;
+	}
+
+	if(isKeyword(input, "if", 2)){
+		if(jitCompileIf(input)) return;
+	}
+	if(isKeyword(input, "while", 5)){
+		jitCompileWhile(input);
+		return;
+	}
+	if(isKeyword(input, "do", 2)){
+		jitCompileDoWhile(input);
+		return;
+	}
+	if(isKeyword(input, "break", 5)){
+		jitCompileLoopJump(input, 5, false);
+		return;
+	}
+	if(isKeyword(input, "continue", 8)){
+		jitCompileLoopJump(input, 8, true);
+		return;
+	}
+
+	if(!_strnicmp(input, "print", 5)){
+		input += 5;
+		skipSpaces(input);
+		bool pendingSpace=false;
+		bool noNewLine=false;
+		for(;;){
+			if(*input=='\"'){
+				//literal text
+				e=input;
+				int doubleQuotes= skipString(e)-1;
+				if(error) return;
+				if(pendingSpace){
+					jitEmit(jitPrintSpace);
+					pendingSpace=false;
+				}
+				Tcompiled *p= jitEmit(jitPrintText);
+				p->inputPtr= ++input;
+				p->length= int(e-input)-doubleQuotes;
+				p->flags= doubleQuotes;
+				if(*e) e++;
+				skipSpaces(e);
+				input=e;
+			}
+			else if(!*input || *input==';'){
+				e = input;
+				break;
+			}
+			else{
+				// print expression
+				if(pendingSpace){
+					jitEmit(jitPrintSpace);
+					pendingSpace=false;
+				}
+				parse(input, &e);
+				if(error) return;
+				jitEmit(jitCmdEnd)->flags= 1; // writeResult
+				input=e;
+			}
+			if(*input!=',') break;
+			input++;
+			skipSpaces(input);
+			if(!*input || *input==';'){
+				// trailing comma = suppress newline
+				noNewLine=true;
+				e = input;
+				break;
+			}
+			pendingSpace=true;
+		}
+		if(!noNewLine) jitEmit(jitPrintNewLine);
+	}
+	else{
+		// expression
+		parse(input, &e);
+		if(error) return;
+		// writeResult when not ending with ';'
+		jitEmit(jitCmdEnd)->flags= (*e!=';');
+	}
+	if(!error) errPos = e;
+	if(*e==',') cerror(956, "Unmatched comma");
+	if(*e==']') cerror(963, "Unmatched right bracket");
+	if(*e==')') cerror(955, "Unmatched parenthesis");
+	if(*e==';') e++;
+	input=e;
+}
+
+void jitCompileScript(const char *input)
+{
+	cmdNum = -1;
+	cmdStart.reset();
+	loopBreakPatches.reset();
+	loopContinuePatches.reset();
+	loopStack.reset();
+
+	while(!error){
+		skipSpaces(input);
+		if(!*input) break;
 #ifdef CONSOLE
 		if(*input=='"' && (!input[1] || input[1]==' ' && !input[2])) break;
 #endif
-		if(*input==';') {
-			// empty command
-			input++; 
-			continue;
-		} 
-
-		if(!_strnicmp(input, "print", 5)){
-			input+=5;
-			skipSpaces(input);
-			bool pendingSpace=false;
-			bool noNewLine=false;
-			for(;;){
-				if(*input=='\"'){
-					//literal text
-					e=input;
-					int doubleQuotes= skipString(e)-1;
-					if(error) return;
-					if(pendingSpace){
-						jitEmit(jitPrintSpace);
-						pendingSpace=false;
-					}
-					Tcompiled *p= jitEmit(jitPrintText);
-					p->inputPtr= ++input;
-					p->length= int(e-input)-doubleQuotes;
-					p->flags= doubleQuotes;
-					if(*e) e++;
-					skipSpaces(e);
-					input=e;
-				}
-				else if(!*input || *input==';'){
-					e = input;
-					break;
-				}
-				else{
-					// print expression
-					if(pendingSpace){
-						jitEmit(jitPrintSpace);
-						pendingSpace=false;
-					}
-					parse(input, &e);
-					if(error) return;
-					jitEmit(jitCmdEnd)->flags= 1; // writeResult
-					input=e;
-				}
-				if(*input!=',') break;
-				input++;
-				skipSpaces(input);
-				if(!*input || *input==';'){
-					// trailing comma = suppress newline
-					noNewLine=true;
-					e = input;
-					break;
-				}
-				pendingSpace=true;
-			}
-			if(!noNewLine) jitEmit(jitPrintNewLine);
-		}
-		else{
-			// expression
-			parse(input, &e);
-			if(error) return;
-			// writeResult when not ending with ';'
-			jitEmit(jitCmdEnd)->flags= (*e!=';');
-		}
-		if(!error) errPos = e;
-		if(*e==',') cerror(956, "Unmatched comma");
-		if(*e==']') cerror(963, "Unmatched right bracket");
-		if(*e==')') cerror(955, "Unmatched parenthesis");
-		if(*e) e++;
-		input=e;
+		jitCompileStatement(input);
 	}
+	*cmdStart++= code.len;
 	jitEmit(jitEnd);
+
+	for(Tlen k = 0; k<labelPatches.len; k++) {
+		TlabelPatch &p = labelPatches[k];
+		code[p.instructionIndex].integer = labels[p.labelIndex].ind;
+	}
+	labelPatches.reset();
 }
 
 void jitUpdateNumbers()

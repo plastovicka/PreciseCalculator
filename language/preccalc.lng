@@ -150,6 +150,13 @@
 963=Unmatched right bracket
 955=Unmatched parenthesis
 964=End of comment is missing
+965=} expected
+966=Unmatched end of block }
+967=Semicolon expected
+968=Keyword while expected
+969=) expected
+970=break outside loop
+971=continue outside loop
 
 755=Error in %s\nLine %d
 756=Error in %s\nMessage number %d is too big

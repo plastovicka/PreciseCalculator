@@ -141,6 +141,14 @@ dove abc è una variabile e non un'etichetta. Il
 comando<CODE>&nbsp;goto0</CODE>&nbsp;salta all'inizio. Il comando <CODE>Gotor N 
 </CODE>salta in avanti o indietro in base al segno&nbsp;N che può essere 
 qualsiasi espressione intera. </P>
+
+<P><U>Comandi di controllo del flusso</U></P>
+<P>I seguenti comandi utilizzano una sintassi simile a quella di Java o C: <CODE>if</CODE>, <CODE>else</CODE>, <CODE>while</CODE>, <CODE>do</CODE>, <CODE>break</CODE>, <CODE>continue</CODE>. Le condizioni vanno racchiuse tra parentesi. È possibile raggruppare più comandi all'interno di parentesi graffe <CODE>{ }</CODE>.</P>
+<P><CODE>if(condition) command;</CODE> esegue il comando quando la condizione è diversa da zero. È possibile aggiungere un comando alternativo tramite <CODE>else</CODE>: <CODE>if(condition) command1 else command2</CODE>. Esempio: <CODE>if(x&gt;0) print x; else print -x;</CODE></P>
+<P><CODE>while(condition) command;</CODE> ripete il comando finché la condizione è diversa da zero. Esempio: <CODE>while(i&lt;10) { print i; i++; }</CODE></P>
+<P><CODE>do command while(condition);</CODE> esegue prima il comando, quindi lo ripete finché la condizione è diversa da zero. Il punto e virgola dopo <CODE>while(...)</CODE> è obbligatorio. Esempio: <CODE>do { i++; } while(i&lt;10);</CODE></P>
+<P><CODE>break</CODE> termina immediatamente il ciclo corrente. <CODE>continue</CODE> salta la parte restante dell'iterazione corrente e prosegue con quella successiva. Questi comandi sono validi solo all'interno dei cicli. Esempio: <CODE>while(1) { if(a&gt;100) break; if(a&lt;0) { a++; continue; } print a++; }</CODE></P>
+
 <P><U>Operatori</U></P>
 <P>Gli operatori di prefisso sono posti prima di un numero o di un'espressione. 
 Gli operatori in forma suffissa vengono dopo un'espressione. Gli operatori 

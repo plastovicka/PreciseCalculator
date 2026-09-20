@@ -115,6 +115,13 @@
 962=espera 
 963=No coincide corchete derecho
 964=faltan Fin del comentario
+965=} attendu
+966=Fin de bloc } sans correspondance
+967=Point-virgule attendu
+968=Mot-clé while attendu
+969=) attendu
+970=break en dehors d'une boucle
+971=continue en dehors d'une boucle
 
 1010=Division par zéro
 1011=Overflow, le nombre est trop grand 

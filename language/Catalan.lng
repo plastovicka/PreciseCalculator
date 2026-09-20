@@ -149,6 +149,13 @@
 963=paréntesi dret desaparellat
 955=paréntesi desaparellat
 964=No hi ha final de comentari
+965=S'esperava }
+966=Final de bloc } sense correspondència
+967=S'esperava punt i coma
+968=S'esperava la paraula clau while
+969=S'esperava )
+970=break fora del bucle
+971=continue fora del bucle
 
 755=Error a la  %s\nLinia %d
 756=Error a %s\nMissatge número %d és massa gran

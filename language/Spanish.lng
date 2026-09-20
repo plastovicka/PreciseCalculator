@@ -151,6 +151,13 @@
 963=Corchete derecho aislado
 955=Paréntesis aislado
 964=Final de comentario faltante
+965=Se espera }
+966=Fin de bloque } sin pareja
+967=Se espera punto y coma
+968=Se espera la palabra clave while
+969=Se espera )
+970=break fuera del bucle
+971=continue fuera del bucle
 
 755=Error en %s\nlínea %d
 756=Error en %s\mensaje número %d es enorme

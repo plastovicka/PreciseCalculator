@@ -117,6 +117,13 @@
 962=Zde se očekává ]
 963=Nadbytečná pravá hranatá závorka
 964=Chybí konec komentáře
+965=Zde se očekává }
+966=Přebývá konec bloku }
+967=Zde se očekává středník
+968=Zde se očekává klíčové slovo while
+969=Zde se očekává pravá závorka
+970=break mimo cyklus
+971=continue mimo cyklus
 
 1010=Dělení nulou
 1011=Přetečení, číslo je moc velké
