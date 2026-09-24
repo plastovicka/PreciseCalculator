@@ -972,6 +972,7 @@ void historySize(HWND hWnd, LPARAM lP, int &oldWidth, int &oldHeight)
 		moveX(p, hWnd, 520, dw);
 		moveX(p, hWnd, 521, dw);
 		moveX(p, hWnd, 522, dw);
+		moveX(p, hWnd, 523, dw);
 		moveX(p, hWnd, 9, dw);
 		moveW(p, hWnd, 101, dw, dh); //listBox
 		EndDeferWindowPos(p);
@@ -1081,6 +1082,9 @@ BOOL CALLBACK VarListProc(HWND hWnd, UINT mesg, WPARAM wP, LPARAM lP)
 				case 9:  //close
 					EndDialog(hWnd, wP);
 					break;
+				case 523: //refresh
+					initVarList(listBox);
+					break;
 				case 521: //remove
 					if(item<0 || item>=vAlen) break;
 					v=vA[item];
@@ -1115,6 +1119,7 @@ BOOL CALLBACK HistoryProc(HWND hWnd, UINT mesg, WPARAM wP, LPARAM lP)
 
 	switch(mesg){
 		case WM_INITDIALOG:
+			ShowWindow(GetDlgItem(hWnd, 523), SW_HIDE);
 			GetClientRect(hWnd, &rc);
 			oldWidth=rc.right;
 			oldHeight=rc.bottom;
