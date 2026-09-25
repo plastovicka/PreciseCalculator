@@ -844,11 +844,7 @@ static void _stdcall ATANCOTC(Complex &y, const Complex &x, int f)
 			DIVI(y.i, t.r, 2);
 			if(f==0) NEGX(y.i);
 		}
-		if(f==1 && !isZero(x)) NEGX(y.r);
-		if(isZero(x.r) && (f==0 ? CMPX(x.i, minusone)<0 :
-			isImag(x) && x.i[-2])){
-			NEGX(y.r);
-		}
+		if(f==1 && !isZero(x.r)) NEGX(y.r);
 	}
 	else{
 		if(isZero(x.r) && f==3) ZEROX(y.r);
@@ -865,14 +861,12 @@ static void _stdcall ATANCOTC(Complex &y, const Complex &x, int f)
 }
 
 //arctan(x)=-i/2*ln((1+i*x)/(1-i*x))
-//for imag x<-1i, the real part of the result is negated
 void _stdcall ATANC(Complex &y, const Complex &x)
 {
 	ATANCOTC(y, x, 0);
 }
 
 //arccotg(x)=i/2*ln((1+i*x)/(i*x-1))
-//for imag 0<x<1i, the real part of the result is negated
 void _stdcall ACOTGC(Complex &y, const Complex &x)
 {
 	ATANCOTC(y, x, 1);
